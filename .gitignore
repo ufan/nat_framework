@@ -1,15 +1,14 @@
-public_key.cpp
-public_key.h
-private_key.cpp
-private_key.h
-rsa_public_key.pem
-rsa_private_key.pem
+# public_key.cpp
+# public_key.h
+# private_key.cpp
+# private_key.h
+# rsa_public_key.pem
+# rsa_private_key.pem
 test.log
-prikey.pem
-pubkey.pem
+# prikey.pem
+# pubkey.pem
 src/lib
 remlog_*
 release
 ThirdParty
 *.o
-test

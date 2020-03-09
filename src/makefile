@@ -3,7 +3,7 @@ SHELL=/bin/bash
 
 SUBDIR = io strategy md td TunnelAgent TradeTool signal_agent dump tools execute_model test tdlib crypt logger logdb
 
-build : md td TunnelAgent TradeTool SignalAgent libstrategy dump tools test tdlib logdb
+build : md td TunnelAgent TradeTool SignalAgent libstrategy dump tools tdlib logdb
 
 md: libio
 	make -C md

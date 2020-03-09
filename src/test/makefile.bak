@@ -1,0 +1,31 @@
+include ../make/make.inc
+
+#CC		=	
+#LD     =	
+
+BUILDDIR		=	.
+BUILD_FLAGS		+= -Wno-deprecated-declarations -fPIC
+LIBPATHS		+= -L$(BASEDIR)/io -L$(BASEDIR)/ThirdParty/CTP -L$(BASEDIR)/ThirdParty/Xt
+LIBS        	+= -ldl -lthostmduserapi -lthosttraderapi -lXtTraderApi
+INCLUDEPATHS 	+= -I$(BASEDIR)/io -I$(BASEDIR)/md -I$(BASEDIR)/td -I$(BASEDIR)/account -I$(BASEDIR)/bar -I$(BASEDIR)/ThirdParty/CTP -I$(BASEDIR)/ThirdParty/Xt -I$(BASEDIR)/logger
+VPATH 			+= $(BASEDIR)/io $(BASEDIR)/account $(BASEDIR)/bar $(BASEDIR)/md $(BASEDIR)/td $(BASEDIR)/logger
+RELEASE         := ../../release/test/bin
+
+build			= test
+
+
+build: ${build}
+
+test: test.o CTradeBaseInfo.o CTimer.o MurmurHash2.o utils.o\
+ UnitVol.o UnitAmt.o UnitPx.o UnitPnl.o ModInstr.o ModPrd.o ModAcc.o AccBase.o\
+ ConfUtil.o RiskInstr.o RiskInstrStg.o RiskInstrTop.o RiskPrd.o RiskAcc.o RiskStg.o RiskTop.o
+	${CC} ${BUILD_FLAGS} $^ ${LIBPATHS} ${LIBS} ${INCLUDEPATHS} -o ${RELEASE}/$@
+
+
+testmdlatency: testmdlatency.o
+	${CC} ${BUILD_FLAGS} $^ ${LIBPATHS} ${LIBS} -lio ${INCLUDEPATHS} -o $@
+
+
+# must put at the end
+include ../make/tail.inc
+
