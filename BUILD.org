@@ -1,3 +1,11 @@
+* dependencies
+** install python2.7
+** install and build boost_python agains python2.7
+* make based build system
+** copy ThirdParty under src/ directory
+** edit /src/make/head.mk/, change *boost_DIR* and *PYTHON_BIN* accordingly
+** invoke /make/ command
+*** a new /release/ directory will be created with all targets inside
 * Caveants
 ** change libev.so.4.0.0 to libev.so
 *** only dynamic linkage success right now, to be investigated later
