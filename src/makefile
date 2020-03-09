@@ -57,7 +57,7 @@ installer: build
 	cp ./lib/*.so ../release/lib/
 	scripts/make_installer.sh
 
-SDK: strategylib tools
+SDK: libstrategy tools
 	cp account/*.h ../release/SDK/include
 	cp risk/*.h ../release/SDK/include
 	cp common/*.h* ../release/SDK/include
