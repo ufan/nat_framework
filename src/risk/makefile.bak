@@ -1,0 +1,27 @@
+include ../make/make.inc
+
+#CC		=	
+#LD     =	
+
+BUILDDIR		=	.
+BUILD_FLAGS		+= -Wno-deprecated-declarations 
+LIBPATHS		+= 
+LIBS        	+= 
+INCLUDEPATHS 	+= -I$(BASEDIR)/io -I$(BASEDIR)/account -I$(BASEDIR)/risk -I$(BASEDIR)/include -I$(BASEDIR)/common -I$(BASEDIR)/logger
+VPATH 			+= $(BASEDIR)/io $(BASEDIR)/account $(BASEDIR)/risk $(BASEDIR)/common $(BASEDIR)/logger
+
+
+build			= test
+
+
+build: ${build}
+
+test: test.o CTradeBaseInfo.o CTimer.o MurmurHash2.o utils.o\
+ UnitVol.o UnitAmt.o UnitPx.o UnitPnl.o ModInstr.o ModPrd.o ModAcc.o AccBase.o\
+ ConfUtil.o RiskInstr.o RiskInstrStg.o RiskInstrTop.o RiskPrd.o RiskAcc.o RiskStg.o RiskTop.o
+	${CC} ${BUILD_FLAGS} $^ ${LIBPATHS} ${LIBS} ${INCLUDEPATHS} -o ${RELEASE}/$@
+
+
+# must put at the end
+include ../make/tail.inc
+

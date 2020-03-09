@@ -1,0 +1,36 @@
+#!/bin/bash
+
+DSTDIR="/home/jarvis/global/io/md_engine/engine0/"
+
+if [[ $# -lt 3 ]]
+then
+	echo "Usage:$0 start_date end_date product1 product2..."
+	exit -1
+fi
+
+START=$1
+END=$2
+DAYLIST=${START}
+for ((CNT=1;;CNT++))
+do
+	D=`date -d "${START} ${CNT} days" +"%Y%m%d"`
+	if [[ ${D} > ${END} ]]; then break; fi
+	DAYLIST="${DAYLIST} ${D}"
+done
+echo ${DAYLIST}
+shift 2
+FILES=""
+for arg in $*
+do
+	DIR=`find /mnt/warehouse/China/ -mindepth 2 -maxdepth 2 -name ${arg} -type d`
+	for day in ${DAYLIST}
+	do
+		f=`ls ${DIR}/CTP_${day}_*_${arg}.data` 
+		FILES="${FILES} ${f}"
+	done
+done
+
+mkdir -p ${DSTDIR}
+CMD="./ctpdump2mmap ${DSTDIR} ${FILES}"
+echo ${CMD}
+eval ${CMD}

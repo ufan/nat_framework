@@ -1,0 +1,31 @@
+include ../make/make.inc
+
+#CC		=	
+#LD     =	
+
+BUILDDIR		=	.
+BUILD_FLAGS		:= -DFAST_LOGGER_ -g -O0 -std=c++11 -fPIC -Wno-unused-result -Wno-deprecated-declarations
+LIBPATHS		+= -L$(BASEDIR)/lib
+LIBS        	:= -lpthread -lstdc++ -ldl -lboost_python -lpython2.7 -lstrategy
+INCLUDEPATHS 	+= -I$(BASEDIR)/io -I$(BASEDIR)/md -I$(BASEDIR)/td -I$(BASEDIR)/account -I$(BASEDIR)/risk \
+                   -I$(BASEDIR)/logger -I/usr/include/python2.7 -I$(BASEDIR)/pyext -I$(BASEDIR)/bar -I$(BASEDIR)/strategy
+VPATH 			+= $(BASEDIR)/io $(BASEDIR)/account $(BASEDIR)/risk $(BASEDIR)/md $(BASEDIR)/td $(BASEDIR)/logger $(BASEDIR)/pyext \
+					$(BASEDIR)/bar
+
+RELEASE			:= $(BASEDIR)/lib
+
+build			= ${RELEASE}/libexecstg.so
+
+
+build: ${build}
+
+	
+${RELEASE}/libexecstg.so: CMarketStruct.o CBaseSignal.o CABM.o  CAvgSpread.o CDriftModel.o CLiquidityModel.o CLogitPModel.o  CSigmaSignal.o CVolatilityModel.o CLossModel.o CExecuteStrategy.o \
+ PyExecStgExtension.o
+	${CC} ${BUILD_FLAGS} -shared $^ ${LIBPATHS} ${LIBS} ${INCLUDEPATHS} -o $@
+	
+
+
+# must put at the end
+include ../make/tail.inc
+

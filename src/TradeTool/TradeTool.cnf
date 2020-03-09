@@ -1,0 +1,32 @@
+[CTP]
+trade_flow_path = ./tdflow/
+broker_id = 9999
+user_id = 101903
+passwd = 888888
+front = tcp://180.168.146.187:10000
+tcp://180.168.146.187:10001
+tcp://218.202.237.33:10002
+
+[CTPMINI]
+trade_flow_path = ./tdflow/
+broker_id = 9999
+user_id = 101903
+passwd = 888888
+front = tcp://180.168.146.187:10003
+
+[EES]
+lib_path    = ../ThirdParty/EES
+trade_ip    = 183.129.220.106
+trade_port  = 40000
+trade_udo_port = 40001
+query_ip    = 183.129.220.106
+query_port  = 50000 
+local_ip 	= 192.168.1.2
+local_udp_port = 20001
+logon_id    = 0003602
+passwd      = 0
+local_mac   = 30:e1:71:62:45:79
+name        = eestest
+
+[RISK]
+

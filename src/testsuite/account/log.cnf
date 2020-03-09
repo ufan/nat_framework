@@ -1,0 +1,12 @@
+/*
+ *    urconfig.properties
+ */
+log4cplus.rootLogger=TRACE, APPENDER
+
+log4cplus.appender.APPENDER=log4cplus::FileAppender
+log4cplus.appender.APPENDER.Append=false
+log4cplus.appender.APPENDER.MaxBackupIndex=3
+log4cplus.appender.APPENDER.MaxFileSize=100MB
+log4cplus.appender.APPENDER.File=./test.log
+log4cplus.appender.APPENDER.layout=log4cplus::PatternLayout
+log4cplus.appender.APPENDER.layout.ConversionPattern=%D|%l|%p|%m%n

@@ -1,0 +1,25 @@
+include ../make/make.inc
+
+#CC		=	
+#LD     =	
+
+BUILDDIR		=	.
+BUILD_FLAGS		+=
+LIBPATHS		+=	
+LIBS        	+=  
+INCLUDEPATHS 	+=	
+
+build			= test
+
+build: ${build}
+	@echo make target: $@
+
+
+test: test.o
+	@echo make target: $@ 
+	${CC} ${BUILD_FLAGS} $^ ${LIBPATHS} ${LIBS} ${INCLUDEPATHS} -o ${RELEASE}/$@
+
+
+# must put at the end
+include ../make/tail.inc
+

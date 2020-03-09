@@ -1,0 +1,30 @@
+include ../make/make.inc
+
+#CC		=	
+#LD     =	
+
+BUILDDIR		=	.
+BUILD_FLAGS		+= -Wno-deprecated-declarations
+LIBPATHS		+=	
+LIBS        	+=  -llog4cplus
+INCLUDEPATHS 	+=	
+
+build			= liblog.a test
+
+build: ${build}
+	@echo make target: $@
+
+
+liblog.a: Logger.o
+	ar rc $@ $^
+
+
+test: test.o CLogPool.o CFastLog.o utils.o
+	@echo make target: $@ 
+	${CC} ${BUILD_FLAGS} $^ ${LIBPATHS} ${LIBS} ${INCLUDEPATHS} -o ${RELEASE}/$@
+
+
+
+# must put at the end
+include ../make/tail.inc
+

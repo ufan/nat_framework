@@ -1,0 +1,49 @@
+{
+	"MDEngine":
+	{
+		"type":"onload_ees",
+		"log4cplus":"./mdlogger.cnf",
+		"subscribe":["rb"]
+	},
+	"CTPMD":
+	{
+		"timeout": 3,
+		"name" : "engine0",
+		"con_dir" : "./con_dir/",
+		"front" : ["tcp://180.168.146.187:10010"],
+		"BrokerID" : "9999",
+		"UserID" : "101903",
+		"Password" : "888888"
+	},
+    "EESMD":
+    {   
+        "name" : "engine0",
+        "use_multicast": false,
+        "timeout": 3,
+        "md_ip" : "183.129.220.106",
+        "md_port": 40006,
+        "login_id": "0003601",
+        "passwd": "0",
+        "multicast_config":
+        {
+            "mc_ip": "1.2.3.4",
+            "mc_port": 1234,
+            "local_ip": "2.3.4.5",
+            "local_port": 2345,
+            "exchange": "SHH"
+        }
+    },
+	"OnloadEESMD":
+	{
+		"name" : "engine0",
+		"interface": "ens3f0",
+		"mc_ip": "0.0.0.0",
+		"mc_port" : 0
+	},
+	"TDEngine":
+	{
+		"COMMENT":"we need this to get some base information.",
+		"engine_name":"td_engine",
+		"timeout":5
+	}
+}

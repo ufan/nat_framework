@@ -1,0 +1,13 @@
+[COMMON]
+base_dir = /media/E/VMs/sharework/st/src/ta
+log_conf = ./logger.cnf
+exe_log_dir = /media/E/VMs/sharework/st/src/ta/log
+lib_dir = /media/E/VMs/sharework/st/src/lib
+python_path = /media/E/VMs/sharework/st/src/lib
+clean_interval = 5.0
+
+
+[AGENT]
+ip = 127.0.0.1
+port = 6888
+

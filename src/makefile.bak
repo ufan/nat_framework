@@ -1,0 +1,76 @@
+SHELL=/bin/bash
+.PHONY:getversion build clean libio strategylib md td TunnelAgent TradeTool SignalAgent dump tools
+
+SUBDIR = io risk strategy md td TunnelAgent TradeTool signal_agent dump tools execute_model
+
+build: md td TunnelAgent TradeTool SignalAgent strategylib dump tools
+
+getversion:
+	REV=`svn info|awk '/^Revision:/{print $$2}'`; if [ ! -z $${REV} ]; then echo $${REV} > ../release/conf/version.txt; fi
+	
+libio:
+	make -C io
+
+strategylib:
+	@if [[ -f ./strategy/CSystemIO.o ]]; then \
+		make -C strategy; \
+	else make -B -C strategy; \
+	fi
+	make -C execute_model
+
+md: libio
+	make -C md
+
+td: libio
+	make -C td
+	
+TunnelAgent:
+	make -C TunnelAgent
+
+TradeTool:
+	make -C TradeTool
+	
+SignalAgent:
+	make -C signal_agent
+	
+dump:
+	make -C dump
+	
+installer: getversion build
+	mkdir -p ../release/lib/ThirdParty; cp -r ThirdParty/CTP ThirdParty/EES ThirdParty/EESV2 ThirdParty/EES3_1_3_47 ThirdParty/Xele ThirdParty/Xt ../release/lib/ThirdParty/
+	cp ./lib/*.so ../release/lib/
+	scripts/make_installer.sh
+	
+tools:
+	make -C tools
+
+SDK: strategylib getversion tools
+	cp account/*.h ../release/SDK/include
+	cp risk/*.h ../release/SDK/include
+	cp common/*.h* ../release/SDK/include
+	cp config/*.h ../release/SDK/include
+	cp include/*.h ../release/SDK/include
+	cp io/*.h ../release/SDK/include
+	cp logdb/*.h ../release/SDK/include
+	cp logger/*.h ../release/SDK/include
+	cp bar/*.h ../release/SDK/include
+	cp md/*.h ../release/SDK/include
+	cp td/*.h ../release/SDK/include
+	cp pyext/*.h ../release/SDK/include
+	cp strategy/*.h ../release/SDK/include
+	cp execute_model/*.h ../release/SDK/include
+	cp ./lib/*.so ../release/SDK/lib
+	-cp ../release/conf/version.txt ../release/SDK 2>/dev/null; true
+	cd ../release; tar cfz share/SDK.tgz SDK/
+
+clean:
+	@for i in $(SUBDIR); \
+	do \
+		make -C $$i $@; \
+	done
+	-rm -r ../release/lib/* 2>/dev/null; true
+	-rm ../release/install.sh 2>/dev/null; true
+	-rm ../release/SDK/lib/libstrategy.so 2>/dev/null; true
+	-rm ../release/SDK/include/* 2>/dev/null; true
+	-rm -r ../release/share/SDK 2>/dev/null; true
+

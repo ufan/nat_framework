@@ -1,0 +1,33 @@
+include ../make/make.inc
+
+#CC		=	
+#LD     =	
+
+BUILDDIR		=	.
+BUILD_FLAGS		+= -Wno-deprecated-declarations
+LIBPATHS		+= -L$(BASEDIR)/ThirdParty/CTP -L$(BASEDIR)/ThirdParty/OpenOnload
+LIBS        	+= -ldl -lthostmduserapi -lthosttraderapi -lEESQuoteApi -lciul1 -lonload_ext
+INCLUDEPATHS 	+= -I$(BASEDIR)/io -I$(BASEDIR)/ThirdParty/CTP -I$(BASEDIR)/ThirdParty/OpenOnload
+VPATH 			+= $(BASEDIR)/io
+RELEASE			:= ../../release/MDEngine/bin
+
+
+build			= ${RELEASE}/MDEngine ${RELEASE}/MDEngineEESV2
+
+
+build: ${build}
+
+${RELEASE}/MDEngine: INCLUDEPATHS += -I$(BASEDIR)/ThirdParty/EES
+${RELEASE}/MDEngine: LIBS += -L$(BASEDIR)/ThirdParty/EES
+${RELEASE}/MDEngine: MDEngine.o CMDEngineCtp.o CMDEngineEES.o IMDEngine.o CSystemIO.o CTradeBaseInfo.o ATSysUtils.o CEESOnload.o CMDEngineEESOnload.o
+	${CC} ${BUILD_FLAGS} $^ ${LIBPATHS} ${LIBS} $(BASEDIR)/io/libio.a ${INCLUDEPATHS} -o $@
+	
+${RELEASE}/MDEngineEESV2: INCLUDEPATHS += -I$(BASEDIR)/ThirdParty/EESV2
+${RELEASE}/MDEngineEESV2: LIBS += -L$(BASEDIR)/ThirdParty/EESV2
+${RELEASE}/MDEngineEESV2: MDEngine.o CMDEngineCtp.o CMDEngineEES.o IMDEngine.o CSystemIO.o CTradeBaseInfo.o ATSysUtils.o CEESOnload.o CMDEngineEESOnload.o
+	${CC} ${BUILD_FLAGS} $^ ${LIBPATHS} ${LIBS} $(BASEDIR)/io/libio.a ${INCLUDEPATHS} -o $@
+
+
+# must put at the end
+include ../make/tail.inc
+

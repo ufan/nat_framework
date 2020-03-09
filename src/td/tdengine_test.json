@@ -1,0 +1,37 @@
+{
+	"TDEngine":
+	{
+		"type":"xt"
+	},
+	"CTPTD":
+	{
+		"name" : "td_engine",
+		"trade_flow_path" : "./trade_flow/",
+		"front_uri" : "tcp://180.168.146.187:10030",
+		"timeout" : 5,
+		"Account" : [
+			{
+				"BrokerID" : "9999",
+				"UserID" : "101903",
+				"Password" : "888888"
+			}
+		]
+	},
+	"XTTD":
+	{
+		"name" : "td_engine_xt",
+		"ip_port" : "172.22.4.103:65300",
+		"timeout" : 5,
+		"Account" : [
+			{
+				"FundAccount" : "999119835",
+				"UserID" : "ben",
+				"Password" : "jrqh@123"
+			}
+		]
+	},
+	"AccountDefault":
+	{
+	},
+	"Account": []
+}

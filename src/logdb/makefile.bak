@@ -1,0 +1,25 @@
+include ../make/make.inc
+
+#CC		=	
+#LD     =	
+
+BUILDDIR		=	.
+BUILD_FLAGS		+= -Wno-deprecated-declarations
+LIBPATHS		+=
+LIBS        	+=
+INCLUDEPATHS 	+= -I/usr/include/python2.7
+VPATH 			+=
+
+test: test.o CLogDB.o CLogTable.o
+	${CC} ${BUILD_FLAGS} $^ ${LIBPATHS} ${LIBS} ${INCLUDEPATHS} -o ${RELEASE}/$@
+
+testpython.so: testpython.o
+	${CC} ${BUILD_FLAGS} -shared $^ ${LIBPATHS} ${LIBS} -lboost_python ${INCLUDEPATHS} -o $(RELEASE)/$@
+
+LogDB.so: CLogDB.o CLogTable.o CPyLogTable.o CPyLogDB.o
+	${CC} ${BUILD_FLAGS} -shared $^ ${LIBPATHS} ${LIBS} -lboost_python ${INCLUDEPATHS} -o $(RELEASE)/$@
+
+
+# must put at the end
+include ../make/tail.inc
+

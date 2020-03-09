@@ -1,0 +1,35 @@
+include ../make/make.inc
+
+#CC		=	
+#LD     =	
+
+BUILDDIR		=	.
+BUILD_FLAGS		+= 
+LIBPATHS		+= 
+LIBS        	+=
+INCLUDEPATHS 	+= 
+VPATH 			+=
+
+
+build			= libio.a IOMonitor OTMonitor
+
+build: ${build}
+
+
+IOTools: CIOBase.o utils.o CTimer.o CRawIOReader.o CRawIOWriter.o IOTools.o MurmurHash2.o CGlobalLock.o
+	${CC} ${BUILD_FLAGS} $^ ${LIBPATHS} ${LIBS} ${INCLUDEPATHS} -o ${RELEASE}/$@
+
+IOMonitor: CIOBase.o utils.o CTimer.o CRawIOReader.o CRawIOWriter.o IOMonitor.o MurmurHash2.o CGlobalLock.o
+	${CC} ${BUILD_FLAGS} $^ ${LIBPATHS} ${LIBS} ${INCLUDEPATHS} -o ${RELEASE}/$@
+
+OTMonitor: OTMonitor.o utils.o
+	${CC} ${BUILD_FLAGS} $^ ${LIBPATHS} ${LIBS} ${INCLUDEPATHS} -o ${RELEASE}/$@
+
+
+libio.a: CIOBase.o utils.o CTimer.o CRawIOReader.o CRawIOWriter.o MurmurHash2.o CGlobalLock.o CGlobalSafeRawIOWriter.o CSignal.o
+	ar rc $@ $^
+
+
+# must put at the end
+include ../make/tail.inc
+

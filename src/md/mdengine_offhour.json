@@ -1,0 +1,16 @@
+{
+	"MDEngine":
+	{
+		"type":"ctp"
+	},
+	"CTPMD":
+	{
+		"name" : "engine0",
+		"con_dir" : "./con_dir/",
+		"front" : ["tcp://180.168.146.187:10031"],
+		"BrokerID" : "9999",
+		"UserID" : "101903",
+		"Password" : "888888",
+		"subscribe" : ["rb1810", "rb1805"]
+	}
+}

@@ -1,0 +1,129 @@
+{
+	"TDEngine":
+	{
+		"type":"ees",
+		"log4cplus" : "./tdlogger.cnf",
+		"request_id_range" : [1000, 1000000]
+	},
+	"CTPTD":
+	{
+		"name" : "td_engine",
+		"trade_flow_path" : "./trade_flow/",
+		"front_uri" : "tcp://180.168.146.187:10000",
+		"timeout" : 5,
+		"Account" : [
+			{
+				"BrokerID" : "9999",
+				"UserID" : "101903",
+				"Password" : "888888"
+			}
+		]
+	},
+    "EESTD":
+    {   
+        "name" : "td_engine",
+        "timeout": 5,
+        "trade_ip" : "183.129.220.106",
+        "trade_port": 40000,
+        "trade_port_udp": 40001,
+        "query_ip" : "183.129.220.106",
+        "query_port": 50000,
+        "local_trade_ip" : "172.16.32.119",
+        "Account" : 
+        [
+            {
+                "login_id": "0003601",
+                "passwd": "0",
+                "nic_mac" : "48:4d:7e:9d:2a:4f",
+                "local_udp_port": 45556
+            }
+        ]
+    },
+	"XTTD":
+	{
+		"name" : "td_engine_xt",
+		"ip_port" : "172.22.4.103:65300",
+		"timeout" : 5,
+		"Account" : [
+			{
+				"FundAccount" : "999119835",
+				"UserID" : "ben",
+				"Password" : "jrqh@123"
+			}
+		]
+	},
+	"AccountDefault":
+	{
+		"RiskForGeneral":
+		{
+			"allowed_instrument":["All"],
+			"allowed_max_unfilled_order_number":1
+		},
+		"RiskForOrder":
+		{
+			"allowed_price_tick":
+			{
+				"default":100000
+			},
+			"allowed_order_size":
+			{
+				"default":200000
+			},
+			"intensity_cycle_order_count":
+			{
+				"default":10
+			},
+			"intensity_cycle_time_span":
+			{
+				"default":0
+			}
+		},
+		"RiskForInstrument":
+		{
+			"allowed_long_volume":
+			{
+				"default":1000000
+			},
+			"allowed_short_volume":
+			{
+				"default":200000000
+			},
+			"allowed_net_volume":
+			{
+				"default":20000000
+			},
+			"auto_offset_open_long_volume":
+			{
+				"default":1000,
+				"rb1810":100
+			},
+			"auto_offset_open_short_volume":
+			{
+				"default":1000,
+				"rb1810":10
+			}
+		},
+		"RiskForProduct":
+		{
+			"allowed_long_volume":
+			{
+				"default":200000000
+			},
+			"allowed_short_volume":
+			{
+				"default":20000000
+			},
+			"allowed_net_volume":
+			{
+				"default":200000000
+			}
+		},
+		"RiskForAccount":
+		{
+			"allowed_long_amount":10000000000.00,
+			"allowed_short_amount":10000000000.00,
+			"allowed_net_amount":10000000000.00
+		}
+	},
+	"Account": []
+}

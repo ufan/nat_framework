@@ -1,0 +1,24 @@
+
+
+[BLOCK1]	#test block1
+	
+string_key = asdfasdfasd
+
+int_key = 2333			# int key
+
+list_key = a1
+a2
+= a3
+	= a4  	#adsfasdf
+	= a5
+			#asdfasdf
+a6
+
+
+# block2
+[BLOCK2]
+double_key = 1.23
+uint_key    =    51234
+list = 1,2,3,4,5
+list2 = 1 2 3 4 5
+

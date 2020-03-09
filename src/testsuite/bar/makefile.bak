@@ -1,0 +1,25 @@
+include ../../make/make.inc
+
+#CC		=	
+#LD     =	
+
+BASEDIR			=	../..
+BUILDDIR		=	.
+BUILD_FLAGS		+= -Wno-deprecated-declarations 
+LIBPATHS		+= 
+LIBS        	+= 
+INCLUDEPATHS 	+= -I$(BASEDIR)/io -I$(BASEDIR)/bar -I$(BASEDIR)/logger -I$(BASEDIR)/include
+VPATH 			+= $(BASEDIR)/io $(BASEDIR)/bar $(BASEDIR)/logger
+
+build			= test
+
+
+build: ${build}
+
+test: test.o CTradeBaseInfo.o BarMaker.o Bar2.o BarHelper.o
+	${CC} ${BUILD_FLAGS} $^ ${LIBPATHS} ${LIBS} ${INCLUDEPATHS} -o ${RELEASE}/$@
+
+
+# must put at the end
+include ../../make/tail.inc
+

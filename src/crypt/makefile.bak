@@ -1,0 +1,29 @@
+include ../make/make.inc
+
+#CC		=	
+#LD     =	
+
+BUILDDIR		=	.
+BUILD_FLAGS		+= -Wno-deprecated-declarations
+LIBPATHS		+=	
+LIBS        	+= -lssl -lcrypto
+INCLUDEPATHS 	+=	
+
+build			= libccrypt.a test
+
+build: ${build}
+	@echo make target: $@
+
+
+libccrypt.a: CCrypt.o
+	ar rc $@ $^
+
+test: test.o CCrypt.o
+	@echo make target: $@ 
+	${CC} ${BUILD_FLAGS} $^ ${LIBPATHS} ${LIBS} ${INCLUDEPATHS} -o ${RELEASE}/$@
+
+
+
+# must put at the end
+include ../make/tail.inc
+

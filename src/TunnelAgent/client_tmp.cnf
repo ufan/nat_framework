@@ -1,0 +1,26 @@
+[COMMON]
+log_conf = ./logger.cnf
+
+[AGENT]
+ip = 127.0.0.1
+port = 6888
+
+
+[TASK]
+cmd_list = 
+#SHELL sha256sum /home/ubuntu/work/SmartTrader/src/TunnelAgent/TunnelAgent|awk '{print $1}'
+#ASSERT 11b3bb5fd94dabae8cbe212e8aea5b7dcbc00674c542e36aa4dc6e8e9aec8fe7
+
+#SHELL (sudo dmidecode; uname -a; cat /etc/machine-id)|sha256sum|awk '{print $1}'
+#ASSERT 2b63ff5998ad22c9de4040f1bd401decbdd15ab9214af4d9ba057370cd4f00eb
+
+#save /home/ubuntu/bigfiletest /home/ubuntu/savedtest
+#save /home/ubuntu/test /home/ubuntu/testtest
+
+#EXEC config exe args...
+#EXEC_DIR workdir config exe args...
+
+EXEC /media/E/VMs/sharework/st/src/strategy/demo/demo.json /media/E/VMs/sharework/st/src/strategy/demo/demo.py ./conf
+
+
+

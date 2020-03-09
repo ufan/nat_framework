@@ -1,0 +1,99 @@
+{
+	"name": "demo",
+	"Logger":
+	{
+		"path":"./",
+		"file_mode" : "DAY",
+		"cycle_buffer_kb" : 64,
+		"write_mode" : "none",
+		"thread_cycle_us" : 50000
+	},
+	"MDHelper":
+	{
+		"type":"replay_ctpdump",
+		"file_pattern": [
+		    "/mnt/warehouse/China/SHFE/rb/CTP_${DAY}_SHFE_rb.data",
+	        "/mnt/warehouse/China/SHFE/cu/CTP_${DAY}_SHFE_cu.data"
+		],
+		"start":"20180807",
+		"end":"20180807"
+	},
+	"TDHelper":
+	{
+		"type":"fake"
+	},
+	"AccountDefault":
+	{
+		"RiskForGeneral":
+		{
+			"allowed_instrument":["All"],
+			"allowed_max_unfilled_order_number":1
+		},
+		"RiskForOrder":
+		{
+			"allowed_price_tick":
+			{
+				"default":100000
+			},
+			"allowed_order_size":
+			{
+				"default":200000
+			},
+			"intensity_cycle_order_count":
+			{
+				"default":10
+			},
+			"intensity_cycle_time_span":
+			{
+				"default":0
+			}
+		},
+		"RiskForInstrument":
+		{
+			"allowed_long_volume":
+			{
+				"default":1000000
+			},
+			"allowed_short_volume":
+			{
+				"default":200000000
+			},
+			"allowed_net_volume":
+			{
+				"default":20000000
+			},
+			"auto_offset_open_long_volume":
+			{
+				"default":1000,
+				"rb1810":100
+			},
+			"auto_offset_open_short_volume":
+			{
+				"default":1000,
+				"rb1810":10
+			}
+		},
+		"RiskForProduct":
+		{
+			"allowed_long_volume":
+			{
+				"default":200000000
+			},
+			"allowed_short_volume":
+			{
+				"default":20000000
+			},
+			"allowed_net_volume":
+			{
+				"default":200000000
+			}
+		},
+		"RiskForAccount":
+		{
+			"allowed_long_amount":10000000000.00,
+			"allowed_short_amount":10000000000.00,
+			"allowed_net_amount":10000000000.00
+		}
+	},
+	"Account": []
+}

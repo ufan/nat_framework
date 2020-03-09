@@ -1,0 +1,18 @@
+[AGENT]
+ip = 127.0.0.1
+port = 8888
+
+[TASK]
+cmd_list = 
+#SHELL sha256sum /home/hongxu/work/SmartTrader/src/TunnelAgent/TunnelAgent|awk '{print $1}'
+#ASSERT aff86e733061a823c50a5a5fec6254f09b04255c8f4e48ff7a13aff5176555a8 
+
+#SHELL (sudo dmidecode; uname -a; cat /etc/machine-id)|sha256sum|awk '{print $1}'
+#ASSERT cd66650eba66f1c3cdfd62ec6684077f62a69e0f1a8763216f59e21ec48ed835
+
+#SAVE "/home/hongxu/work/SmartTrader/src/TunnelAgent/TunnelAgent" "/home/hongxu/work/SmartTrader/src/TunnelAgent/test"
+
+#EXEC config exe args...
+#EXEC_DIR workdir config exe args...
+
+

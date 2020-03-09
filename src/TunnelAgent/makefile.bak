@@ -1,0 +1,47 @@
+include ../make/make.inc
+
+#CC		=	
+#LD     =	
+
+BUILDDIR		=	.
+BUILD_FLAGS		+= -Wno-deprecated-declarations
+LIBPATHS		+= -L$(BASEDIR)/crypt -L$(BASEDIR)/ThirdParty/libev/lib -L/usr/lib/python2.7
+LIBS        	:= -lccrypt -lssl -lcrypto -lev $(LIBS)
+INCLUDEPATHS 	+= -I$(BASEDIR)/crypt -I$(BASEDIR)/config -I$(BASEDIR)/ThirdParty/libev/include -I/usr/include/python2.7
+VPATH 			+=
+RELEASE			:= ../../release/TunnelAgent/bin
+
+
+build			= GenRSAKey ${RELEASE}/TunnelAgent TunnelClient
+
+
+${RELEASE}/TunnelAgent: main.o CTunnelAgent.o CWaiter.o CCommanderBase.o CSaveFileCmd.o CShellCmd.o CPythonExecutor.o\
+  CFileReciever.o utils.o CExecLoader.o CDirReciever.o public_key.o CStrategyManager.o MurmurHash2.o
+	${CC} ${BUILD_FLAGS} $^ ${LIBPATHS} ${LIBS} ${INCLUDEPATHS} -o $@ -lpython2.7 -ldl
+
+
+TunnelClient: client.o CClient.o utils.o private_key.o
+	${CC} ${BUILD_FLAGS} $^ ${LIBPATHS} ${LIBS} ${INCLUDEPATHS} -o ./$@
+
+
+GenRSAKey:
+	../tools/sshkeytransfer
+
+
+build: ${build}
+	@echo make target: $@
+
+LibLoader: LibLoader.o utils.o
+	${CC} ${BUILD_FLAGS} $^ ${LIBPATHS} ${LIBS} ${INCLUDEPATHS} -o ${RELEASE}/$@ -ldl
+	
+PyLoader: PyLoader.o utils.o
+	${CC} ${BUILD_FLAGS} $^ ${LIBPATHS} ${LIBS} ${INCLUDEPATHS} -o ${RELEASE}/$@ -lpython2.7 -ldl
+	
+StgManager: StgManager.o utils.o MurmurHash2.o
+	${CC} ${BUILD_FLAGS} $^ ${LIBPATHS} ${LIBS} ${INCLUDEPATHS} -o ${RELEASE}/$@
+
+
+
+# must put at the end
+include ../make/tail.inc
+

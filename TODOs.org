@@ -1,0 +1,19 @@
+
+* TODO Use upstream code base, just use orignial
+<2020-03-09 Mo>
+[[file:~/src/nat_framework/NAT/src/common/json.hpp::#include <algorithm> // all_of, copy, fill, find, for_each, none_of, remove, reverse, transform]]
+
+* TODO libev.a link error, static or dynamic
+<2020-03-09 Mo>
+[[file:~/src/nat_framework/NAT/src/make/head.mk::libev_DIR = $(BASEDIR)/ThirdParty/libev]]
+** change libev.so.4.0.0 to libev.so
+** only dynamic libev linkage allowed
+
+* TODO deploy log4cplus headers as well??
+<2020-03-09 Mo>
+[[file:~/src/nat_framework/NAT/src/makefile::# cp -r ThirdParty/log4cplus/include/* ../release/SDK/include]]
+
+* TODO 'risk' has no test main function
+<2020-03-09 Mo>
+[[file:~/src/nat_framework/NAT/src/risk/makefile.bak::include ../make/make.inc]]
+

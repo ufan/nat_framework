@@ -1,0 +1,22 @@
+
+[AGENT]
+ip = 192.168.1.117
+port = 8888
+
+[TASK]
+cmd_list = 
+#SHELL sha256sum /home/hongxu/work/SmartTrader/src/TunnelAgent/TunnelAgent|awk '{print $1}'
+#ASSERT aff86e733061a823c50a5a5fec6254f09b04255c8f4e48ff7a13aff5176555a8 
+
+#SHELL (sudo dmidecode; uname -a; cat /etc/machine-id)|sha256sum|awk '{print $1}'
+#ASSERT cd66650eba66f1c3cdfd62ec6684077f62a69e0f1a8763216f59e21ec48ed835
+
+#SAVE "/home/hongxu/work/SmartTrader/src/TunnelAgent/TunnelAgent" "/home/hongxu/work/SmartTrader/src/TunnelAgent/test"
+
+#PYTHON /home/hongxu/work/SmartTrader/src/TunnelAgent/test/Strategy2.py Strategy2.py
+#LOADLIB /home/hongxu/work/AutoTrading/Tunnel/src/TunnelAgent/test/sotest.so sotest
+#PYTHON /home/hongxu/app/anaconda/test.py ananconda_test
+
+#python ./worktest/main.py test_main testtrade.cnf worktest
+python ./test/strategy.py test_return testtrade.cnf
+

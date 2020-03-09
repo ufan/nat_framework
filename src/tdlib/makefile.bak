@@ -1,0 +1,29 @@
+include ../make/make.inc
+
+#CC		=	
+#LD     =	
+
+BUILDDIR		=	.
+BUILD_FLAGS		+= -DFAST_LOGGER_ -Wno-deprecated-declarations
+LIBPATHS		+= -L$(BASEDIR)/lib
+LIBS        	:= -lpthread -lstdc++ -ldl -lthostmduserapi -lthosttraderapi -lboost_python -lpython2.7
+INCLUDEPATHS 	+= -I$(BASEDIR)/io -I$(BASEDIR)/md -I$(BASEDIR)/td -I$(BASEDIR)/account -I$(BASEDIR)/risk -I$(BASEDIR)/ThirdParty/CTP \
+                   -I$(BASEDIR)/logger -I/usr/include/python2.7 -I$(BASEDIR)/pyext -I$(BASEDIR)/bar
+VPATH 			+= $(BASEDIR)/io $(BASEDIR)/account $(BASEDIR)/risk $(BASEDIR)/md $(BASEDIR)/td $(BASEDIR)/logger $(BASEDIR)/pyext \
+					$(BASEDIR)/bar
+
+
+build			= libexecstg.so
+
+
+build: ${build}
+
+	
+libexecstg.so: CMarketStruct.o CBaseSignal.o CABM.o  CAvgSpread.o CDriftModel.o CLiquidityModel.o CLogitPModel.o  CSigmaSignal.o CVolatilityModel.o CLossModel.o main.o
+	${CC} ${BUILD_FLAGS} -shared $^ ${LIBPATHS} ${LIBS} ${INCLUDEPATHS} -o ${RELEASE}/$@
+	
+
+
+# must put at the end
+include ../make/tail.inc
+

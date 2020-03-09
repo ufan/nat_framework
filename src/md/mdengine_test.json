@@ -1,0 +1,23 @@
+{
+	"MDEngine":
+	{
+		"type":"ctp",
+		"subscribe":["rb"]
+	},
+	"CTPMD":
+	{
+		"timeout": 3,
+		"name" : "engine0",
+		"con_dir" : "./con_dir/",
+		"front" : ["tcp://180.168.146.187:10031"],
+		"BrokerID" : "9999",
+		"UserID" : "101903",
+		"Password" : "888888"
+	},
+	"TDEngine":
+	{
+		"COMMENT":"we need this to get some base information.",
+		"engine_name":"td_engine",
+		"timeout":5
+	}
+}

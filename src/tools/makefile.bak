@@ -1,0 +1,52 @@
+include ../make/make.inc
+
+#CC		=	
+#LD     =	
+
+BUILDDIR		=	.
+BUILD_FLAGS		+= -Wno-deprecated-declarations
+LIBPATHS		+= -L$(BASEDIR)/crypt
+LIBS        	+= -llog
+INCLUDEPATHS 	+= -I$(BASEDIR)/crypt -I$(BASEDIR)/config -I$(BASEDIR)/common -I$(BASEDIR)/io -I$(BASEDIR)/logger -I/usr/include/python2.7
+VPATH 			+= $(BASEDIR)/common $(BASEDIR)/io $(BASEDIR)/logger
+
+
+build			= sshkeytransfer ctpdump2mmap dump2csv orderextract
+
+
+build: ${build}
+	@echo make target: $@
+
+
+sshkeytransfer: sshkeytransfer.o
+	${CC} ${BUILD_FLAGS} $^ ${LIBPATHS} ${LIBS} ${INCLUDEPATHS} -o ${RELEASE}/$@
+	
+
+ctpdump2mmap : ctpdump2mmap.o CTradeBaseInfo.o utils.o CTimer.o MurmurHash2.o CIOBase.o CRawIOWriter.o
+	${CC} ${BUILD_FLAGS} $^ ${LIBPATHS} ${LIBS} ${INCLUDEPATHS} -o ${RELEASE}/$@
+	cp ${RELEASE}/$@ ../../release/SDK/$@
+	
+	
+dump2csv : dump2csv.o utils.o
+	${CC} ${BUILD_FLAGS} $^ ${LIBPATHS} ${LIBS} ${INCLUDEPATHS} -o ${RELEASE}/$@
+	cp ${RELEASE}/$@ ../../release/SDK/$@
+
+
+orderextract: orderextract.o CIOBase.o utils.o CTimer.o CRawIOReader.o CRawIOWriter.o MurmurHash2.o\
+ CGlobalLock.o CGlobalSafeRawIOWriter.o CSystemIO.o
+	${CC} ${BUILD_FLAGS} $^ ${LIBPATHS} ${LIBS} ${INCLUDEPATHS} -o ${RELEASE}/$@
+	cp ${RELEASE}/$@ ../../release/tools/$@
+
+
+fixmday: fixmday.o CIOBase.o utils.o CTimer.o CRawIOReader.o CRawIOModify.o
+	${CC} ${BUILD_FLAGS} $^ ${LIBPATHS} ${LIBS} ${INCLUDEPATHS} -o ${RELEASE}/$@
+	
+	
+syscmd: syscmd.o CIOBase.o utils.o CTimer.o CRawIOReader.o CRawIOWriter.o MurmurHash2.o\
+ CGlobalLock.o CGlobalSafeRawIOWriter.o CSystemIO.o
+	${CC} ${BUILD_FLAGS} $^ ${LIBPATHS} ${LIBS} ${INCLUDEPATHS} -o ${RELEASE}/$@
+
+
+# must put at the end
+include ../make/tail.inc
+
