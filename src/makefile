@@ -46,7 +46,7 @@ test:
 	make -C test
 
 tdlib: libstrategy
-	make -C test
+	make -C tdlib
 
 logdb:
 	make -C logdb
