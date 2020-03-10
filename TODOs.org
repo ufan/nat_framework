@@ -21,3 +21,6 @@
 <2020-03-11 Mi>
 [[file:~/src/nat_framework/NAT/src/io/note.org::*Unused sources][Unused sources]]
 
+* TODO /libev/ alternative
+** /libev/ code base merged into nat code repo
+** or replace with /libuv/ or /libevent/
