@@ -1,0 +1,51 @@
+* Logging system
+  
+ *Three types of log facilities in use:*
+   
+** Log.h
+*** The most simple form, just print on std::out
+*** Limited use, only in /io/CMemConfigBase/, /io/CQueueBase/ and /io/CLocalQueue/
+*** TODO consider removing this service
+    
+** FastLogger.h
+*** Self-defined logger, composed of /CFastLog/ and /CLogPool/.
+*** Used only in /libstrategy/, /execute_model/ /tdlib/ and /pyext/
+*** All python binding/extension use this /FastLogger/
+    
+** Logger.h
+*** Wrapper around /log4cplus/
+*** Most widely used
+*** TODO contains condtional compiling with FastLogger
+    
+    The logic is that some /io/ classes like /CRawIOReader/ and /CRawIOWriter/
+    are used both in Python binding and normal packages.
+    
+    Since Python binding all use /FastLogger/ and normal packages use /Logger/
+    thus the same header /Logger.h/ is used with Macro Definition /FAST_LOGGER_/
+    to choose which logger to use.
+
+* Python extension/binding
+
+** /libstrategy/ 
+   
+  *Depends on /pyext/ and provides binding for MD and TD* 
+  
+*** binding
+
+*** extension
+    
+** /execute_model/
+
+** /TunnelAgent/
+  
+   *Totally independent, only depends on Python*
+
+*** /TunnelAgent/
+    
+**** /CPythonExecutor/, /CWaiter/
+
+*** /PyLoader/
+
+** /logdb/
+   
+** /tdlib/

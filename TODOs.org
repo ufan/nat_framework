@@ -17,3 +17,7 @@
 <2020-03-09 Mo>
 [[file:~/src/nat_framework/NAT/src/risk/makefile.bak::include ../make/make.inc]]
 
+
+* TODO /libev/ alternative
+** /libev/ code base merged into nat code repo
+** or replace with /libuv/ or /libevent/
