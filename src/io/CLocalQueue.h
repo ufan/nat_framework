@@ -11,7 +11,7 @@
 #include "CQueueBase.h"
 #include <map>
 #include <pthread.h>
-#include "Log.h"
+#include "SimpleLog.h"
 using namespace std;
 
 class CLocalQueue : public CQueueBase

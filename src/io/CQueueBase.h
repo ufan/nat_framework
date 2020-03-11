@@ -13,7 +13,7 @@
 #include <string>
 #include <memory.h>
 #include "compiler.h"
-#include "Log.h"
+#include "SimpleLog.h"
 
 class CQueueBase
 {
