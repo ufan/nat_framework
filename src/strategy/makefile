@@ -9,16 +9,15 @@ include ../make/head.mk
 # risk
 # md
 # td
-# logger
+# logger (only FastLogger)
 # pyext
 # bar
-# logger
 
 # Internal (Library Linkage) #
 # None
 
 # External (Source Available)#
-# log4cplus : 2.0.0 (static)
+# None
 
 # External (Ubuntu-package available)
 # C++11
@@ -30,12 +29,12 @@ include ../make/head.mk
 
 #######################
 
-CFLAGS      += -DFAST_LOGGER_ -I$(BASEDIR)/logger ${log4cplus_CFLAGS} \
+CFLAGS      += -DFAST_LOGGER_ -I$(BASEDIR)/logger \
 							 -I$(BASEDIR)/io -I$(BASEDIR)/md -I$(BASEDIR)/td -I$(BASEDIR)/account \
 							 -I$(BASEDIR)/risk -I$(BASEDIR)/pyext -I$(BASEDIR)/bar \
 							 ${boost_CFLAGS} ${PYTHON_CFLAGS}
 
-LDFLAGS     += ${SHARED_LDFLAGS} ${boost_python_LDFLAGS} ${PYTHON_LDFLAGS} ${log4cplus_LDFLAGS}
+LDFLAGS     += ${SHARED_LDFLAGS} ${boost_python_LDFLAGS} ${PYTHON_LDFLAGS}
 
 VPATH 			+= $(BASEDIR)/io $(BASEDIR)/md $(BASEDIR)/td $(BASEDIR)/account \
 							 $(BASEDIR)/risk $(BASEDIR)/pyext $(BASEDIR)/bar $(BASEDIR)/logger
