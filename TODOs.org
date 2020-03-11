@@ -21,3 +21,8 @@
 * TODO /libev/ alternative
 ** /libev/ code base merged into nat code repo
 ** or replace with /libuv/ or /libevent/
+
+* TODO Integration of three logging service in one library
+<2020-03-11 Mi>
+[[file:~/src/nat_framework/NAT/Notes.org::*Logging system][Logging system]]
+
