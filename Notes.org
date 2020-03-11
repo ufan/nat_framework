@@ -16,6 +16,7 @@
 *** Self-defined logger, composed of /CFastLog/ and /CLogPool/.
 *** Used only in /libstrategy/, /execute_model/ /tdlib/ and /pyext/
 *** All python binding/extension use this /FastLogger/
+*** /FastLogger/ is exported to python module /libstrategy/
     
 ** HeavyLogger.h
 *** Wrapper around /log4cplus/
@@ -29,8 +30,34 @@
     Since Python binding all use /FastLogger/ and normal packages use /Logger/
     thus the same header /Logger.h/ is used with Macro Definition /FAST_LOGGER_/
     to choose which logger to use.
-
-    
+** Log Level
+   The following level is the same for all three logger:
+   - LOG_INFO
+   - LOG_DBG
+   - LOG_ERR
+   - LOG_WARN
+   
+   /FastLogger/ and /HeavyLogger/ also have:
+   - LOG_TRACE
+   - ASSERT
+   - ASSERT_RET
+   - ENGLOG
+   - ALERT
+   
+   /FastLogger/ has one extra level, which is general:
+   - LOG_LVL
+   Use need to pass in *log_level* number in this case.
+   The number of commonly used level is defined in /FastLogger.h/ and /PublicFun.h/:
+   - LOG_DBG :: 10000
+   - LOG_INFO :: 10001
+   - LOG_WARN :: 10002
+   - LOG_ERR :: 10003
+   - LOG_TRACE :: 10004
+   - DEBUGLEVEL0 :: 0
+   - DEBUGLEVEL1 :: 1
+   - DEBUGLEVEL2 :: 2
+   - DEBUGLEVEL3 :: 3
+     
 * Python Interface
 ** Python Extension
 *** /strategy/
