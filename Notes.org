@@ -211,3 +211,25 @@
 *** /logdb/
    
 *** /tdlib/
+
+* Time ( design of /CTimer/)
+
+** Two types of timer option
+   Choose the timer used by two macros as follows.
+
+*** CLOCK_REALTIME
+    Wall-clock time, which may suffer a jump gap.
+    
+*** CLOCK_MONOTONIC
+    Physical fixed-clock time, which is not subject system-time adjustment and records a constant time interval.
+
+** Packages using /CTimer/ service
+   - md
+   - strategy (included in libstrategy.so)
+   - execute_model
+   - account
+   - risk
+   - io (include in libio.a)
+   - signal_agent
+   - dump
+   - tools

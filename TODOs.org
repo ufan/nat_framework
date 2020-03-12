@@ -25,7 +25,21 @@
 ** /libev/ code base merged into nat code repo
 ** or replace with /libuv/ or /libevent/
 
-* TODO Integration of three logging service in one library
+* DONE Integration of three logging service in one library
+  CLOSED: [2020-03-12 Do 10:49]
 <2020-03-11 Mi>
 [[file:~/src/nat_framework/NAT/Notes.org::*Logging system][Logging system]]
+
+* TODO Understand CTimer design
+<2020-03-12 Do>
+[[file:~/src/nat_framework/NAT/Notes.org::*Time ( design of /CTimer/)][Time ( design of /CTimer/)]]
+
+* DONE Figure out the sources not included in libio.a, but still used in other package
+  CLOSED: [2020-03-12 Do 10:49]
+<2020-03-12 Do>
+[[file:~/src/nat_framework/NAT/src/io/note.org::*Sources used in other package][Sources used in other package]]
+
+* TODO Dependnecy on libio not resolved
+<2020-03-12 Do>
+[[file:~/src/nat_framework/NAT/src/makefile::dump:]]
 
