@@ -1,7 +1,30 @@
 * /td/ package
-** Three Trader Interface are used
+** TDEngine
+    *Three Trader Interface are used*.
 *** CTP and EES are alternative to each other
 **** EES has three versions
 *** Xt is used alone
-** All three Trader Api has similar design
-   [[file:nat_td_class_diagram.pdf][Class Diagram]]  
+*** All three Trader Api has similar design
+    [[file:nat_td_class_diagram.pdf][Class Diagram]]  
+** Helper
+   *Helper sources are not part of TDEngine program*.
+   *They are part of Python extension exported symbols*.
+   
+   /Helper/s do the real job of send/delete order, get return message and init job.
+   They are managed using *Factory* design pattern.
+   There are 4 types of Helper:
+   - CTDHelperFake :: useless
+   - CTDHelperComm :: using /io/ as communication channel
+   - CTDHelperPipe :: using pipe as communication channel
+   - CTDHelperPython :: just an python engine, which can execute Python scripts. Replay the work to other /Helper/s
+
+   /CStrategy/ and /CStrategyProcess/ are the driving engine to use /Helper/s to finish the jobs.
+   They are interface facing the end user. And they are exported to Python module /libstrategy/.
+   User just need to provide a json configuration file to choose a specific /Helper/ for use.
+   /CStrategy/ and /CStrategyProcess/ will dispatch all jobs to the underlying /Helper/ to finish.
+   
+   Directory /strategy/demo/ provides a full example of the full chain.
+   
+   But, there is no example showing how to use /CTDHelperPython/.
+*** Design
+    [[file:nat_td_helper_diagram.pdf][Helper Class Diagram]] 

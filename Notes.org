@@ -233,3 +233,22 @@
    - signal_agent
    - dump
    - tools
+
+* Memory Management
+
+** Memory-mapped file
+
+*** Comparison against shared-memory technique
+
+** Packages using /mmap/
+   - io
+     + CIOBase
+     + CRawIOReader
+     + CRawIOWriter
+     + CRawIOModify
+     + OTMonitor
+   - td
+     + COrderTrackMmap
+
+* Multi-threading Support
+

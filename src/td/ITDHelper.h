@@ -25,25 +25,23 @@ public:
 	ITDHelper(string name);
 	virtual ~ITDHelper() {}
 
-	virtual bool init(const json& j_conf) = 0;
-
+  // interface functions
 	int sendOrder(const char *instr, double price, int vol, int dir, int off, int acc_id, int stgid, uint32_t instr_hash);
-
 	int deleteOrder(int id);
-
 	const tRtnMsg* getRtn();
 
 	int getOrderTrackCnt() {return order_track_.size();}
-
 	tOrderTrack& getOrderTrack(int idx) {return order_track_[idx];}
-
 	int	getStgIdFromRtnMsg(const tRtnMsg* prtn) {return getOrderTrack(prtn->local_id).stg_id;}
-
 	void closeOrderTrack();
 
-	virtual void doSendOrder(int track_id) = 0;
+  // TODO to be implemeted in child, real operation, should be private
+  virtual bool init(const json& j_conf) = 0;
+  virtual void doSendOrder(int track_id) = 0;
 	virtual void doDelOrder(int track_id) = 0;
 	virtual const tRtnMsg* doGetRtn() = 0;
+
+  // default implementation, to be override in child
 	virtual void release() {}
 	virtual bool qryTradeBaseInfo() {return false;}		// 获取基础信息，填写 trading_day 及 instruments info
 	virtual bool qryOrderTrack() {return false;}

@@ -43,3 +43,15 @@
 <2020-03-12 Do>
 [[file:~/src/nat_framework/NAT/src/makefile::dump:]]
 
+* TODO What's the meaning to keep 3 versions of EES
+<2020-03-12 Do>
+[[file:~/src/nat_framework/NAT/src/td/note.org::*EES has three versions][EES has three versions]]
+
+* TODO Better be private member function
+<2020-03-12 Do>
+[[file:~/src/nat_framework/NAT/src/td/ITDHelper.h::virtual void doSendOrder(int track_id) = 0;]]
+
+* TODO CStrategy not used in the class
+<2020-03-12 Do>
+[[file:~/src/nat_framework/NAT/src/execute_model/CMarketStruct.h::#include "CStrategy.h"]]
+
