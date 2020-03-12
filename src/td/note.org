@@ -1,0 +1,7 @@
+* /td/ package
+** Three Trader Interface are used
+*** CTP and EES are alternative to each other
+**** EES has three versions
+*** Xt is used alone
+** All three Trader Api has similar design
+   [[file:nat_td_class_diagram.pdf][Class Diagram]]  
