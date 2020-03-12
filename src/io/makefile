@@ -29,8 +29,7 @@ build		= ${RELEASE}/libio.a ${RELEASE}/IOMonitor ${RELEASE}/OTMonitor ${RELEASE}
 
 build: release ${build}
 
-${RELEASE}/libio.a: CIOBase.o utils.o CTimer.o CRawIOReader.o CRawIOWriter.o MurmurHash2.o CGlobalLock.o CGlobalSafeRawIOWriter.o CSignal.o \
-                    CRawIOModify.o CSystemIO.o # added by Yong
+${RELEASE}/libio.a: CIOBase.o utils.o CTimer.o CRawIOReader.o CRawIOWriter.o MurmurHash2.o CGlobalLock.o CGlobalSafeRawIOWriter.o CSignal.o CRawIOModify.o CSystemIO.o
 	$(AR) $@ $^
 
 ${RELEASE}/IOTools: IOTools.o
