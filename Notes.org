@@ -77,7 +77,7 @@
       * getSessionCycle
       
       From /CTradeBaseInfo.h/, static member functions
-      * getInstrumentInfoByHash
+      * getInstrumentInfoByHash :: CTradeBaseInfo::getInstrInfo
       * getTradingDay
       * setTradingDay
       * setTradeBaseInitFlag
@@ -251,4 +251,23 @@
      + COrderTrackMmap
 
 * Multi-threading Support
+
+* Message Encoding
+  Message from CTP is encoded in GBK.
+  Class *CEncodeConv* from /common/ is used to convert GBK string to UTF8 string.
+
+* References
+
+** Terminology
+   - Instrument ::
+   - Bar ::
+   - Tick ::
+   - Product ::
+   - Account ::
+   - Helper ::
+   - Risk ::
+   - Logger ::
+   - TD ::
+   - MD ::
+   - WareHouse :: 
 

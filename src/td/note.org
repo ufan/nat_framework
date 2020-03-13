@@ -13,10 +13,13 @@
    /Helper/s do the real job of send/delete order, get return message and init job.
    They are managed using *Factory* design pattern.
    There are 4 types of Helper:
-   - CTDHelperFake :: useless
-   - CTDHelperComm :: using /io/ as communication channel
-   - CTDHelperPipe :: using pipe as communication channel
-   - CTDHelperPython :: just an python engine, which can execute Python scripts. Replay the work to other /Helper/s
+   - CTDHelperFake :: a fake TD (i.e. not real world TD), can be useful for strategy test or debug
+   - CTDHelperComm :: real TD, using /io/ as communication channel
+   - CTDHelperPipe :: real TD, using pipe as communication channel
+   - CTDHelperPython :: just an python engine, which can execute Python scripts. 
+                        Replay the work to other *CPyExtTdExch*.
+                        *CPyExtTdExch* then just executes some Python scripts to finish the job.
+                        An example of Python Helper is provided under /release/share/ytexch.json/.
 
    /CStrategy/ and /CStrategyProcess/ are the driving engine to use /Helper/s to finish the jobs.
    They are interface facing the end user. And they are exported to Python module /libstrategy/.
@@ -25,6 +28,11 @@
    
    Directory /strategy/demo/ provides a full example of the full chain.
    
-   But, there is no example showing how to use /CTDHelperPython/.
 *** Design
     [[file:nat_td_helper_diagram.pdf][Helper Class Diagram]] 
+    
+*** Logic behind Python Helper
+    
+    In case of new interface API of TD/MD using Python, the same strategy can still be used.
+    As long as the interface functions provided, the same strategy engine can be used either C++ or Python based.
+    

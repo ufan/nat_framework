@@ -55,3 +55,7 @@
 <2020-03-12 Do>
 [[file:~/src/nat_framework/NAT/src/execute_model/CMarketStruct.h::#include "CStrategy.h"]]
 
+* TODO Python Helper Design
+<2020-03-13 Fr>
+[[file:~/src/nat_framework/NAT/src/td/note.org::*Helper][Helper]]
+
