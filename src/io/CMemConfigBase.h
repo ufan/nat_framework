@@ -1,10 +1,3 @@
-/*
- * CMemConfigBase.h
- *
- *  Created on: Sep 11, 2017
- *      Author: hongxu
- */
-
 #ifndef LIB_MEMORYQUEUE_CMEMCONFIGBASE_H_
 #define LIB_MEMORYQUEUE_CMEMCONFIGBASE_H_
 
@@ -20,8 +13,8 @@
 #include <unistd.h>
 #include <string>
 #include <vector>
-#include "Compiler.h"
-#include "Log.h"
+#include "compiler.h"
+#include "SimpleLog.h"
 
 
 namespace IPC {

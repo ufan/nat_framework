@@ -1,0 +1,43 @@
+* /io/ package
+  *The package is about Memory Management??*
+
+** Unused sources (missing sources exist)
+   *Seems to be a separate library with specific functions.*
+   These files have different *logger* in use, which should be resolved.
+   
+   + CQueueBase  (Log.h)
+   + CLocalQueue (Log.h)
+   + CReplayMemQueue (Log.h)
+    
+   + CMemConfigBase (Log.h) : includes 'Compiler.h' which does not exist
+   + CMemQueue   (Logger.h)
+   + CMemoryQueueBase (Logger.h)
+   + CMemIPCPy.cpp (Logger.h) : boost_python dependency
+   + quequetoo.cpp (Logger.h)
+     
+** target /libio.a/
+   
+   /io/-specific:
+   + CIOBase
+   + CRawIOReader
+   + CRawIOWriter
+   + CGlobalSafeRawIOWriter
+   + CSignal
+   + CSystemIO
+   + CRawIOModify
+   + CReaderPool : CReaderPool.h is header only, its source file is deprecated.
+
+   /common/:
+   + utils.cpp
+   + MurmurHash2
+   + CTimer
+   + CGlobalLock
+
+   [[file:nat_libio_class_diagram.pdf][Class Diagram of libio]]  
+ 
+** binary targets
+
+   + IOMonitor
+   + IOTools
+   + OTMonitor
+     

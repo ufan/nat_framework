@@ -17,12 +17,45 @@
 <2020-03-09 Mo>
 [[file:~/src/nat_framework/NAT/src/risk/makefile.bak::include ../make/make.inc]]
 
+* TODO Figure out and setup the target for unused sources in /io/ package
+<2020-03-11 Mi>
+[[file:~/src/nat_framework/NAT/src/io/note.org::*Unused sources][Unused sources]]
 
 * TODO /libev/ alternative
 ** /libev/ code base merged into nat code repo
 ** or replace with /libuv/ or /libevent/
 
-* TODO Integration of three logging service in one library
+* DONE Integration of three logging service in one library
+  CLOSED: [2020-03-12 Do 10:49]
 <2020-03-11 Mi>
 [[file:~/src/nat_framework/NAT/Notes.org::*Logging system][Logging system]]
+
+* TODO Understand CTimer design
+<2020-03-12 Do>
+[[file:~/src/nat_framework/NAT/Notes.org::*Time ( design of /CTimer/)][Time ( design of /CTimer/)]]
+
+* DONE Figure out the sources not included in libio.a, but still used in other package
+  CLOSED: [2020-03-12 Do 10:49]
+<2020-03-12 Do>
+[[file:~/src/nat_framework/NAT/src/io/note.org::*Sources used in other package][Sources used in other package]]
+
+* TODO Dependnecy on libio not resolved
+<2020-03-12 Do>
+[[file:~/src/nat_framework/NAT/src/makefile::dump:]]
+
+* TODO What's the meaning to keep 3 versions of EES
+<2020-03-12 Do>
+[[file:~/src/nat_framework/NAT/src/td/note.org::*EES has three versions][EES has three versions]]
+
+* TODO Better be private member function
+<2020-03-12 Do>
+[[file:~/src/nat_framework/NAT/src/td/ITDHelper.h::virtual void doSendOrder(int track_id) = 0;]]
+
+* TODO CStrategy not used in the class
+<2020-03-12 Do>
+[[file:~/src/nat_framework/NAT/src/execute_model/CMarketStruct.h::#include "CStrategy.h"]]
+
+* TODO Python Helper Design
+<2020-03-13 Fr>
+[[file:~/src/nat_framework/NAT/src/td/note.org::*Helper][Helper]]
 

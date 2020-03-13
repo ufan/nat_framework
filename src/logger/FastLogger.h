@@ -1,12 +1,5 @@
-/*
- * EngLogger.h
- *
- *  Created on: May 22, 2018
- *      Author: hongxu
- */
-
-#ifndef SRC_LOGGER_FASTLOGGER_H_
-#define SRC_LOGGER_FASTLOGGER_H_
+#ifndef LOGGER_FASTLOGGER_H_
+#define LOGGER_FASTLOGGER_H_
 
 #include "CLogPool.h"
 #include "json.hpp"
@@ -48,4 +41,4 @@ extern int g_fastlogger_level_;
 #define ALERT(format, ...)		LOG_ERR("ALERT|" format, ##__VA_ARGS__)
 
 
-#endif /* SRC_LOGGER_FASTLOGGER_H_ */
+#endif /* LOGGER_FASTLOGGER_H_ */

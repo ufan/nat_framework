@@ -29,7 +29,8 @@ build		= ${RELEASE}/liblog.a ${RELEASE}/test
 
 build: release ${build}
 
-${RELEASE}/liblog.a: Logger.o
+${RELEASE}/liblog.a: HeavyLogger.o \
+										 FastLogger.o CFastLog.o CLogPool.o
 	${AR} $@ $^
 
 # ${RELEASE}/test: LDFLAGS += ${STATIC_FLAGS}

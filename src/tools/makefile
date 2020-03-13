@@ -4,7 +4,6 @@ include ../make/head.mk
 
 # Internal (Source Integration) #
 # common + include
-# io (part of)
 
 # Internal (Library Linkage) #
 # io (static)
@@ -38,14 +37,13 @@ build: release ${build}
 sshkeytransfer: sshkeytransfer.o
 	${CXX} $^ ${LDFLAGS} -o $@
 
-fixmday: fixmday.o CIOBase.o utils.o CTimer.o CRawIOReader.o CRawIOModify.o
+fixmday: fixmday.o
 	${CXX} $^ ${LDFLAGS} -o $@
 
-syscmd: syscmd.o CIOBase.o utils.o CTimer.o CRawIOReader.o CRawIOWriter.o MurmurHash2.o\
- CGlobalLock.o CGlobalSafeRawIOWriter.o CSystemIO.o
+syscmd: syscmd.o
 	${CXX} $^ ${LDFLAGS} -o $@
 
-ctpdump2mmap : ctpdump2mmap.o CTradeBaseInfo.o utils.o CTimer.o MurmurHash2.o CIOBase.o CRawIOWriter.o
+ctpdump2mmap : ctpdump2mmap.o CTradeBaseInfo.o
 	${CXX} $^ ${LDFLAGS} -o $@
 	@if [ ! -d ${BASEDIR}/../release/SDK ]; then  mkdir -p ${BASEDIR}/../release/SDK;  fi
 	cp $@ ${BASEDIR}/../release/SDK/$@
@@ -56,8 +54,7 @@ dump2csv : dump2csv.o utils.o
 	cp $@ ${BASEDIR}/../release/SDK/$@
 
 
-${RELEASE}/orderextract: orderextract.o CIOBase.o utils.o CTimer.o CRawIOReader.o CRawIOWriter.o MurmurHash2.o\
- CGlobalLock.o CGlobalSafeRawIOWriter.o CSystemIO.o
+${RELEASE}/orderextract: orderextract.o 
 	${CXX} $^ ${LDFLAGS} -o $@
 
 

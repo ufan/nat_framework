@@ -23,10 +23,10 @@ TunnelAgent: tools libccrypt
 TradeTool:
 	make -C TradeTool
 
-SignalAgent:
+SignalAgent: libio
 	make -C signal_agent
 
-libstrategy:
+libstrategy: libio liblog
 	@if [[ -f ./strategy/CSystemIO.o ]]; then \
 		make -C strategy; \
 	else make -B -C strategy; \

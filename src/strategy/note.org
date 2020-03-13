@@ -1,0 +1,11 @@
+* Programming Interface
+** Single Strategy : use of *CStrategy*
+** Multiple Strategies : use of *CStrategyBase* and *CStrategyProcess*
+** Executable Strategy : *CExecuteStrategy*
+* Operation list
+  - on_tick
+  - on_time
+  - on_rtn
+  - on_bar
+  - on_switch_day
+  - on_msg

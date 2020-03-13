@@ -4,7 +4,6 @@ include ../make/head.mk
 
 # Internal (Source Integration) #
 # common + include
-# io (part of)
 
 # Internal (Library Linkage) #
 # logger (static)
@@ -39,12 +38,12 @@ build: release ${build}
 
 ${RELEASE}/MDEngine: CFLAGS += ${EES_CFLAGS}
 ${RELEASE}/MDEngine: LDFLAGS += ${EES_LDFLAGS}
-${RELEASE}/MDEngine: MDEngine.o CMDEngineCtp.o CMDEngineEES.o IMDEngine.o CSystemIO.o CTradeBaseInfo.o ATSysUtils.o CEESOnload.o CMDEngineEESOnload.o
+${RELEASE}/MDEngine: MDEngine.o CMDEngineCtp.o CMDEngineEES.o IMDEngine.o CTradeBaseInfo.o ATSysUtils.o CEESOnload.o CMDEngineEESOnload.o
 	${CXX} $^ ${LDFLAGS} -o $@
 
 ${RELEASE}/MDEngineEESV2: CFLAGS += ${EESV2_CFLAGS}
 ${RELEASE}/MDEngineEESV2: LDFLAGS += ${EESV2_LDFLAGS}
-${RELEASE}/MDEngineEESV2: MDEngine.o CMDEngineCtp.o CMDEngineEES.o IMDEngine.o CSystemIO.o CTradeBaseInfo.o ATSysUtils.o CEESOnload.o CMDEngineEESOnload.o
+${RELEASE}/MDEngineEESV2: MDEngine.o CMDEngineCtp.o CMDEngineEES.o IMDEngine.o CTradeBaseInfo.o ATSysUtils.o CEESOnload.o CMDEngineEESOnload.o
 	${CXX} $^ ${LDFLAGS} -o $@
 
 

@@ -29,17 +29,17 @@ build		= ${RELEASE}/libio.a ${RELEASE}/IOMonitor ${RELEASE}/OTMonitor ${RELEASE}
 
 build: release ${build}
 
-${RELEASE}/IOTools: CIOBase.o utils.o CTimer.o CRawIOReader.o CRawIOWriter.o IOTools.o MurmurHash2.o CGlobalLock.o
-	${CXX} $^ ${LDFLAGS} -o $@
-
-${RELEASE}/IOMonitor: CIOBase.o utils.o CTimer.o CRawIOReader.o CRawIOWriter.o IOMonitor.o MurmurHash2.o CGlobalLock.o
-	${CXX} $^ ${LDFLAGS} -o $@
-
-${RELEASE}/OTMonitor: OTMonitor.o utils.o
-	${CXX} $^ ${LDFLAGS} -o $@
-
-${RELEASE}/libio.a: CIOBase.o utils.o CTimer.o CRawIOReader.o CRawIOWriter.o MurmurHash2.o CGlobalLock.o CGlobalSafeRawIOWriter.o CSignal.o
+${RELEASE}/libio.a: CIOBase.o utils.o CTimer.o CRawIOReader.o CRawIOWriter.o MurmurHash2.o CGlobalLock.o CGlobalSafeRawIOWriter.o CSignal.o CRawIOModify.o CSystemIO.o
 	$(AR) $@ $^
+
+${RELEASE}/IOTools: IOTools.o
+	${CXX} $^ -lio ${LDFLAGS} -o $@
+
+${RELEASE}/IOMonitor: IOMonitor.o
+	${CXX} $^ -lio ${LDFLAGS} -o $@
+
+${RELEASE}/OTMonitor: OTMonitor.o
+	${CXX} $^ -lio ${LDFLAGS} -o $@
 
 
 # must put at the end

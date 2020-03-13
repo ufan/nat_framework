@@ -9,7 +9,7 @@ include ../make/head.mk
 # strategy (dynamic)
 
 # External (Source Available)#
-# log4cplus : 2.0.0 (static)
+# None
 
 # External (Ubuntu-package available)
 # C++11
@@ -21,13 +21,12 @@ include ../make/head.mk
 
 #######################
 
-CFLAGS    += -DFAST_LOGGER_ -I${BASEDIR}/strategy \
-						 -I$(BASEDIR)/logger ${log4cplus_CFLAGS} \
+CFLAGS    += -DFAST_LOGGER_ -I${BASEDIR}/strategy -I$(BASEDIR)/logger \
 						 -I$(BASEDIR)/io -I$(BASEDIR)/md -I$(BASEDIR)/td -I$(BASEDIR)/account \
 						 -I$(BASEDIR)/risk -I$(BASEDIR)/pyext -I$(BASEDIR)/bar \
 						  ${boost_CFLAGS} ${PYTHON_CFLAGS}
 
-LDFLAGS   += ${SHARED_LDFLAGS} -L$(BASEDIR)/lib -lstrategy ${boost_python_LDFLAGS} ${PYTHON_LDFLAGS} ${log4cplus_LDFLAGS}
+LDFLAGS   += ${SHARED_LDFLAGS} -L$(BASEDIR)/lib -lstrategy ${boost_python_LDFLAGS} ${PYTHON_LDFLAGS}
 
 VPATH 		+=
 

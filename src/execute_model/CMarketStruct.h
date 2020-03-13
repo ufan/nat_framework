@@ -1,7 +1,6 @@
 #ifndef CMARKETSTRUCT_H_
 #define CMARKETSTRUCT_H_
 
-#include "CStrategy.h"
 #include "PublicFun.h"
 
 class CMarketStruct
