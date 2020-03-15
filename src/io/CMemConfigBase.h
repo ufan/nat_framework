@@ -14,7 +14,7 @@
 #include <string>
 #include <vector>
 #include "compiler.h"
-#include "SimpleLog.h"
+#include "SimpleLogger.h"
 
 
 namespace IPC {

@@ -6,7 +6,7 @@
  - Define macro variable *SIMPLE_LOGGER_* to use SimpleLogger
  - The default logger is HeavyLogger, which use /log4cplus/ underneath
    
-** SimpleLog.h
+** SimpleLogger.h
 *** The most simple form, just print on std::out
 *** Limited use, only in /io/CMemConfigBase/, /io/CQueueBase/ and /io/CLocalQueue/
 *** TODO consider removing this service
