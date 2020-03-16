@@ -9,7 +9,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <iostream>
-#include "Logger.h"
+#include "HeavyLogger.h"
 #include <log4cplus/logger.h>
 #include <log4cplus/configurator.h>
 #include <log4cplus/helpers/stringhelper.h>
