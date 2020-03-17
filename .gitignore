@@ -12,3 +12,6 @@ remlog_*
 release
 ThirdParty
 *.o
+
+src/cmake-build-debug
+.idea
