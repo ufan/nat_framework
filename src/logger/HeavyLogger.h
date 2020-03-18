@@ -2,7 +2,7 @@
 #define LOGGER_HEAVY_LOGGER_H_
 
 #include <string>
-#include <log4cplus/HeavyLogger.h>
+#include <log4cplus/logger.h>
 #include <log4cplus/loggingmacros.h>
 
 #define LOG_INFO(format, ...) LOG4CPLUS_INFO_FMT(log4cplus::Logger::getRoot(), format, ##__VA_ARGS__)
