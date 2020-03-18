@@ -1,14 +1,51 @@
-cmake_minimum_required(VERSION 3.10)
+#[===============================================================================[.rst
+#
+# Project:
+#
+#   NAT Framework
+#
+# Description:
+#
+#
+#]===============================================================================]
 
-# project name and version
-project(NatFramework VERSION 0.1.0)
+#=================================================================================
+
+# Setup minimum required version of cmake, policy
+# This command should be the first command in the project
+cmake_minimum_required(VERSION 3.12...3.16)
+
+# Setup Project name and version
+# CMakeTest_VERSION and PROJECT_VERSION variables are set
+project(CMakeTest VERSION 1.0
+  DESCRIPTION "Test Project of CMake Functions"
+  LANGUAGES CXX
+  )
 
 # specify the C++ standard
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-####################################################################
-# external projects (ThirdParty packages)
+#=================================================================================
+# DONE: folder grouping
+# RELATED: target property: folder
+option(CMakeTest_USE_FOLDERS "Enable folder grouping in IDEs." ON)
+if(CMakeTest_USE_FOLDERS)
+  set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+else()
+  set_property(GLOBAL PROPERTY USE_FOLDERS OFF)
+endif()
+
+# Always use '-fPIC' or '-fPIE' option
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
+#=================================================================================
+# TODO:useful commands
+
+# find_program(MAKE_EXE NAMES gamke namke make)
+
+#=================================================================================
+# External Dependency
 
 include(ExternalProject)
 set(ThirdParty_DIR ${PROJECT_SOURCE_DIR}/ThirdParty)
@@ -41,8 +78,13 @@ ExternalProject_Add(${proj}
 set_property(TARGET ${proj} PROPERTY FOLDER "${proj}")
 
 ExternalProject_Get_Property(${proj} INSTALL_DIR)
-set(LOG4CPLUS_DIR ${INSTALL_DIR})
-message("Install directory of log4cplus: ${LOG4CPLUS_DIR}")
+
+# two ways of setting search loaction of Config-based package
+set(log4cplus_ROOT ${INSTALL_DIR})
+# list(APPEND CMAKE_PREFIX_PATH "${INSTALL_DIR}")
+find_package(${proj} REQUIRED)
+
+message("Install directory of log4cplus: ${INSTALL_DIR}")
 
 ## EP 2 : libev
 set(proj libev)
@@ -55,8 +97,7 @@ ExternalProject_Add(${proj}
   ### Step 2 : download external source ###
   CVS_REPOSITORY   ":pserver:anonymous@cvs.schmorp.de/schmorpforge"
   CVS_MODULE       "libev"
-  CVS_TAG          "-rrel-4_24"
-  # CVS_TAG          "-rrel-4_31"
+  CVS_TAG          "-rrel-4_31"
   ### Step 3 : build configuration (default is cmake-based configuration) ###
   # configure command comes from libev/autogen.sh
   CONFIGURE_COMMAND autoreconf --install --symlink --force <SOURCE_DIR>
@@ -70,10 +111,15 @@ ExternalProject_Add(${proj}
 set_property(TARGET ${proj} PROPERTY FOLDER "${proj}")
 
 ExternalProject_Get_Property(${proj} INSTALL_DIR)
-set(LIBEV_DIR ${INSTALL_DIR})
-message("Install directory of libev: ${LIBEV_DIR}")
 
-# TODO: some external packages may need higher version of cmake
+# set(libev_ROOT ${INSTALL_DIR})
+# set(libev_LIBRARIES "-lev")
+# set(libev_INCLUDE_DIRS "${libev_ROOT}/include")
+# set(libev_DEFINITIONS "-static")
+#TODO: extract version number from ev.h
+
+# message("Install directory of libev: ${Libev_ROOT}")
+
 # ## EP 3 : CMake
 # set(Utility_DIR ${PROJECT_SOURCE_DIR}/Utility)
 # set(proj cmake-latest)
@@ -82,13 +128,58 @@ message("Install directory of libev: ${LIBEV_DIR}")
 #   INSTALL_DIR     ${Utility_DIR}/${proj}
 #   URL https://github.com/Kitware/CMake/releases/download/v3.16.5/cmake-3.16.5.tar.gz
 #   CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
-#   -DCMAKE_BUILD_TYPE=release
-#   -DBUILD_TESTING=OFF
-#   #   BUILD_COMMAND ""
+#              -DCMAKE_BUILD_TYPE=release
+#              -DBUILD_TESTING=OFF
+# #   BUILD_COMMAND ""
 #   )
 
-
 #############################################################
-# TODO: Test
+# Find external packages
 
-# enable_testing()
+# Config-file based packages
+# list(APPEND CMAKE_PREFIX_PATH "${log}")
+
+# Module-file based packages
+# list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+
+#TODO: find python
+
+#TODO: find boost_python
+
+#=================================================================================
+# Subdiretories
+
+add_subdirectory(include)
+add_subdirectory(common)
+#=================================================================================
+# TODO: Test or GoogleTest or Catch
+
+# if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+#   include(CTest)
+# endif()
+
+# if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
+#   add_subdirectory(test)
+# endif()
+
+# TODO: or enable_testing()?
+
+#=================================================================================
+#TODO: Packaging
+
+# set(CPACK_PACKAGE_VENDOR "Yong")
+# set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "NAT Framework")
+# set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
+# set(CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})
+# set(CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH})
+# # set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
+# # set(CPACK_RESOURCE_FILE_READE "${CMAKE_CURRENT_SOURCE_DIR}/READE.md")
+
+# set(CPACK_SOURCE_GENERATOR "TGZ;ZIP")
+# set(CPACK_SOURCE_IGNORE_FILES
+#     /.git
+#     /.*build.*
+#     /\\\\.DS_Store
+#     )
+
+# include(CPack)
