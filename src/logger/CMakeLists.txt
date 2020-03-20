@@ -1,46 +1,68 @@
-# sources
-set(SOURCES HeavyLogger.cpp FastLogger.cpp CFastLog.cpp CLogPool.cpp)
-set(HEADERS HeavyLogger.h FastLogger.h CFastLog.h CLogPool.h SimpleLogger.h)
+#[===============================================================================[.rst
+#
+# This will define the following variables::
+#
+#   VarName     - Variable Explanation
+#
+# and the following Imported/Interface/Alias targets::
+#
+#   Logger : OBJECT target
+#
+# Notes:
+#
+#]===============================================================================]
 
-# target defintion
-add_library(logger STATIC
-  ${SOURCES}
-  ${HEADERS} # TODO: explicit dependencies on header or not
+# For imported target : log4cplus::log4cplusS
+find_package(${proj} REQUIRED)
+
+# Target: Logger ##############################################################
+add_library(Logger OBJECT)
+
+# alias name
+add_library(Nat::Logger ALIAS Logger)
+
+target_sources(Logger
+  PRIVATE   "HeavyLogger.cpp"
+            "FastLogger.cpp"
+            "CFastLog.cpp"
+            "CLogPool.cpp"
+  PUBLIC    "CFastLog.h"
+            "CLogPool.h"
+            "HeavyLogger.h"
+            "FastLogger.h"
+            "SimpleLogger.h"
+  INTERFACE "Logger.h"
   )
 
-target_sources()
-
-set_target_properties(logger PROPERTIES
-  PUBLIC_HEADER Logger.h FastLogger.h HeavyLogger.h SimpleLogger.h
+target_include_directories(Logger
+  PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+         $<INSTALL_INTERFACE:include>
   )
 
-set_target_properties(logger PROPERTIES
-  PRIVATE_HEADER CFastLog.h CLogPool.h
+target_link_libraries(Logger
+  PRIVATE Nat::CommonHeader
+          Nat::CommonUtils
+  PUBLIC  log4cplus::log4cplusS # static library from log4cplus
   )
 
-# generate position independent code
-set_target_properties(logger PROPERTIES
-  POSITION_INDEPENDENT_CODE 1
+# Install: the headers ############################################################
+
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
+  TYPE INCLUDE
+  FILES_MATCHING PATTERN "*.h"
   )
 
-target_include_directories(logger
-  INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}
-  )
+# TODO: install the headers from log4cplusS
+# libstrategy does not need log4cplusS
 
-target_link_libraries(logger
-  PUBLIC
-  
-  )
+# install(TARGETS Logger EXPORT LoggerExport // TODO
+#   )
 
-target_compile_definitions()
-target_compile_features()
-target_compile_options()
-
-# installation
-install(TARGETS logger
-  ARCHIVE
-  PUBLIC_HEADER
-  PRIVATE_HEADER
-  )
+# install(EXPORT LoggerExport
+#         DESTINATION lib/cmake/NatFramework
+#         NAMESPACE Nat::
+#         FILE LoggerTarget.cmake
+#   )
 
 # TODO: test
+

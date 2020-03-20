@@ -12,3 +12,5 @@ remlog_*
 release
 ThirdParty
 *.o
+build
+install

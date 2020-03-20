@@ -81,36 +81,34 @@ ExternalProject_Get_Property(${proj} INSTALL_DIR)
 
 # two ways of setting search loaction of Config-based package
 set(log4cplus_ROOT ${INSTALL_DIR})
-# list(APPEND CMAKE_PREFIX_PATH "${INSTALL_DIR}")
-find_package(${proj} REQUIRED)
 
 message("Install directory of log4cplus: ${INSTALL_DIR}")
 
 ## EP 2 : libev
-set(proj libev)
-ExternalProject_Add(${proj}
-  ### Step 1 : setup directories ###
-  # PREFIX         ${ThirdParty_DIR}/${proj}
-  SOURCE_DIR       ${ThirdParty_DIR}/${proj}/src
-  # BINARY_DIR     ${ThirdParty_DIR}/${proj}/build
-  INSTALL_DIR      ${ThirdParty_DIR}/${proj}
-  ### Step 2 : download external source ###
-  CVS_REPOSITORY   ":pserver:anonymous@cvs.schmorp.de/schmorpforge"
-  CVS_MODULE       "libev"
-  CVS_TAG          "-rrel-4_31"
-  ### Step 3 : build configuration (default is cmake-based configuration) ###
-  # configure command comes from libev/autogen.sh
-  CONFIGURE_COMMAND autoreconf --install --symlink --force <SOURCE_DIR>
-  COMMAND <SOURCE_DIR>/configure --prefix=<INSTALL_DIR>
-  # BUILD_COMMAND     make
-  ### Step 4 : installation ###
-  ### Step 5 : test ###
-  # TEST_BEFORE_INSTALL     1
-  TEST_EXCLUDE_FROM_MAIN  1
-  )
-set_property(TARGET ${proj} PROPERTY FOLDER "${proj}")
+# set(proj libev)
+# ExternalProject_Add(${proj}
+#   ### Step 1 : setup directories ###
+#   # PREFIX         ${ThirdParty_DIR}/${proj}
+#   SOURCE_DIR       ${ThirdParty_DIR}/${proj}/src
+#   # BINARY_DIR     ${ThirdParty_DIR}/${proj}/build
+#   INSTALL_DIR      ${ThirdParty_DIR}/${proj}
+#   ### Step 2 : download external source ###
+#   CVS_REPOSITORY   ":pserver:anonymous@cvs.schmorp.de/schmorpforge"
+#   CVS_MODULE       "libev"
+#   CVS_TAG          "-rrel-4_31"
+#   ### Step 3 : build configuration (default is cmake-based configuration) ###
+#   # configure command comes from libev/autogen.sh
+#   CONFIGURE_COMMAND autoreconf --install --symlink --force <SOURCE_DIR>
+#   COMMAND <SOURCE_DIR>/configure --prefix=<INSTALL_DIR>
+#   # BUILD_COMMAND     make
+#   ### Step 4 : installation ###
+#   ### Step 5 : test ###
+#   # TEST_BEFORE_INSTALL     1
+#   TEST_EXCLUDE_FROM_MAIN  1
+#   )
+# set_property(TARGET ${proj} PROPERTY FOLDER "${proj}")
 
-ExternalProject_Get_Property(${proj} INSTALL_DIR)
+# ExternalProject_Get_Property(${proj} INSTALL_DIR)
 
 # set(libev_ROOT ${INSTALL_DIR})
 # set(libev_LIBRARIES "-lev")
@@ -151,6 +149,10 @@ ExternalProject_Get_Property(${proj} INSTALL_DIR)
 
 add_subdirectory(include)
 add_subdirectory(common)
+add_subdirectory(logger)
+add_subdirectory(io)
+add_subdirectory(strategy)
+
 #=================================================================================
 # TODO: Test or GoogleTest or Catch
 
