@@ -1,7 +1,18 @@
-* dependencies
-** install python2.7
-** install and build boost_python agains python2.7
-* make based build system
+* CMake
+  The preferred build system is *CMake*
+** Pre-requsites
+*** install python2.7
+*** install and build boost_python agains python2.7
+*** install CMake latest (>=3.13)
+** Dependencies
+*** External (i.e. source available)
+**** log4cplus
+**** libev
+*** ThirdParty (i.e. only binary library available)
+**** CTP
+**** EES
+**** Xt
+* /make/ based build system
 ** copy ThirdParty under src/ directory
 ** edit /src/make/head.mk/, change *boost_DIR* and *PYTHON_BIN* accordingly
 ** invoke /make/ command
