@@ -67,3 +67,7 @@
 <2020-03-21 Sa>
 [[file:~/src/nat_framework/NAT/src/external/log4cplus/CMakeLists.txt::# add_library(log4cplus::log4cplus ALIAS log4cplus)]]
 
+* TODO Use namespace or not?
+<2020-03-21 Sa>
+[[file:~/src/nat_framework/NAT/src/external/libev/CMakeLists.txt::# add_library(libev::libev ALIAS libev)]]
+
