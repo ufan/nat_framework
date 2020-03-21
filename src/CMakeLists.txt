@@ -140,9 +140,23 @@ message("Install directory of log4cplus: ${INSTALL_DIR}")
 # Module-file based packages
 # list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
-#TODO: find python
+# Find Python #################################################################
+# Hint variable : Python2_ROOT_DIR
+find_package(Python2 REQUIRED COMPONENTS
+  Development
+  )
 
-#TODO: find boost_python
+# TODO: Make found targets globally available, in case of list file in subdirectory
+# if(Python2_FOUND AND Python2_Development_FOUND )
+#   set_target_properties(
+#     Python2::Python
+#     Python2::Module
+#     PROPERTIES IMPORTED_GLOBAL TRUE )
+#   # message("Python2 Found: ${Python2_EXECUTABLE} ${Python2_VERSION}")
+#   # message("Python2 Include Dir: ${Python2_INCLUDE_DIRS}")
+#   # message("Python2 Libraies: ${Python2_LIBRARY_DIRS} ${Python2_LIBRARIES}")
+# endif()
+
 # Find Boost library ##########################################################
 # TODO: how to integrate boost source base
 
@@ -155,7 +169,7 @@ set(Boost_USE_MULTITHREADED    TRUE)
 # set(Boost_USE_STATIC_RUNTIME   TRUE)
 
 # set(BOOST_VERSION 1.72.0)
-set(Boost_ROOT "/home/yong/boost/1_72_0")
+set(Boost_ROOT "/home/yong/boost/1_72_0") # can be omitted and provided by user
 find_package(Boost REQUIRED COMPONENTS
   python # header only libraries are found by default, in Boost::headers
   )
