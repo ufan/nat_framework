@@ -13,7 +13,7 @@
 
 # Setup minimum required version of cmake, policy
 # This command should be the first command in the project
-cmake_minimum_required(VERSION 3.12...3.16)
+cmake_minimum_required(VERSION 3.13...3.16)
 
 # Setup Project name and version
 # CMakeTest_VERSION and PROJECT_VERSION variables are set

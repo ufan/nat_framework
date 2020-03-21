@@ -4,6 +4,7 @@
 *** install python2.7
 *** install and build boost_python agains python2.7
 *** install CMake latest (>=3.13)
+*** autotools is needed to build libev
 ** Dependencies
 *** External (i.e. source available)
 **** log4cplus

@@ -59,3 +59,11 @@
 <2020-03-13 Fr>
 [[file:~/src/nat_framework/NAT/src/td/note.org::*Helper][Helper]]
 
+* TODO The policy is not working
+<2020-03-21 Sa>
+[[file:~/src/nat_framework/NAT/src/external/log4cplus/CMakeLists.txt::# Add subdirectory and alias target]]
+
+* TODO Add namespace or not ?
+<2020-03-21 Sa>
+[[file:~/src/nat_framework/NAT/src/external/log4cplus/CMakeLists.txt::# add_library(log4cplus::log4cplus ALIAS log4cplus)]]
+
