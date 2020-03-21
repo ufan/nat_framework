@@ -142,9 +142,9 @@ message("Install directory of log4cplus: ${INSTALL_DIR}")
 
 # Find Python #################################################################
 # Hint variable : Python2_ROOT_DIR
-find_package(Python2 REQUIRED COMPONENTS
-  Development
-  )
+# find_package(Python2 REQUIRED COMPONENTS
+#   Development
+#   )
 
 # TODO: Make found targets globally available, in case of list file in subdirectory
 # if(Python2_FOUND AND Python2_Development_FOUND )
@@ -162,17 +162,17 @@ find_package(Python2 REQUIRED COMPONENTS
 
 # variables controlling the behavior of boost, referenced in BoostConfig.cmake
 # set(Boost_DEBUG                TRUE) # verbose control
-set(Boost_USE_RELEASE_LIBS     TRUE)
-set(Boost_USE_STATIC_LIBS      TRUE)
-set(Boost_USE_MULTITHREADED    TRUE)
-# only used when boost is built with runtime-link=static
-# set(Boost_USE_STATIC_RUNTIME   TRUE)
+# set(Boost_USE_RELEASE_LIBS     TRUE)
+# set(Boost_USE_STATIC_LIBS      TRUE)
+# set(Boost_USE_MULTITHREADED    TRUE)
+# # only used when boost is built with runtime-link=static
+# # set(Boost_USE_STATIC_RUNTIME   TRUE)
 
-# set(BOOST_VERSION 1.72.0)
-set(Boost_ROOT "/home/yong/boost/1_72_0") # can be omitted and provided by user
-find_package(Boost REQUIRED COMPONENTS
-  python # header only libraries are found by default, in Boost::headers
-  )
+# # set(BOOST_VERSION 1.72.0)
+# set(Boost_ROOT "/home/yong/boost/1_72_0") # can be omitted and provided by user
+# find_package(Boost REQUIRED COMPONENTS
+#   python # header only libraries are found by default, in Boost::headers
+#   )
 
 # TODO: Make found targets globally available, in case of list file in subdirectory
 # if ( Boost_FOUND )
@@ -181,6 +181,11 @@ find_package(Boost REQUIRED COMPONENTS
 #     Boost::python
 #     PROPERTIES IMPORTED_GLOBAL TRUE )
 # endif ()
+
+#=================================================================================
+# External dependencies
+
+add_subdirectory(external)
 
 #=================================================================================
 # Subdiretories
