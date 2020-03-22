@@ -10,7 +10,6 @@ test.log
 src/lib
 remlog_*
 release
-ThirdParty
 *.o
 build
 install
