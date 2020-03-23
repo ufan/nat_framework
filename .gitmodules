@@ -1,0 +1,3 @@
+[submodule "src/ThirdParty/EES"]
+	path = src/ThirdParty/EES
+	url = https://github.com/natcollab/EES
