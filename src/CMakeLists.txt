@@ -186,6 +186,7 @@ message("Install directory of log4cplus: ${INSTALL_DIR}")
 # External dependencies
 
 add_subdirectory(external)
+add_subdirectory(ThirdParty)
 
 #=================================================================================
 # Subdiretories
