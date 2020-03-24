@@ -1,3 +1,10 @@
+* Getting the source
+  The third party libraries (such as, EES, CTP ...) are integrated into the source base
+  as git submodule.
+
+  The command to clone the whole source base including ThirdParty libraries is:
+  /git clone --recurse-submodules -b <branch_name> <repo_address>/
+  
 * CMake
   The preferred build system is *CMake*
 ** Pre-requsites
