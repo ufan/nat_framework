@@ -10,6 +10,17 @@
 #
 #]===============================================================================]
 
+# Setup minimum required version of cmake, policy
+cmake_minimum_required(VERSION 3.13...3.16)
+
+# Setup Project name and version
+project(libev VERSION 1.0
+  DESCRIPTION "Interface to libev library"
+  LANGUAGES CXX
+  )
+
+#=================================================================================
+
 include(FetchContent)
 
 # Variables controlling FetchContent
@@ -26,9 +37,6 @@ FetchContent_Declare(
   CVS_TAG          ${VERSION}
   SOURCE_DIR       ${CMAKE_CURRENT_LIST_DIR}/src
   )
-
-# Add to main project directly, useful for cmake project
-# FetchContent_MakeAvailable(log4cplus) # generates log4cplus target without namespace "log4cplus"
 
 FetchContent_GetProperties(libev)
 if(NOT libev_POPULATED)
@@ -52,7 +60,7 @@ if(NOT libev_POPULATED)
       )
 
     execute_process(
-      COMMAND ./configure --prefix=${CMAKE_CURRENT_LIST_DIR}/install
+      COMMAND ./configure --prefix=${CMAKE_CURRENT_BINARY_DIR}/install
       WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/src
       )
 
@@ -64,17 +72,69 @@ if(NOT libev_POPULATED)
   endif()
 
   # Export target : libev::libev
-  add_library(libev INTERFACE
-    IMPORTED GLOBAL
-    )
-  # add_library(libev::libev ALIAS libev)
+  add_library(libev INTERFACE)
+  add_library(libev::libev ALIAS libev)
 
-  target_include_directories(libev INTERFACE
-    ${CMAKE_CURRENT_LIST_DIR}/install/include
+  set(libev_INCLUDE_INSTALL_DIR include/libev)
+  set(libev_LIB_INSTALL_DIR lib/libev)
+  set(libev_CMAKE_INSTALL_DIR lib/cmake/libev)
+
+  target_include_directories(libev
+    INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/install/include>
+              $<INSTALL_INTERFACE:${libev_INCLUDE_INSTALL_DIR}>
     )
-  target_link_libraries(libev INTERFACE
-    ${CMAKE_CURRENT_LIST_DIR}/install/lib/libev.a
+
+  target_link_libraries(libev
+    INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/install/lib/libev.a>
+              $<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${libev_LIB_INSTALL_DIR}/libev.a>
     )
+
+  # Install headers and libs
+  install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/install/include/
+    DESTINATION ${libev_INCLUDE_INSTALL_DIR}
+    )
+
+  install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/install/lib/
+    DESTINATION ${libev_LIB_INSTALL_DIR}
+    )
+
+  # Install export targets
+  install(TARGETS libev EXPORT libev_export)
+
+  install(EXPORT libev_export
+    NAMESPACE libev::
+    FILE libevTargets.cmake
+    DESTINATION ${libev_CMAKE_INSTALL_DIR}
+    )
+
+  # Install package config and version files
+
+  include(CMakePackageConfigHelpers)
+
+  # Package version file
+  write_basic_package_version_file(
+    ${CMAKE_CURRENT_BINARY_DIR}/libevConfigVersion.cmake
+    VERSION ${PROJECT_VERSION}
+    COMPATIBILITY SameMajorVersion
+    )
+
+  # Package config file
+  configure_package_config_file(
+    ${CMAKE_CURRENT_LIST_DIR}/libevConfig.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/libevConfig.cmake
+    INSTALL_DESTINATION ${libev_CMAKE_INSTALL_DIR}
+    PATH_VARS
+      libev_INCLUDE_INSTALL_DIR
+      libev_LIB_INSTALL_DIR
+    )
+
+  # Install the config and version files
+  install(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/libevConfig.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/libevConfigVersion.cmake
+    DESTINATION ${libev_CMAKE_INSTALL_DIR}
+    )
+
 endif()
 
 
