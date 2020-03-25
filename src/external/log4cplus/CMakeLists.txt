@@ -10,6 +10,14 @@
 #
 #]===============================================================================]
 
+# Setup minimum required version of cmake, policy
+cmake_minimum_required(VERSION 3.13...3.16)
+
+# Setup Project name and version
+project(log4cplus VERSION 1.0
+  DESCRIPTION "Interface to log4cplus library"
+  LANGUAGES CXX
+  )
 
 #=================================================================================
 include(FetchContent)
@@ -41,10 +49,9 @@ if(NOT log4cplus_POPULATED)
     cmake_policy(SET CMP0077 NEW)
   endif()
 
-  set(BUILD_SHARED_LIBS OFF)
+  # set(BUILD_SHARED_LIBS OFF)
   # set(ENABLE_SYMBOLS_VISIBILITY FALSE)
-  set(LOG4CPLUS_ENABLE_DECORATED_LIBRARY_NAME OFF)
+  # set(LOG4CPLUS_ENABLE_DECORATED_LIBRARY_NAME OFF)
   add_subdirectory(${log4cplus_SOURCE_DIR} ${log4cplus_BINARY_DIR})
-  # add_subdirectory(${log4cplus_SOURCE_DIR})
-  # add_library(log4cplus::log4cplus ALIAS log4cplus)
+  add_library(log4cplus::log4cplus ALIAS log4cplus)
 endif()

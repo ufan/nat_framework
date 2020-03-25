@@ -41,10 +41,10 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/ ${CMAKE_CURRENT_BINARY_DIR}/
         )
 
 # Install the target ########################################
-install(TARGETS ${Tgt} EXPORT ${Tgt}Export)
+install(TARGETS ${Tgt} EXPORT ${Tgt}_export)
 
-install(EXPORT ${Tgt}Export DESTINATION lib/cmake/NatFramework
+install(EXPORT ${Tgt}_export
+        DESTINATION ${NAT_CMAKE_INSTALL_DIR}
         NAMESPACE Nat::
-        FILE ${Tgt}Target.cmake
+        FILE ${Tgt}Targets.cmake
         )
-

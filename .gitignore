@@ -9,7 +9,9 @@ test.log
 # pubkey.pem
 src/lib
 remlog_*
-release
 *.o
 build
 install
+release
+src/external/libev/src
+src/external/log4cplus/src

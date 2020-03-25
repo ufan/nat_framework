@@ -40,13 +40,8 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 # TODO:useful commands
 
 # find_program(MAKE_EXE NAMES gamke namke make)
-
 #=================================================================================
 # External Dependency
-
-
-#############################################################
-# Find external packages
 
 # open source projects
 add_subdirectory(external)
@@ -55,13 +50,50 @@ add_subdirectory(external)
 add_subdirectory(ThirdParty)
 
 #=================================================================================
+# Global variables
+
+# installation directory for headers, libraries, binary
+set(NAT_INCLUDE_INSTALL_DIR include)
+set(NAT_LIB_INSTALL_DIR lib)
+set(NAT_CMAKE_INSTALL_DIR "lib/cmake/NatFramework-${CMAKE_PROJECT_VERSION}")
+
+#=================================================================================
 # Subdiretories
 
 add_subdirectory(include)
-add_subdirectory(common)
-add_subdirectory(logger)
-add_subdirectory(io)
-add_subdirectory(strategy)
+# add_subdirectory(common)
+# add_subdirectory(logger)
+# add_subdirectory(io)
+# add_subdirectory(strategy)
+
+#=================================================================================
+# TODO: find_package configuration
+
+include(CMakePackageConfigHelpers)
+
+# Package version file
+write_basic_package_version_file(
+  ${CMAKE_CURRENT_BINARY_DIR}/NatFrameworkConfigVersion.cmake
+  VERSION ${PROJECT_VERSION}
+  COMPATIBILITY SameMajorVersion
+  )
+
+# Package config file
+configure_package_config_file(
+  ${CMAKE_CURRENT_LIST_DIR}/cmake/NatFrameworkConfig.cmake.in
+  ${CMAKE_CURRENT_BINARY_DIR}/NatFrameworkConfig.cmake
+  INSTALL_DESTINATION ${NAT_CMAKE_INSTALL_DIR}
+  PATH_VARS
+    NAT_INCLUDE_INSTALL_DIR
+    NAT_LIB_INSTALL_DIR
+  )
+
+# Install the config and version files
+install(FILES
+  ${CMAKE_CURRENT_BINARY_DIR}/NatFrameworkConfig.cmake
+  ${CMAKE_CURRENT_BINARY_DIR}/NatFrameworkConfigVersion.cmake
+  DESTINATION ${NAT_CMAKE_INSTALL_DIR}
+  )
 
 #=================================================================================
 # TODO: Test or GoogleTest or Catch
