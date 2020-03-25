@@ -12,13 +12,8 @@
 #
 #]===============================================================================]
 
-# For imported target : log4cplus::log4cplusS
-find_package(${proj} REQUIRED)
-
 # Target: Logger ##############################################################
-add_library(Logger OBJECT)
-
-# alias name
+add_library(Logger STATIC)
 add_library(Nat::Logger ALIAS Logger)
 
 target_sources(Logger
@@ -40,9 +35,9 @@ target_include_directories(Logger
   )
 
 target_link_libraries(Logger
-  PRIVATE Nat::CommonHeader
-          Nat::CommonUtils
-  PUBLIC  log4cplus::log4cplusS # static library from log4cplus
+  PUBLIC  log4cplus::log4cplus
+          CommonUtils
+          CommonHeader
   )
 
 # Install: the headers ############################################################
@@ -52,17 +47,15 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
   FILES_MATCHING PATTERN "*.h"
   )
 
-# TODO: install the headers from log4cplusS
-# libstrategy does not need log4cplusS
+# Install the target ########################################
+# install(TARGETS Logger EXPORT Logger_export)
 
-# install(TARGETS Logger EXPORT LoggerExport // TODO
+# install(EXPORT Logger_export
+#   DESTINATION ${NAT_CMAKE_INSTALL_DIR}
+#   NAMESPACE Nat::
+#   FILE LoggerTargets.cmake
 #   )
 
-# install(EXPORT LoggerExport
-#         DESTINATION lib/cmake/NatFramework
-#         NAMESPACE Nat::
-#         FILE LoggerTarget.cmake
-#   )
-
+# Test ########################################################################
 # TODO: test
 

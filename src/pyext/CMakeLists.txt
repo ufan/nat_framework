@@ -6,45 +6,40 @@
 #
 # and the following Imported/Interface/Alias targets::
 #
-#   Nat::Strategy
+#   PyExt : OBJECT target
 #
 # Notes:
 #
 #]===============================================================================]
 
-# Target: Strategy ##############################################################
-add_library(Strategy STATIC)
-add_library(Nat::Strategy ALIAS Strategy)
+# Target: PyExt ##############################################################
+add_library(PyExt STATIC)
 
-target_sources(Strategy
-  PRIVATE   "CStrategy.cpp"
-            "CStrategyProcess.cpp"
-            "StrategyShared.cpp"
-  PUBLIC    "CStrategy.h"
-            "CStrategyProcess.h"
-            "StrategyShared.h"
+target_sources(PyExt
+  PRIVATE   "PyExtExch.cpp"
+            "PyExtension.cpp"
+            # "PyUtils.cpp" # header only ?
+            "PyWrapper.cpp"
+  PUBLIC    "PyExtExch.h"
+            "PyUtils.h"
+            "PyWrapper.h"
   )
 
-target_compile_definitions(Strategy
-  PUBLIC FAST_LOGGER_
-  )
-
-target_include_directories(Strategy
+target_include_directories(PyExt
   PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
          $<INSTALL_INTERFACE:include>
   )
 
-target_link_libraries(Strategy
-  PUBLIC  CommonHeader
-          CommonUtils
-          Logger
-          IO
-          MDHelper
-          TDHelper
-          Risk
-          Bar
-          Account
-  PRIVATE Boost::headers
+target_link_libraries(PyExt
+  PUBLIC Logger
+         IO
+         Strategy
+         Risk
+         MDHelper
+         TDHelper
+         Boost::python
+         Python2::Module
+         Python2::Python
   )
 
 # Install: the headers ############################################################
@@ -52,18 +47,17 @@ target_link_libraries(Strategy
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
   TYPE INCLUDE
   FILES_MATCHING PATTERN "*.h"
-  PATTERN "demo" EXCLUDE
   )
 
 # Install the target ########################################
-install(TARGETS Strategy EXPORT Strategy_export
-  )
+# install(TARGETS PyExt EXPORT Logger_export)
 
-# install(EXPORT Strategy_export
+# install(EXPORT Logger_export
 #   DESTINATION ${NAT_CMAKE_INSTALL_DIR}
 #   NAMESPACE Nat::
-#   FILE StrategyTargets.cmake
+#   FILE LoggerTargets.cmake
 #   )
 
 # Test ########################################################################
 # TODO: test
+

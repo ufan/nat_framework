@@ -13,14 +13,11 @@
 #]===============================================================================]
 
 # Define Static Target: CommonUtils ################################################
-add_library(CommonUtils OBJECT)
-
-# alias name
-add_library(Nat::CommonUtils ALIAS CommonUtils)
+add_library(CommonUtils STATIC)
 
 target_sources(CommonUtils
   PRIVATE  "ATSysUtils.cpp" # io, include, common, used in md, td
-           "CGloablLock.cpp" # common, used in io
+           "CGlobalLock.cpp" # common, used in io
            "CPipExecutor.cpp" # logger, common, used in md, td
            "CTradeBaseInfo.cpp" # include
            "CWareHouseReader.cpp" # include, common, io, used in md, pyext
@@ -32,7 +29,7 @@ target_sources(CommonUtils
            "MurmurHash2.cpp"
            "MurmurHash3.cpp"
   PUBLIC   "ATSysUtils.h"
-           "CGloablLock.h"
+           "CGlobalLock.h"
            "CPipExecutor.h"
            "CTradeBaseInfo.h"
            "CWareHouseReader.h"
@@ -55,12 +52,9 @@ target_include_directories(CommonUtils
   )
 
 target_link_libraries(CommonUtils
-  PRIVATE Nat::CommonHeader
-          Nat::Logger
-          Nat::IO
+  PRIVATE Logger
+          IO
   )
-
-add_library(Nat::CommonUtils ALIAS CommonUtils)
 
 # Install: the headers ############################################################
 
@@ -69,13 +63,8 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
   FILES_MATCHING PATTERN "*.h"
   )
 
-# install(TARGETS CommonUtils EXPORT CommonUtilsExport // TODO
-#   )
+# Install the target ########################################
+# install(TARGETS CommonUtils EXPORT Common_export)
 
-# install(EXPORT CommonUtilsExport
-#         DESTINATION lib/cmake/NatFramework
-#         NAMESPACE Nat::
-#         FILE CommonUtilsTarget.cmake
-#   )
-
+# Test ########################################################################
 # TODO: test

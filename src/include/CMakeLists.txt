@@ -13,15 +13,13 @@
 #]===============================================================================]
 
 # Define Interface target : CommonHeader #####################################################
-set(Tgt CommonHeader)
-
-add_library(${Tgt} INTERFACE)
-add_library(Nat::${Tgt} ALIAS CommonHeader)
+add_library(CommonHeader INTERFACE)
+add_library(Nat::CommonHeader ALIAS CommonHeader)
 
 # Configure version number ####################################################
 configure_file(VersionConfig.h.in VersionConfig.h)
 
-target_include_directories(${Tgt} INTERFACE
+target_include_directories(CommonHeader INTERFACE
                            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
                            $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}> # for VersionConfig.h
                            $<INSTALL_INTERFACE:include>
@@ -30,7 +28,7 @@ target_include_directories(${Tgt} INTERFACE
 # Alternative way to set up INTERFACE_INCLUDE_DIRECTORY
 # set(CMAKE_INCLUDE_CURRENT_DIR ON)
 # set(CMAKE_INCLUDE_CURRENT_DIR_IN_INTERFACE ON)
-# target_include_directories(${Tgt} INTERFACE
+# target_include_directories(CommonHeader INTERFACE
 #   $<INSTALL_INTERFACE:include>
 #   )
 
@@ -41,10 +39,18 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/ ${CMAKE_CURRENT_BINARY_DIR}/
         )
 
 # Install the target ########################################
-install(TARGETS ${Tgt} EXPORT ${Tgt}_export)
+install(TARGETS CommonHeader EXPORT Common_export)
 
-install(EXPORT ${Tgt}_export
+install(EXPORT Common_export
         DESTINATION ${NAT_CMAKE_INSTALL_DIR}
         NAMESPACE Nat::
-        FILE ${Tgt}Targets.cmake
+        FILE CommonTargets.cmake
         )
+
+# install(TARGETS CommonHeader EXPORT CommonHeader_export)
+
+# install(EXPORT CommonHeader_export
+#         DESTINATION ${NAT_CMAKE_INSTALL_DIR}
+#         NAMESPACE Nat::
+#         FILE CommonHeaderTargets.cmake
+#         )

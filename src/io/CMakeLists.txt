@@ -13,9 +13,7 @@
 #]===============================================================================]
 
 # Target: IO ##############################################################
-add_library(IO OBJECT)
-
-# alias name
+add_library(IO STATIC)
 add_library(Nat::IO ALIAS IO)
 
 target_sources(IO
@@ -34,13 +32,16 @@ target_sources(IO
             "CGlobalSafeRawIOWriter.h"
             "CSystemIO.h"
             "ioprotocol.h"
-  INTERFACE "CReaderPool.cpp"
+  INTERFACE "CReaderPool.h"
   )
 
 target_include_directories(IO
-  PRIVATE   Nat::CommonUtils
-            Nat::CommonHeader
-            Nat::Logger
+  PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+         $<INSTALL_INTERFACE:include>
+  )
+
+target_link_libraries(IO
+  PUBLIC Logger
   )
 
 # Install: the headers ############################################################
@@ -50,15 +51,16 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
   FILES_MATCHING PATTERN "*.h"
   )
 
-# install(TARGETS Logger EXPORT LoggerExport // TODO
-#   )
+# Install the targets ########################################################
+install(TARGETS IO EXPORT IO_export)
 
-# install(EXPORT LoggerExport
-#         DESTINATION lib/cmake/NatFramework
+# install(EXPORT IO_export
+#         DESTINATION ${NAT_CMAKE_INSTALL_DIR}
 #         NAMESPACE Nat::
-#         FILE LoggerTarget.cmake
-#   )
+#         FILE IOTargets.cmake
+#         )
 
+# Test ##################################################################
 # TODO: test
 
 # TODO: Target: MemQueue ######################################################

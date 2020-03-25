@@ -6,45 +6,29 @@
 #
 # and the following Imported/Interface/Alias targets::
 #
-#   Nat::Strategy
+#   Crypt : STATIC target
 #
 # Notes:
 #
 #]===============================================================================]
 
-# Target: Strategy ##############################################################
-add_library(Strategy STATIC)
-add_library(Nat::Strategy ALIAS Strategy)
+# Target: Crypt ##############################################################
+add_library(Crypt STATIC)
 
-target_sources(Strategy
-  PRIVATE   "CStrategy.cpp"
-            "CStrategyProcess.cpp"
-            "StrategyShared.cpp"
-  PUBLIC    "CStrategy.h"
-            "CStrategyProcess.h"
-            "StrategyShared.h"
+target_sources(Crypt
+  PRIVATE   "CCrypt.cpp"
+  PUBLIC    "CCrypt.h"
   )
 
-target_compile_definitions(Strategy
-  PUBLIC FAST_LOGGER_
-  )
-
-target_include_directories(Strategy
+target_include_directories(Crypt
   PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
          $<INSTALL_INTERFACE:include>
   )
 
-target_link_libraries(Strategy
-  PUBLIC  CommonHeader
-          CommonUtils
-          Logger
-          IO
-          MDHelper
-          TDHelper
-          Risk
-          Bar
-          Account
-  PRIVATE Boost::headers
+target_link_libraries(Crypt
+  PUBLIC Logger
+         OpenSSL::SSL
+         OpenSSL::Crypto
   )
 
 # Install: the headers ############################################################
@@ -52,18 +36,17 @@ target_link_libraries(Strategy
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
   TYPE INCLUDE
   FILES_MATCHING PATTERN "*.h"
-  PATTERN "demo" EXCLUDE
   )
 
 # Install the target ########################################
-install(TARGETS Strategy EXPORT Strategy_export
-  )
+install(TARGETS Crypt EXPORT Crypt_export)
 
-# install(EXPORT Strategy_export
+# install(EXPORT Logger_export
 #   DESTINATION ${NAT_CMAKE_INSTALL_DIR}
 #   NAMESPACE Nat::
-#   FILE StrategyTargets.cmake
+#   FILE LoggerTargets.cmake
 #   )
 
 # Test ########################################################################
 # TODO: test
+

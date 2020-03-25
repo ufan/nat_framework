@@ -60,11 +60,18 @@ set(NAT_CMAKE_INSTALL_DIR "lib/cmake/NatFramework-${CMAKE_PROJECT_VERSION}")
 #=================================================================================
 # Subdiretories
 
+add_subdirectory(strategy)
 add_subdirectory(include)
-# add_subdirectory(common)
-# add_subdirectory(logger)
-# add_subdirectory(io)
-# add_subdirectory(strategy)
+add_subdirectory(common)
+add_subdirectory(logger)
+add_subdirectory(io)
+add_subdirectory(md)
+add_subdirectory(td)
+add_subdirectory(pyext)
+add_subdirectory(risk)
+add_subdirectory(account)
+add_subdirectory(bar)
+add_subdirectory(crypt)
 
 #=================================================================================
 # TODO: find_package configuration
@@ -119,7 +126,7 @@ set(CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH})
 # set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
 # set(CPACK_RESOURCE_FILE_READE "${CMAKE_CURRENT_SOURCE_DIR}/READE.md")
 
-set(CPACK_SOURCE_GENERATOR "TGZ;ZIP")
+set(CPACK_SOURCE_GENERATOR "TGZ")
 set(CPACK_SOURCE_IGNORE_FILES
     /.git
     /.*build.*

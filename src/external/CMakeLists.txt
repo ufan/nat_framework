@@ -17,3 +17,6 @@ add_subdirectory(log4cplus)
 
 # libev: downloaded and compiled, integrated as imported target
 add_subdirectory(libev)
+
+# OpenSSL: user provided, access by find_package module
+add_subdirectory(openssl)
