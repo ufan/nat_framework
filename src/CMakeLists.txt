@@ -10,13 +10,19 @@
 #]===============================================================================]
 
 # Setup minimum required version of cmake, policy
-cmake_minimum_required(VERSION 3.13...3.16)
+cmake_minimum_required(VERSION 3.15...3.17)
 
 # Setup Project name and version
 project(NatFramework VERSION 1.0
   DESCRIPTION "NAT framework"
   LANGUAGES CXX
   )
+
+#=================================================================================
+# Policy settings
+
+# converts INTERFACE_SOURCES from relative path to absolute path
+cmake_policy(SET CMP0076 NEW)
 
 #=================================================================================
 

@@ -64,7 +64,13 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
   )
 
 # Install the target ########################################
-# install(TARGETS CommonUtils EXPORT Common_export)
+install(TARGETS CommonUtils EXPORT Common_export)
+
+install(EXPORT Common_export
+  DESTINATION ${NAT_CMAKE_INSTALL_DIR}
+  NAMESPACE Nat::
+  FILE CommonTargets.cmake
+  )
 
 # Test ########################################################################
 # TODO: test

@@ -11,7 +11,7 @@
 #]===============================================================================]
 
 # Setup minimum required version of cmake, policy
-cmake_minimum_required(VERSION 3.13...3.16)
+cmake_minimum_required(VERSION 3.15...3.17)
 
 # Setup Project name and version
 project(log4cplus VERSION 1.0

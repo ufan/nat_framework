@@ -48,7 +48,7 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
   )
 
 # Install the target ########################################
-# install(TARGETS Logger EXPORT Logger_export)
+install(TARGETS Logger EXPORT Logger_export)
 
 # install(EXPORT Logger_export
 #   DESTINATION ${NAT_CMAKE_INSTALL_DIR}
