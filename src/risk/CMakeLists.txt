@@ -24,7 +24,8 @@ target_sources(Risk
             "RiskStg.cpp"
             "RiskTop.cpp"
             # "ConfUtil.cpp" # header only ?
-  PUBLIC    "RiskAcc.h"
+            # PUBLIC
+            "RiskAcc.h"
             "RiskInstr.h"
             "RiskInstrStg.h"
             "RiskInstrTop.h"
@@ -58,11 +59,11 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
 # Install the target ########################################
 install(TARGETS Risk EXPORT Risk_export)
 
-# install(EXPORT Logger_export
-#   DESTINATION ${NAT_CMAKE_INSTALL_DIR}
-#   NAMESPACE Nat::
-#   FILE LoggerTargets.cmake
-#   )
+install(EXPORT Risk_export
+  DESTINATION ${NAT_CMAKE_INSTALL_DIR}
+  NAMESPACE Nat::
+  FILE RiskTargets.cmake
+  )
 
 # Test ########################################################################
 # TODO: test

@@ -31,7 +31,8 @@ target_sources(Account
             "UnitPnl.h"
             "UnitPx.h"
             "UnitVol.h"
-  PUBLIC    "AccBase.h" # only used in risk
+            # PUBLIC
+            "AccBase.h" # only used in risk
   )
 
 target_include_directories(Account
@@ -53,11 +54,11 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
 # Install the target ########################################
 install(TARGETS Account EXPORT Account_export)
 
-# install(EXPORT Logger_export
-#   DESTINATION ${NAT_CMAKE_INSTALL_DIR}
-#   NAMESPACE Nat::
-#   FILE LoggerTargets.cmake
-#   )
+install(EXPORT Account_export
+  DESTINATION ${NAT_CMAKE_INSTALL_DIR}
+  NAMESPACE Nat::
+  FILE AccountTargets.cmake
+  )
 
 # Test ########################################################################
 # TODO: test

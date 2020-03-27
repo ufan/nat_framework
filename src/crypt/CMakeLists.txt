@@ -17,7 +17,8 @@ add_library(Crypt STATIC)
 
 target_sources(Crypt
   PRIVATE   "CCrypt.cpp"
-  PUBLIC    "CCrypt.h"
+            # PUBLIC
+            "CCrypt.h"
   )
 
 target_include_directories(Crypt
@@ -41,11 +42,11 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
 # Install the target ########################################
 install(TARGETS Crypt EXPORT Crypt_export)
 
-# install(EXPORT Logger_export
-#   DESTINATION ${NAT_CMAKE_INSTALL_DIR}
-#   NAMESPACE Nat::
-#   FILE LoggerTargets.cmake
-#   )
+install(EXPORT Crypt_export
+  DESTINATION ${NAT_CMAKE_INSTALL_DIR}
+  NAMESPACE Nat::
+  FILE CryptTargets.cmake
+  )
 
 # Test ########################################################################
 # TODO: test

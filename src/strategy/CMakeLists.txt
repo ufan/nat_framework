@@ -20,7 +20,8 @@ target_sources(Strategy
   PRIVATE   "CStrategy.cpp"
             "CStrategyProcess.cpp"
             "StrategyShared.cpp"
-  PUBLIC    "CStrategy.h"
+            # PUBLIC
+            "CStrategy.h"
             "CStrategyProcess.h"
             "StrategyShared.h"
   )
@@ -59,11 +60,11 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
 install(TARGETS Strategy EXPORT Strategy_export
   )
 
-# install(EXPORT Strategy_export
-#   DESTINATION ${NAT_CMAKE_INSTALL_DIR}
-#   NAMESPACE Nat::
-#   FILE StrategyTargets.cmake
-#   )
+install(EXPORT Strategy_export
+  DESTINATION ${NAT_CMAKE_INSTALL_DIR}
+  NAMESPACE Nat::
+  FILE StrategyTargets.cmake
+  )
 
 # Test ########################################################################
 # TODO: test

@@ -90,7 +90,8 @@ target_sources(MDHelper
             "CMDHelperPipe.h"
             "CMDHelperPython.h"
             "CMDHelperReplayCtpDump.h"
-  PUBLIC    "CMDHelperFactory.h"
+            # PUBLIC
+            "CMDHelperFactory.h"
             "CMDHelperReplayIO.h" # used in pyext
             "CMDHelperComm.h" # in used pyext
   )
@@ -122,11 +123,11 @@ install(TARGETS MDEngine MDEngineEESV2
 # Install the target ########################################
 install(TARGETS MDHelper EXPORT MDHelper_export)
 
-# install(EXPORT MDEngine_export
-#   DESTINATION ${NAT_CMAKE_INSTALL_DIR}
-#   NAMESPACE Nat::
-#   FILE MDEngineTargets.cmake
-#   )
+install(EXPORT MDHelper_export
+  DESTINATION ${NAT_CMAKE_INSTALL_DIR}
+  NAMESPACE Nat::
+  FILE MDHelperTargets.cmake
+  )
 
 # Test ########################################################################
 # TODO: test

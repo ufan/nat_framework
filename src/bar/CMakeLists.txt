@@ -20,7 +20,8 @@ target_sources(Bar
             "BarHelper.cpp"
             "BarMaker.cpp"
             "Bar2.h"
-  PUBLIC    "BarHelper.h"
+            # PUBLIC
+            "BarHelper.h"
             "BarMaker.h"
   )
 
@@ -43,11 +44,11 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
 # Install the target ########################################
 install(TARGETS Bar EXPORT Bar_export)
 
-# install(EXPORT Logger_export
-#   DESTINATION ${NAT_CMAKE_INSTALL_DIR}
-#   NAMESPACE Nat::
-#   FILE LoggerTargets.cmake
-#   )
+install(EXPORT Bar_export
+  DESTINATION ${NAT_CMAKE_INSTALL_DIR}
+  NAMESPACE Nat::
+  FILE BarTargets.cmake
+  )
 
 # Test ########################################################################
 # TODO: test

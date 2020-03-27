@@ -76,9 +76,9 @@ add_executable(TDEngineEESV3)
 
 target_sources(TDEngineEESV3
   PRIVATE ${TDEngine_SRC}
-  TDEngine.cpp
-  CTDEngineCtp.cpp
-  CTDEngineEES.cpp
+          TDEngine.cpp
+          CTDEngineCtp.cpp
+          CTDEngineEES.cpp
   )
 
 target_include_directories(TDEngineEESV3
@@ -123,7 +123,8 @@ target_sources(TDHelper
             "ITDHelper.h"
             "CTDHelperPipe.h"
             "CTDHelperPython.h"
-  PUBLIC    "CTDHelperFactory.h"
+            # PUBLIC
+            "CTDHelperFactory.h"
             "CTDHelperComm.h" # in used pyext
             "CTDHelperFake.h"
   )
@@ -156,11 +157,11 @@ install(TARGETS TDEngine TDEngineEESV2 TDEngineEESV3 TDEngineXt
 install(TARGETS TDHelper EXPORT TDHelper_export
   )
 
-# install(EXPORT TDEngine_export
-#   DESTINATION ${NAT_CMAKE_INSTALL_DIR}
-#   NAMESPACE Nat::
-#   FILE TDEngineTargets.cmake
-#   )
+install(EXPORT TDHelper_export
+  DESTINATION ${NAT_CMAKE_INSTALL_DIR}
+  NAMESPACE Nat::
+  FILE TDHelperTargets.cmake
+  )
 
 # Test ########################################################################
 # TODO: test

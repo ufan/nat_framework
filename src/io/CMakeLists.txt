@@ -24,7 +24,8 @@ target_sources(IO
             "CRawIOModify.cpp"
             "CGlobalSafeRawIOWriter.cpp"
             "CSystemIO.cpp"
-  PUBLIC    "CIOBase.h"
+            # PUBLIC
+            "CIOBase.h"
             "CRawIOReader.h"
             "CRawIOWriter.h"
             "CSignal.h"
@@ -32,7 +33,8 @@ target_sources(IO
             "CGlobalSafeRawIOWriter.h"
             "CSystemIO.h"
             "ioprotocol.h"
-  INTERFACE "CReaderPool.h"
+            # INTERFACE
+            "CReaderPool.h"
   )
 
 target_include_directories(IO
@@ -54,11 +56,11 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
 # Install the targets ########################################################
 install(TARGETS IO EXPORT IO_export)
 
-# install(EXPORT IO_export
-#         DESTINATION ${NAT_CMAKE_INSTALL_DIR}
-#         NAMESPACE Nat::
-#         FILE IOTargets.cmake
-#         )
+install(EXPORT IO_export
+        DESTINATION ${NAT_CMAKE_INSTALL_DIR}
+        NAMESPACE Nat::
+        FILE IOTargets.cmake
+        )
 
 # Test ##################################################################
 # TODO: test

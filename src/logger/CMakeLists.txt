@@ -21,12 +21,14 @@ target_sources(Logger
             "FastLogger.cpp"
             "CFastLog.cpp"
             "CLogPool.cpp"
-  PUBLIC    "CFastLog.h"
+            # PUBLIC
+            "CFastLog.h"
             "CLogPool.h"
             "HeavyLogger.h"
             "FastLogger.h"
             "SimpleLogger.h"
-  INTERFACE "Logger.h"
+            #INTERFACE
+            "Logger.h"
   )
 
 target_include_directories(Logger
@@ -50,11 +52,11 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
 # Install the target ########################################
 install(TARGETS Logger EXPORT Logger_export)
 
-# install(EXPORT Logger_export
-#   DESTINATION ${NAT_CMAKE_INSTALL_DIR}
-#   NAMESPACE Nat::
-#   FILE LoggerTargets.cmake
-#   )
+install(EXPORT Logger_export
+  DESTINATION ${NAT_CMAKE_INSTALL_DIR}
+  NAMESPACE Nat::
+  FILE LoggerTargets.cmake
+  )
 
 # Test ########################################################################
 # TODO: test

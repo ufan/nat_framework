@@ -28,7 +28,8 @@ target_sources(CommonUtils
            "CityHash.cpp"
            "MurmurHash2.cpp"
            "MurmurHash3.cpp"
-  PUBLIC   "ATSysUtils.h"
+# PUBLIC
+           "ATSysUtils.h"
            "CGlobalLock.h"
            "CPipExecutor.h"
            "CTradeBaseInfo.h"
