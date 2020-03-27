@@ -21,10 +21,12 @@ set(Boost_USE_MULTITHREADED    TRUE)
 # only used when boost is built with runtime-link=static
 # set(Boost_USE_STATIC_RUNTIME   TRUE)
 
-# set(BOOST_VERSION 1.72.0)
+set(BOOST_VERSION 1.72.0)
 set(Boost_ROOT "/home/yong/boost/1_72_0") # can be omitted and provided by user
-find_package(Boost REQUIRED COMPONENTS
-  python # header only libraries are found by default, in Boost::headers
+find_package(Boost ${BOOST_VERSION} EXACT
+  CONFIG
+  REQUIRED COMPONENTS headers
+                      python # header only libraries are found by default, in Boost::headers
   )
 
 # Make found targets globally available, in case of list file in subdirectory
