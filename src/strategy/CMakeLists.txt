@@ -36,16 +36,8 @@ target_include_directories(Strategy
   )
 
 target_link_libraries(Strategy
-  PUBLIC  CommonHeader
-          CommonUtils
-          Logger
-          IO
-          MDHelper
-          TDHelper
-          Risk
-          Bar
-          Account
   PRIVATE Boost::headers
+          CommonHeader
   )
 
 # Install: the headers ############################################################

@@ -17,7 +17,7 @@
 #include "PyUtils.h"
 #include "CStrategyProcess.h"
 #include "CStrategy.h"
-#include "FastLogger.h"
+#include "Logger.h"
 #include "CTradeBaseInfo.h"
 #include "RiskStg.h"
 #include "CWareHouseReader.h"

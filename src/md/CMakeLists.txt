@@ -11,7 +11,7 @@
 #     MDEngineEESV2
 #
 #   Object Target:
-#     MDHelper
+#     Strategy
 #
 # Notes:
 #
@@ -33,8 +33,6 @@ set(MDEngine_SRC
   )
 
 set(MDEngine_Common_Deps
-  CommonHeader
-  CommonUtils
   Logger
   IO
   CTP::CTP # for CMDEngineCtp
@@ -74,11 +72,9 @@ target_link_libraries(MDEngineEESV2
   EESV2::Quote # for CMDEngineEES
   )
 
-# Target: MDHelper ##############################################################
+# Target: Strategy ##############################################################
 
-add_library(MDHelper STATIC)
-
-target_sources(MDHelper
+target_sources(Strategy
   PRIVATE   "IMDHelper.cpp"
             "CMDHelperFactory.cpp"
             "CMDHelperComm.cpp"
@@ -96,15 +92,9 @@ target_sources(MDHelper
             "CMDHelperComm.h" # in used pyext
   )
 
-target_include_directories(MDHelper
+target_include_directories(Strategy
   PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
          $<INSTALL_INTERFACE:include>
-  )
-
-target_link_libraries(MDHelper
-  PUBLIC Logger
-         IO
-         PyExt
   )
 
 # Install: the headers ############################################################
@@ -118,15 +108,6 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
 # Install: executables ########################################################
 install(TARGETS MDEngine MDEngineEESV2
   DESTINATION MDEngine/bin
-  )
-
-# Install the target ########################################
-install(TARGETS MDHelper EXPORT MDHelper_export)
-
-install(EXPORT MDHelper_export
-  DESTINATION ${NAT_CMAKE_INSTALL_DIR}
-  NAMESPACE Nat::
-  FILE MDHelperTargets.cmake
   )
 
 # Test ########################################################################

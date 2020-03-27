@@ -13,9 +13,7 @@
 #]===============================================================================]
 
 # Target: Bar ##############################################################
-add_library(Bar OBJECT)
-
-target_sources(Bar
+target_sources(Strategy
   PRIVATE   "Bar2.cpp"
             "BarHelper.cpp"
             "BarMaker.cpp"
@@ -25,13 +23,9 @@ target_sources(Bar
             "BarMaker.h"
   )
 
-target_include_directories(Bar
+target_include_directories(Strategy
   PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
          $<INSTALL_INTERFACE:include>
-  )
-
-target_link_libraries(Bar
-  PUBLIC Logger
   )
 
 # Install: the headers ############################################################
@@ -39,15 +33,6 @@ target_link_libraries(Bar
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
   TYPE INCLUDE
   FILES_MATCHING PATTERN "*.h"
-  )
-
-# Install the target ########################################
-install(TARGETS Bar EXPORT Bar_export)
-
-install(EXPORT Bar_export
-  DESTINATION ${NAT_CMAKE_INSTALL_DIR}
-  NAMESPACE Nat::
-  FILE BarTargets.cmake
   )
 
 # Test ########################################################################

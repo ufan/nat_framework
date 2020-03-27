@@ -6,16 +6,14 @@
 #
 # and the following Imported/Interface/Alias targets::
 #
-#   PyExt : OBJECT target
+#   Strategy : OBJECT target
 #
 # Notes:
 #
 #]===============================================================================]
 
-# Target: PyExt ##############################################################
-add_library(PyExt STATIC)
-
-target_sources(PyExt
+# Target: Strategy ##############################################################
+target_sources(Strategy
   PRIVATE   "PyExtExch.cpp"
             "PyExtension.cpp"
             # "PyUtils.cpp" # header only ?
@@ -26,19 +24,13 @@ target_sources(PyExt
             "PyWrapper.h"
   )
 
-target_include_directories(PyExt
+target_include_directories(Strategy
   PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
          $<INSTALL_INTERFACE:include>
   )
 
-target_link_libraries(PyExt
-  PUBLIC Logger
-         IO
-         Strategy
-         Risk
-         MDHelper
-         TDHelper
-         Boost::python
+target_link_libraries(Strategy
+  PUBLIC Boost::python
          Python2::Module
          Python2::Python
   )
@@ -48,15 +40,6 @@ target_link_libraries(PyExt
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
   TYPE INCLUDE
   FILES_MATCHING PATTERN "*.h"
-  )
-
-# Install the target ########################################
-install(TARGETS PyExt EXPORT PyExt_export)
-
-install(EXPORT PyExt_export
-  DESTINATION ${NAT_CMAKE_INSTALL_DIR}
-  NAMESPACE Nat::
-  FILE PyExtTargets.cmake
   )
 
 # Test ########################################################################

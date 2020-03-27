@@ -6,16 +6,14 @@
 #
 # and the following Imported/Interface/Alias targets::
 #
-#   Nat::CommonUtils
+#   Nat::Strategy
 #
 # Notes:
 #
 #]===============================================================================]
 
-# Define Static Target: CommonUtils ################################################
-add_library(CommonUtils STATIC)
-
-target_sources(CommonUtils
+# Define Static Target: Strategy ################################################
+target_sources(Strategy
   PRIVATE  "ATSysUtils.cpp" # io, include, common, used in md, td
            "CGlobalLock.cpp" # common, used in io
            "CPipExecutor.cpp" # logger, common, used in md, td
@@ -47,14 +45,21 @@ target_sources(CommonUtils
            "json.hpp"
   )
 
-target_include_directories(CommonUtils
+target_include_directories(Strategy
   PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
          $<INSTALL_INTERFACE:include>
   )
 
-target_link_libraries(CommonUtils
-  PRIVATE Logger
-          IO
+# Target: Logger ############################################################
+target_sources(Logger
+  PRIVATE  utils.cpp
+           json.hpp
+           utils.h
+  )
+
+target_include_directories(Logger
+  PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+  $<INSTALL_INTERFACE:include>
   )
 
 # Install: the headers ############################################################
@@ -62,15 +67,6 @@ target_link_libraries(CommonUtils
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
   TYPE INCLUDE
   FILES_MATCHING PATTERN "*.h"
-  )
-
-# Install the target ########################################
-install(TARGETS CommonUtils EXPORT Common_export)
-
-install(EXPORT Common_export
-  DESTINATION ${NAT_CMAKE_INSTALL_DIR}
-  NAMESPACE Nat::
-  FILE CommonTargets.cmake
   )
 
 # Test ########################################################################

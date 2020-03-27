@@ -6,17 +6,14 @@
 #
 # and the following Imported/Interface/Alias targets::
 #
-#   Nat::IO
+#   Nat::Strategy
 #
 # Notes:
 #
 #]===============================================================================]
 
-# Target: IO ##############################################################
-add_library(IO STATIC)
-add_library(Nat::IO ALIAS IO)
-
-target_sources(IO
+# Target: Strategy ##############################################################
+target_sources(Strategy
   PRIVATE   "CIOBase.cpp"
             "CRawIOReader.cpp"
             "CRawIOWriter.cpp"
@@ -37,13 +34,43 @@ target_sources(IO
             "CReaderPool.h"
   )
 
-target_include_directories(IO
+target_include_directories(Strategy
   PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
          $<INSTALL_INTERFACE:include>
   )
 
+# Target: IO ##############################################################
+add_library(IO STATIC)
+add_library(Nat::IO ALIAS IO)
+
+target_sources(IO
+  PRIVATE  "CIOBase.cpp"
+           "CRawIOReader.cpp"
+           "CRawIOWriter.cpp"
+           "CSignal.cpp"
+           "CRawIOModify.cpp"
+           "CGlobalSafeRawIOWriter.cpp"
+           "CSystemIO.cpp"
+           # PUBLIC
+           "CIOBase.h"
+           "CRawIOReader.h"
+           "CRawIOWriter.h"
+           "CSignal.h"
+           "CRawIOModify.h"
+           "CGlobalSafeRawIOWriter.h"
+           "CSystemIO.h"
+           "ioprotocol.h"
+           # INTERFACE
+           "CReaderPool.h"
+  )
+
+target_include_directories(IO
+  PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+  $<INSTALL_INTERFACE:include>
+  )
+
 target_link_libraries(IO
-  PUBLIC Logger
+  PUBLIC  Logger
   )
 
 # Install: the headers ############################################################
@@ -53,14 +80,15 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
   FILES_MATCHING PATTERN "*.h"
   )
 
-# Install the targets ########################################################
-install(TARGETS IO EXPORT IO_export)
+# Install the target ########################################
+install(TARGETS IO EXPORT IO_export
+  )
 
 install(EXPORT IO_export
-        DESTINATION ${NAT_CMAKE_INSTALL_DIR}
-        NAMESPACE Nat::
-        FILE IOTargets.cmake
-        )
+  DESTINATION ${NAT_CMAKE_INSTALL_DIR}
+  NAMESPACE Nat::
+  FILE IOTargets.cmake
+  )
 
 # Test ##################################################################
 # TODO: test

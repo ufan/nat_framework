@@ -12,11 +12,8 @@
 #
 #]===============================================================================]
 
-# Target: Logger ##############################################################
-add_library(Logger STATIC)
-add_library(Nat::Logger ALIAS Logger)
-
-target_sources(Logger
+# Target: Strategy ##############################################################
+target_sources(Strategy
   PRIVATE   "HeavyLogger.cpp"
             "FastLogger.cpp"
             "CFastLog.cpp"
@@ -31,14 +28,41 @@ target_sources(Logger
             "Logger.h"
   )
 
-target_include_directories(Logger
+target_include_directories(Strategy
   PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
          $<INSTALL_INTERFACE:include>
   )
 
+target_link_libraries(Strategy
+  PUBLIC  log4cplus::log4cplus
+  )
+
+# Target: Logger ##############################################################
+add_library(Logger STATIC)
+add_library(Nat::Logger ALIAS Logger)
+
+target_sources(Logger
+  PRIVATE   "HeavyLogger.cpp"
+  "FastLogger.cpp"
+  "CFastLog.cpp"
+  "CLogPool.cpp"
+  # PUBLIC
+  "CFastLog.h"
+  "CLogPool.h"
+  "HeavyLogger.h"
+  "FastLogger.h"
+  "SimpleLogger.h"
+  #INTERFACE
+  "Logger.h"
+  )
+
+target_include_directories(Logger
+  PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+  $<INSTALL_INTERFACE:include>
+  )
+
 target_link_libraries(Logger
   PUBLIC  log4cplus::log4cplus
-          CommonUtils
           CommonHeader
   )
 
@@ -50,7 +74,8 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
   )
 
 # Install the target ########################################
-install(TARGETS Logger EXPORT Logger_export)
+install(TARGETS Logger EXPORT Logger_export
+  )
 
 install(EXPORT Logger_export
   DESTINATION ${NAT_CMAKE_INSTALL_DIR}

@@ -13,7 +13,7 @@
 #     TDEngineXt
 #
 #   Object Target:
-#     TDHelper
+#     Strategy
 #
 # Notes:
 #
@@ -28,7 +28,6 @@ set(TDEngine_SRC
 set(TDEngine_Common_Deps
   Logger
   IO
-  Risk
   )
 
 # EES major
@@ -109,11 +108,8 @@ target_link_libraries(TDEngineXt
           Xt::Xt
   )
 
-# Target: TDHelper ##############################################################
-
-add_library(TDHelper STATIC)
-
-target_sources(TDHelper
+# Target: Strategy ##############################################################
+target_sources(Strategy
   PRIVATE   "ITDHelper.cpp"
             "CTDHelperFactory.cpp"
             "CTDHelperComm.cpp"
@@ -129,15 +125,9 @@ target_sources(TDHelper
             "CTDHelperFake.h"
   )
 
-target_include_directories(TDHelper
+target_include_directories(Strategy
   PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
          $<INSTALL_INTERFACE:include>
-  )
-
-target_link_libraries(TDHelper
-  PUBLIC Logger
-         IO
-         PyExt
   )
 
 # Install: the headers ############################################################
@@ -151,16 +141,6 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
 # Install: executables ########################################################
 install(TARGETS TDEngine TDEngineEESV2 TDEngineEESV3 TDEngineXt
   DESTINATION TDEngine/bin
-  )
-
-# Install the target ########################################
-install(TARGETS TDHelper EXPORT TDHelper_export
-  )
-
-install(EXPORT TDHelper_export
-  DESTINATION ${NAT_CMAKE_INSTALL_DIR}
-  NAMESPACE Nat::
-  FILE TDHelperTargets.cmake
   )
 
 # Test ########################################################################

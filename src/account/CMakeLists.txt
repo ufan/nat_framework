@@ -6,16 +6,14 @@
 #
 # and the following Imported/Interface/Alias targets::
 #
-#   Account : OBJECT target
+#   Strategy : OBJECT target
 #
 # Notes:
 #
 #]===============================================================================]
 
-# Target: Account ##############################################################
-add_library(Account OBJECT)
-
-target_sources(Account
+# Target: Strategy ##############################################################
+target_sources(Strategy
   PRIVATE   "AccBase.cpp"
             "ModAcc.cpp"
             "ModInstr.cpp"
@@ -35,13 +33,9 @@ target_sources(Account
             "AccBase.h" # only used in risk
   )
 
-target_include_directories(Account
+target_include_directories(Strategy
   PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
          $<INSTALL_INTERFACE:include>
-  )
-
-target_link_libraries(Account
-  PUBLIC Logger
   )
 
 # Install: the headers ############################################################
@@ -49,15 +43,6 @@ target_link_libraries(Account
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
   TYPE INCLUDE
   FILES_MATCHING PATTERN "*.h"
-  )
-
-# Install the target ########################################
-install(TARGETS Account EXPORT Account_export)
-
-install(EXPORT Account_export
-  DESTINATION ${NAT_CMAKE_INSTALL_DIR}
-  NAMESPACE Nat::
-  FILE AccountTargets.cmake
   )
 
 # Test ########################################################################

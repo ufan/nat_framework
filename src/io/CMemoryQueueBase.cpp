@@ -17,7 +17,7 @@
 #include <sys/mman.h>
 #include <unistd.h>
 #include "compiler.h"
-#include "Logger.h"
+#include "SimpleLogger.h"
 
 using namespace std;
 using boost::hash;
