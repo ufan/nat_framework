@@ -75,14 +75,14 @@ add_subdirectory(logger)
 add_subdirectory(io)
 add_subdirectory(common)
 
+add_subdirectory(strategy)
 add_subdirectory(md)
 add_subdirectory(td)
 
-# add_subdirectory(strategy)
 add_subdirectory(risk)
 add_subdirectory(account)
 add_subdirectory(bar)
-# add_subdirectory(pyext)
+add_subdirectory(pyext)
 
 add_subdirectory(crypt)
 

@@ -79,34 +79,35 @@ target_link_libraries(MDEngineEESV2
 
 # add_library(MDHelper OBJECT)
 
-# target_sources(MDHelper
-#   PRIVATE   "IMDHelper.cpp"
-#             "CMDHelperFactory.cpp"
-#             "CMDHelperComm.cpp"
-#             "CMDHelperPipe.cpp"
-#             "CMDHelperPython.cpp"
-#             "CMDHelperReplayCtpDump.cpp"
-#             "CMDHelperReplayIO.cpp"
-#             "IMDHelper.h"
-#             "CMDHelperPipe.h"
-#             "CMDHelperPython.h"
-#             "CMDHelperReplayCtpDump.h"
-#             # PUBLIC
-#             "CMDHelperFactory.h"
-#             "CMDHelperReplayIO.h" # used in pyext
-#             "CMDHelperComm.h" # in used pyext
-#   )
+target_sources(Strategy
+  PRIVATE   "IMDHelper.cpp"
+            "CMDHelperFactory.cpp"
+            "CMDHelperComm.cpp"
+            "CMDHelperPipe.cpp"
+            "CMDHelperPython.cpp"
+            "CMDHelperReplayCtpDump.cpp"
+            "CMDHelperReplayIO.cpp"
+            "IMDHelper.h"
+            "CMDHelperPipe.h"
+            "CMDHelperPython.h"
+            "CMDHelperReplayCtpDump.h"
+            # PUBLIC
+            "CMDHelperFactory.h"
+            "CMDHelperReplayIO.h" # used in pyext
+            "CMDHelperComm.h" # in used pyext
+  )
 
-# target_include_directories(MDHelper
-#   PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-#          $<INSTALL_INTERFACE:include>
-#   )
+target_include_directories(Strategy
+  PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+         $<INSTALL_INTERFACE:include>
+  )
 
-# target_link_libraries(MDHelper
-#   PUBLIC Logger
-#          IO
-#          PyEmbed
-#   )
+target_link_libraries(Strategy
+  PUBLIC Logger
+         CommonUtils
+         IO
+         PyEmbed
+  )
 
 # Install: the headers ############################################################
 

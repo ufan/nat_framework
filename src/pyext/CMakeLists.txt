@@ -26,12 +26,7 @@ target_include_directories(Strategy
   )
 
 target_link_libraries(Strategy
-  PUBLIC Logger
-         IO
-         Risk
-         MDHelper
-         TDHelper
-         Boost::python
+  PUBLIC Boost::python
          Python2::Module
   )
 

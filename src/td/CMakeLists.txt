@@ -117,32 +117,33 @@ target_link_libraries(TDEngineXt
 
 # add_library(TDHelper OBJECT)
 
-# target_sources(TDHelper
-#   PRIVATE   "ITDHelper.cpp"
-#             "CTDHelperFactory.cpp"
-#             "CTDHelperComm.cpp"
-#             "CTDHelperPipe.cpp"
-#             "CTDHelperPython.cpp"
-#             "CTDHelperFake.cpp"
-#             "ITDHelper.h"
-#             "CTDHelperPipe.h"
-#             "CTDHelperPython.h"
-#             # PUBLIC
-#             "CTDHelperFactory.h"
-#             "CTDHelperComm.h" # in used pyext
-#             "CTDHelperFake.h"
-#   )
+target_sources(Strategy
+  PRIVATE   "ITDHelper.cpp"
+            "CTDHelperFactory.cpp"
+            "CTDHelperComm.cpp"
+            "CTDHelperPipe.cpp"
+            "CTDHelperPython.cpp"
+            "CTDHelperFake.cpp"
+            "ITDHelper.h"
+            "CTDHelperPipe.h"
+            "CTDHelperPython.h"
+            # PUBLIC
+            "CTDHelperFactory.h"
+            "CTDHelperComm.h" # in used pyext
+            "CTDHelperFake.h"
+  )
 
-# target_include_directories(TDHelper
-#   PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-#          $<INSTALL_INTERFACE:include>
-#   )
+target_include_directories(Strategy
+  PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+         $<INSTALL_INTERFACE:include>
+  )
 
-# target_link_libraries(TDHelper
-#   PUBLIC Logger
-#          IO
-#          PyEmbed
-#   )
+target_link_libraries(Strategy
+  PUBLIC CommonUtils
+         Logger
+         IO
+         PyEmbed
+  )
 
 # Install: the headers ############################################################
 

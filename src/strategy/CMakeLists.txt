@@ -43,8 +43,8 @@ target_link_libraries(Strategy
           Risk
           Bar
           Account
-          MDHelper
-          TDHelper
+          # MDHelper
+          # TDHelper
   PRIVATE Boost::headers
   )
 
