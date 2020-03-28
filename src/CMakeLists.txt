@@ -82,6 +82,8 @@ add_subdirectory(account)
 add_subdirectory(bar)
 add_subdirectory(crypt)
 
+add_subdirectory(scripts)
+
 #=================================================================================
 # TODO: find_package configuration
 
