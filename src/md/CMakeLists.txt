@@ -112,7 +112,14 @@ target_link_libraries(MDHelper
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
   TYPE INCLUDE
   FILES_MATCHING PATTERN "*.h"
-  PATTERN "con_dir" EXCLUDE
+  # PATTERN "con_dir" EXCLUDE
+  )
+
+# Install: config files ############################################################
+
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/conf/
+  DESTINATION MDEngine/conf
+  FILES_MATCHING PATTERN "*.json"
   )
 
 # Install: executables ########################################################

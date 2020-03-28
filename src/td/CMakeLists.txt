@@ -145,7 +145,14 @@ target_link_libraries(TDHelper
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
   TYPE INCLUDE
   FILES_MATCHING PATTERN "*.h"
-  PATTERN "trade_flow" EXCLUDE
+  # PATTERN "trade_flow" EXCLUDE
+  )
+
+# Install: config files ############################################################
+
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/conf/
+  DESTINATION TDEngine/conf
+  FILES_MATCHING PATTERN "*.json"
   )
 
 # Install: executables ########################################################
