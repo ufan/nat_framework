@@ -72,19 +72,21 @@ set(NAT_CMAKE_INSTALL_DIR "lib/cmake/NatFramework-${CMAKE_PROJECT_VERSION}")
 add_subdirectory(include)
 add_subdirectory(utility)
 add_subdirectory(logger)
-
 add_subdirectory(io)
 add_subdirectory(common)
-# add_subdirectory(strategy)
-# add_subdirectory(md)
-# add_subdirectory(td)
-# add_subdirectory(pyext)
-# add_subdirectory(risk)
-# add_subdirectory(account)
-# add_subdirectory(bar)
-# add_subdirectory(crypt)
 
-# add_subdirectory(scripts)
+add_subdirectory(md)
+add_subdirectory(td)
+
+# add_subdirectory(strategy)
+add_subdirectory(risk)
+add_subdirectory(account)
+add_subdirectory(bar)
+# add_subdirectory(pyext)
+
+add_subdirectory(crypt)
+
+add_subdirectory(scripts)
 
 #=================================================================================
 # TODO: find_package configuration

@@ -20,7 +20,6 @@ target_sources(Strategy
   PRIVATE   "CStrategy.cpp"
             "CStrategyProcess.cpp"
             "StrategyShared.cpp"
-            # PUBLIC
             "CStrategy.h"
             "CStrategyProcess.h"
             "StrategyShared.h"
@@ -38,13 +37,14 @@ target_include_directories(Strategy
 target_link_libraries(Strategy
   PUBLIC  CommonHeader
           CommonUtils
+          Utility
           Logger
           IO
-          MDHelper
-          TDHelper
           Risk
           Bar
           Account
+          MDHelper
+          TDHelper
   PRIVATE Boost::headers
   )
 

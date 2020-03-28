@@ -20,7 +20,6 @@ target_sources(Bar
             "BarHelper.cpp"
             "BarMaker.cpp"
             "Bar2.h"
-            # PUBLIC
             "BarHelper.h"
             "BarMaker.h"
   )
@@ -32,6 +31,7 @@ target_include_directories(Bar
 
 target_link_libraries(Bar
   PUBLIC Logger
+         CommonUtils
   )
 
 # Install: the headers ############################################################

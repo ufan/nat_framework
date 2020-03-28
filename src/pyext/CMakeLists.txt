@@ -6,57 +6,70 @@
 #
 # and the following Imported/Interface/Alias targets::
 #
-#   PyExt : OBJECT target
+#   PyEmbed : OBJECT target
 #
 # Notes:
 #
 #]===============================================================================]
 
-# Target: PyExt ##############################################################
-add_library(PyExt STATIC)
 
-target_sources(PyExt
-  PRIVATE   "PyExtExch.cpp"
-            "PyExtension.cpp"
-            # "PyUtils.cpp" # header only ?
+target_sources(Strategy
+  PRIVATE   "PyExtension.cpp"
             "PyWrapper.cpp"
-            # PUBLIC
-            "PyExtExch.h"
             "PyUtils.h"
             "PyWrapper.h"
   )
 
-target_include_directories(PyExt
+target_include_directories(Strategy
   PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
          $<INSTALL_INTERFACE:include>
   )
 
-target_link_libraries(PyExt
+target_link_libraries(Strategy
   PUBLIC Logger
          IO
-         Strategy
          Risk
          MDHelper
          TDHelper
          Boost::python
          Python2::Module
+  )
+
+# Target: PyEmbed ##############################################################
+add_library(PyEmbed OBJECT)
+add_library(Nat::PyEmbed ALIAS PyEmbed)
+
+target_sources(PyEmbed
+  PRIVATE   "PyExtExch.cpp"
+            "PyExtExch.h"
+            "PyUtils.h"
+  )
+
+target_include_directories(PyEmbed
+  PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+  $<INSTALL_INTERFACE:include>
+  )
+
+target_link_libraries(PyEmbed
+  PUBLIC CommonHeader
+         Logger
+         Boost::python
          Python2::Python
   )
 
 # Install: the headers ############################################################
-
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
   TYPE INCLUDE
   FILES_MATCHING PATTERN "*.h"
   )
 
 # Install the target ########################################
-install(TARGETS PyExt EXPORT PyExt_export)
+install(TARGETS PyEmbed EXPORT PyEmbed_export)
 
-install(EXPORT PyExt_export
+install(EXPORT PyEmbed_export
   DESTINATION ${NAT_CMAKE_INSTALL_DIR}
   NAMESPACE Nat::
-  FILE PyExtTargets.cmake
+  FILE PyEmbedTargets.cmake
   )
 
 # Test ########################################################################

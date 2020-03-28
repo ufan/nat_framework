@@ -36,6 +36,7 @@ set(MDEngine_Common_Deps
   CommonHeader
   CommonUtils
   Logger
+  Utility
   IO
   CTP::CTP # for CMDEngineCtp
   OpenOnload::OpenOnload # for CMDEngineEESOnload
@@ -76,36 +77,36 @@ target_link_libraries(MDEngineEESV2
 
 # Target: MDHelper ##############################################################
 
-add_library(MDHelper STATIC)
+# add_library(MDHelper OBJECT)
 
-target_sources(MDHelper
-  PRIVATE   "IMDHelper.cpp"
-            "CMDHelperFactory.cpp"
-            "CMDHelperComm.cpp"
-            "CMDHelperPipe.cpp"
-            "CMDHelperPython.cpp"
-            "CMDHelperReplayCtpDump.cpp"
-            "CMDHelperReplayIO.cpp"
-            "IMDHelper.h"
-            "CMDHelperPipe.h"
-            "CMDHelperPython.h"
-            "CMDHelperReplayCtpDump.h"
-            # PUBLIC
-            "CMDHelperFactory.h"
-            "CMDHelperReplayIO.h" # used in pyext
-            "CMDHelperComm.h" # in used pyext
-  )
+# target_sources(MDHelper
+#   PRIVATE   "IMDHelper.cpp"
+#             "CMDHelperFactory.cpp"
+#             "CMDHelperComm.cpp"
+#             "CMDHelperPipe.cpp"
+#             "CMDHelperPython.cpp"
+#             "CMDHelperReplayCtpDump.cpp"
+#             "CMDHelperReplayIO.cpp"
+#             "IMDHelper.h"
+#             "CMDHelperPipe.h"
+#             "CMDHelperPython.h"
+#             "CMDHelperReplayCtpDump.h"
+#             # PUBLIC
+#             "CMDHelperFactory.h"
+#             "CMDHelperReplayIO.h" # used in pyext
+#             "CMDHelperComm.h" # in used pyext
+#   )
 
-target_include_directories(MDHelper
-  PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-         $<INSTALL_INTERFACE:include>
-  )
+# target_include_directories(MDHelper
+#   PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+#          $<INSTALL_INTERFACE:include>
+#   )
 
-target_link_libraries(MDHelper
-  PUBLIC Logger
-         IO
-         PyExt
-  )
+# target_link_libraries(MDHelper
+#   PUBLIC Logger
+#          IO
+#          PyEmbed
+#   )
 
 # Install: the headers ############################################################
 
@@ -128,13 +129,13 @@ install(TARGETS MDEngine MDEngineEESV2
   )
 
 # Install the target ########################################
-install(TARGETS MDHelper EXPORT MDHelper_export)
+# install(TARGETS MDHelper EXPORT MDHelper_export)
 
-install(EXPORT MDHelper_export
-  DESTINATION ${NAT_CMAKE_INSTALL_DIR}
-  NAMESPACE Nat::
-  FILE MDHelperTargets.cmake
-  )
+# install(EXPORT MDHelper_export
+#   DESTINATION ${NAT_CMAKE_INSTALL_DIR}
+#   NAMESPACE Nat::
+#   FILE MDHelperTargets.cmake
+#   )
 
 # Test ########################################################################
 # TODO: test

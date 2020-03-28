@@ -13,7 +13,7 @@
 #]===============================================================================]
 
 # Target: Risk ##############################################################
-add_library(Risk STATIC)
+add_library(Risk OBJECT)
 
 target_sources(Risk
   PRIVATE   "RiskAcc.cpp"
@@ -23,8 +23,6 @@ target_sources(Risk
             "RiskPrd.cpp"
             "RiskStg.cpp"
             "RiskTop.cpp"
-            # "ConfUtil.cpp" # header only ?
-            # PUBLIC
             "RiskAcc.h"
             "RiskInstr.h"
             "RiskInstrStg.h"

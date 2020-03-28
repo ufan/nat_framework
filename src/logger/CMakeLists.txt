@@ -13,7 +13,7 @@
 #]===============================================================================]
 
 # Target: Logger ##############################################################
-add_library(Logger STATIC)
+add_library(Logger OBJECT)
 add_library(Nat::Logger ALIAS Logger)
 
 target_sources(Logger

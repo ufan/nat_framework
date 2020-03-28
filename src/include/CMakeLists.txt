@@ -39,14 +39,6 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/ ${CMAKE_CURRENT_BINARY_DIR}/
         )
 
 # Install the target ########################################
-# install(TARGETS CommonHeader EXPORT Common_export)
-
-# install(EXPORT Common_export
-#         DESTINATION ${NAT_CMAKE_INSTALL_DIR}
-#         NAMESPACE Nat::
-#         FILE CommonTargets.cmake
-#         )
-
 install(TARGETS CommonHeader EXPORT CommonHeader_export)
 
 install(EXPORT CommonHeader_export

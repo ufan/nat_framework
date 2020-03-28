@@ -31,7 +31,6 @@ target_sources(Account
             "UnitPnl.h"
             "UnitPx.h"
             "UnitVol.h"
-            # PUBLIC
             "AccBase.h" # only used in risk
   )
 
@@ -42,6 +41,7 @@ target_include_directories(Account
 
 target_link_libraries(Account
   PUBLIC Logger
+         CommonUtils
   )
 
 # Install: the headers ############################################################

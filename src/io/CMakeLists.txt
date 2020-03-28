@@ -13,7 +13,7 @@
 #]===============================================================================]
 
 # Target: IO ##############################################################
-add_library(IO STATIC)
+add_library(IO OBJECT)
 add_library(Nat::IO ALIAS IO)
 
 target_sources(IO

@@ -26,8 +26,12 @@ set(TDEngine_SRC
   )
 
 set(TDEngine_Common_Deps
+  CommonHeader
+  CommonUtils
   Logger
+  Utility
   IO
+  Account
   Risk
   )
 
@@ -111,34 +115,34 @@ target_link_libraries(TDEngineXt
 
 # Target: TDHelper ##############################################################
 
-add_library(TDHelper STATIC)
+# add_library(TDHelper OBJECT)
 
-target_sources(TDHelper
-  PRIVATE   "ITDHelper.cpp"
-            "CTDHelperFactory.cpp"
-            "CTDHelperComm.cpp"
-            "CTDHelperPipe.cpp"
-            "CTDHelperPython.cpp"
-            "CTDHelperFake.cpp"
-            "ITDHelper.h"
-            "CTDHelperPipe.h"
-            "CTDHelperPython.h"
-            # PUBLIC
-            "CTDHelperFactory.h"
-            "CTDHelperComm.h" # in used pyext
-            "CTDHelperFake.h"
-  )
+# target_sources(TDHelper
+#   PRIVATE   "ITDHelper.cpp"
+#             "CTDHelperFactory.cpp"
+#             "CTDHelperComm.cpp"
+#             "CTDHelperPipe.cpp"
+#             "CTDHelperPython.cpp"
+#             "CTDHelperFake.cpp"
+#             "ITDHelper.h"
+#             "CTDHelperPipe.h"
+#             "CTDHelperPython.h"
+#             # PUBLIC
+#             "CTDHelperFactory.h"
+#             "CTDHelperComm.h" # in used pyext
+#             "CTDHelperFake.h"
+#   )
 
-target_include_directories(TDHelper
-  PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-         $<INSTALL_INTERFACE:include>
-  )
+# target_include_directories(TDHelper
+#   PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+#          $<INSTALL_INTERFACE:include>
+#   )
 
-target_link_libraries(TDHelper
-  PUBLIC Logger
-         IO
-         PyExt
-  )
+# target_link_libraries(TDHelper
+#   PUBLIC Logger
+#          IO
+#          PyEmbed
+#   )
 
 # Install: the headers ############################################################
 
@@ -161,14 +165,14 @@ install(TARGETS TDEngine TDEngineEESV2 TDEngineEESV3 TDEngineXt
   )
 
 # Install the target ########################################
-install(TARGETS TDHelper EXPORT TDHelper_export
-  )
+# install(TARGETS TDHelper EXPORT TDHelper_export
+#   )
 
-install(EXPORT TDHelper_export
-  DESTINATION ${NAT_CMAKE_INSTALL_DIR}
-  NAMESPACE Nat::
-  FILE TDHelperTargets.cmake
-  )
+# install(EXPORT TDHelper_export
+#   DESTINATION ${NAT_CMAKE_INSTALL_DIR}
+#   NAMESPACE Nat::
+#   FILE TDHelperTargets.cmake
+#   )
 
 # Test ########################################################################
 # TODO: test
