@@ -20,7 +20,6 @@
 #include <stdlib.h>
 #include <sched.h>
 #include "utils.h"
-#include "Logger.h"
 
 using namespace std;
 
@@ -191,8 +190,8 @@ void findAllProcessByCmdLine(string cmdline, vector<pid_t> &res)
 	DIR * dir = opendir("/proc");
 	if(NULL == dir)
 	{
-		LOG_ERR("open /proc err: %d", errno);
-		return;
+    fprintf(stderr, "open /proc err: %s", strerror(errno));
+    return;
 	}
 
 	char buf[256];
