@@ -6,35 +6,41 @@
 #
 # and the following Imported/Interface/Alias targets::
 #
-#   Nat::CommonUtils
+#   Nat::Utility
 #
 # Notes:
 #
 #]===============================================================================]
 
-# Define Static Target: CommonUtils ################################################
-add_library(CommonUtils OBJECT)
+# Define Static Target: Utility ################################################
+add_library(Utility OBJECT)
 
-target_sources(CommonUtils
-  PRIVATE  "ATSysUtils.cpp" # io, include, common, used in md, td
-           "CPipExecutor.cpp" # logger, common, used in md, td
-           "CTradeBaseInfo.cpp" # include
-           "CWareHouseReader.cpp" # include, common, io, used in md, pyext
-           "ATSysUtils.h"
-           "CPipExecutor.h"
-           "CTradeBaseInfo.h"
-           "CWareHouseReader.h"
+target_sources(Utility
+  PRIVATE "CGlobalLock.cpp"
+          "CEncodeConv.cpp"
+          "CTimer.cpp"
+          "CityHash.cpp"
+          "MurmurHash2.cpp"
+          "MurmurHash3.cpp"
+          "utils.cpp"
+          "CGlobalLock.h"
+          "CEncodeConv.h"
+          "CTimer.h"
+          "CityHash.h"
+          "MurmurHash2.h"
+          "MurmurHash3.h"
+          "CHashTable.h"
+          "TimeMeasure.h"
+          "utils.h"
   )
 
-target_include_directories(CommonUtils
+target_include_directories(Utility
   PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
          $<INSTALL_INTERFACE:include>
   )
 
-target_link_libraries(CommonUtils
+target_link_libraries(Utility
   PRIVATE CommonHeader
-          Logger
-          IO
   )
 
 # Install: the headers ############################################################
@@ -45,12 +51,12 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
   )
 
 # Install the target ########################################
-install(TARGETS CommonUtils EXPORT Common_export)
+install(TARGETS Utility EXPORT Utility_export)
 
-install(EXPORT Common_export
+install(EXPORT Utility_export
   DESTINATION ${NAT_CMAKE_INSTALL_DIR}
   NAMESPACE Nat::
-  FILE CommonTargets.cmake
+  FILE UtilityTargets.cmake
   )
 
 # Test ########################################################################

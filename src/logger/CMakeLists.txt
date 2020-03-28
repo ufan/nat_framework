@@ -38,7 +38,7 @@ target_include_directories(Logger
 
 target_link_libraries(Logger
   PUBLIC  log4cplus::log4cplus
-          CommonUtils
+          Utility
           CommonHeader
   )
 
