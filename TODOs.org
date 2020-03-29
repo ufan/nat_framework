@@ -21,3 +21,65 @@
 <2020-03-11 Mi>
 [[file:~/src/nat_framework/NAT/src/io/note.org::*Unused sources][Unused sources]]
 
+* TODO /libev/ alternative
+** /libev/ code base merged into nat code repo
+** or replace with /libuv/ or /libevent/
+
+* DONE Integration of three logging service in one library
+  CLOSED: [2020-03-12 Do 10:49]
+<2020-03-11 Mi>
+[[file:~/src/nat_framework/NAT/Notes.org::*Logging system][Logging system]]
+
+* TODO Understand CTimer design
+<2020-03-12 Do>
+[[file:~/src/nat_framework/NAT/Notes.org::*Time ( design of /CTimer/)][Time ( design of /CTimer/)]]
+
+* DONE Figure out the sources not included in libio.a, but still used in other package
+  CLOSED: [2020-03-12 Do 10:49]
+<2020-03-12 Do>
+[[file:~/src/nat_framework/NAT/src/io/note.org::*Sources used in other package][Sources used in other package]]
+
+* TODO Dependnecy on libio not resolved
+<2020-03-12 Do>
+[[file:~/src/nat_framework/NAT/src/makefile::dump:]]
+
+* TODO What's the meaning to keep 3 versions of EES
+<2020-03-12 Do>
+[[file:~/src/nat_framework/NAT/src/td/note.org::*EES has three versions][EES has three versions]]
+
+* TODO Better be private member function
+<2020-03-12 Do>
+[[file:~/src/nat_framework/NAT/src/td/ITDHelper.h::virtual void doSendOrder(int track_id) = 0;]]
+
+* TODO CStrategy not used in the class
+<2020-03-12 Do>
+[[file:~/src/nat_framework/NAT/src/execute_model/CMarketStruct.h::#include "CStrategy.h"]]
+
+* TODO Python Helper Design
+<2020-03-13 Fr>
+[[file:~/src/nat_framework/NAT/src/td/note.org::*Helper][Helper]]
+
+* TODO The policy is not working
+<2020-03-21 Sa>
+[[file:~/src/nat_framework/NAT/src/external/log4cplus/CMakeLists.txt::# Add subdirectory and alias target]]
+
+* TODO Add namespace or not ?
+<2020-03-21 Sa>
+[[file:~/src/nat_framework/NAT/src/external/log4cplus/CMakeLists.txt::# add_library(log4cplus::log4cplus ALIAS log4cplus)]]
+
+* TODO Use namespace or not?
+<2020-03-21 Sa>
+[[file:~/src/nat_framework/NAT/src/external/libev/CMakeLists.txt::# add_library(libev::libev ALIAS libev)]]
+
+* TODO How to install PUBLIC or INTERFACE target_soueces?
+<2020-03-27 Fr>
+[[file:~/src/nat_framework/NAT/src/common/CMakeLists.txt::PUBLIC "ATSysUtils.h"]]
+
+* TODO Correct path format?
+<2020-03-29 So>
+[[file:~/src/nat_framework/NAT/src/include/SysConf.h::#define IO_SYSTEM_MSG_PATH IO_SYSTEM_MSG_DIR "msg"]]
+
+* TODO Deploy.sh unfinished
+<2020-03-29 So>
+[[file:~/src/nat_framework/NAT/src/scripts/deploy.sh][file:~/src/nat_framework/NAT/src/scripts/deploy.sh]]
+

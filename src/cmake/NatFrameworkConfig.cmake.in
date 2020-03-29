@@ -1,0 +1,15 @@
+get_filename_component(NatFramework_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+
+if(NOT TARGET Nat::CommonHeader)
+  include("${NatFramework_CMAKE_DIR}/CommonHeaderTargets.cmake")
+endif()
+
+#=================================================================================
+# NOTE: the following code is not necessary, can be deleted in a target based system
+
+@PACKAGE_INIT@
+
+set_and_check(NAT_INCLUDE_DIR "@PACKAGE_NAT_INCLUDE_INSTALL_DIR@")
+set_and_check(NAT_LIBRARIES_DIR "@PACKAGE_NAT_LIB_INSTALL_DIR@")
+
+check_required_components(NatFramework)

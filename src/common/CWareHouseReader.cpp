@@ -19,7 +19,8 @@
 #include <glob.h>
 #include "CWareHouseReader.h"
 #include "IOCommon.h"
-#include "CRawIOWriter.h"
+#include "Logger.h"
+#include "CTimer.h"
 #include "ATStructure.h"
 #include "utils.h"
 #include "CTradeBaseInfo.h"

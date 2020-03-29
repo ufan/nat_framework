@@ -1,0 +1,3 @@
+#define NAT_VERSION_MAJOR @NatFramework_VERSION_MAJOR@
+#define NAT_VERSION_MINOR @NatFramework_VERSION_MINOR@
+#define NAT_VERSION_PATCH @NatFramework_VERSION_PATCH@

@@ -1,7 +1,27 @@
-* dependencies
-** install python2.7
-** install and build boost_python agains python2.7
-* make based build system
+* Getting the source
+  The third party libraries (such as, EES, CTP ...) are integrated into the source base
+  as git submodule.
+
+  The command to clone the whole source base including ThirdParty libraries is:
+  /git clone --recurse-submodules -b <branch_name> <repo_address>/
+  
+* CMake
+  The preferred build system is *CMake* by /cmake -DCMAKE_INSTALL_PPREFIX=<XXX> -DBoost_ROOT=<XXX>/. 
+** Pre-requsites
+*** install python2.7
+*** install and build boost_python agains python2.7
+*** install CMake latest (>=3.15)
+*** autotools is needed to build libev
+** Dependencies
+*** External (i.e. source available)
+**** log4cplus
+**** libev
+*** ThirdParty (i.e. only binary library available)
+**** CTP
+**** EES
+**** Xt
+     
+* /make/ based build system
 ** copy ThirdParty under src/ directory
 ** edit /src/make/head.mk/, change *boost_DIR* and *PYTHON_BIN* accordingly
 ** invoke /make/ command

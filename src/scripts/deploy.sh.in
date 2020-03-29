@@ -1,0 +1,90 @@
+#!/bin/bash
+
+# The scripts finish the following tasks:
+# 1. Append nat related cron job and backup the original cron job lists
+# 2. Setup core dump file directory and name pattern
+# 3. 
+# 4. Append nat library path to LD_LIBRARY_PATH and PYTHON_MODULE_PATH
+
+PWD=`pwd`
+ME=`whoami`
+DEPLOYDIR="@CMAKE_INSTALL_PREFIX@"
+
+function AddCron()
+{
+	printf "Add crontab [yes|no]?"
+	read -r ans
+	if [[ ${ans} != "y" && ${ans} != "Y" && ${ans} != "yes" ]]; then
+		return
+	fi
+
+	if [[ x`crontab -l|grep @CMAKE_INSTALL_PREFIX@` == "x" ]]
+	then
+		TODAY=`date +"%Y%m%d %H:%M:%S"`
+		echo "----------------- ${TODAY} ---------------" >> /home/${ME}/cron_${ME}.bak || exit 1
+		crontab -l >> /home/${ME}/cron_${ME}.bak || exit 1
+		
+		(
+		crontab -l;
+		echo "#---------------- add by at installer --------------"
+		echo "40 08 * * 1-5 @CMAKE_INSTALL_PREFIX@/scripts/engine_svr.sh start" ;
+		echo "00 17 * * 1-5 @CMAKE_INSTALL_PREFIX@/scripts/engine_svr.sh stop" ;
+		echo "#45 08 * * 1-5 @CMAKE_INSTALL_PREFIX@/scripts/dump_svr.sh start" ;
+		echo "#00 17 * * 1-5 @CMAKE_INSTALL_PREFIX@/scripts/dump_svr.sh stop" ;
+		echo "50 08 * * 1-5 @CMAKE_INSTALL_PREFIX@/scripts/risk_svr.sh start" ;
+		echo "10 15 * * 1-5 @CMAKE_INSTALL_PREFIX@/scripts/risk_svr.sh stop" ;
+		echo "* 09-16 * * 1-5 @CMAKE_INSTALL_PREFIX@/scripts/engine_svr.sh pullup >> @CMAKE_INSTALL_PREFIX@/scripts/check_alive.log" ;
+		
+		echo "40 20 * * 1-5 @CMAKE_INSTALL_PREFIX@/scripts/engine_svr.sh start" ;
+		echo "00 05 * * 2-6 @CMAKE_INSTALL_PREFIX@/scripts/engine_svr.sh stop" ;
+		echo "#45 20 * * 1-5 @CMAKE_INSTALL_PREFIX@/scripts/dump_svr.sh start" ;
+		echo "#00 05 * * 2-6 @CMAKE_INSTALL_PREFIX@/scripts/dump_svr.sh stop" ;
+		echo "50 20 * * 1-5 @CMAKE_INSTALL_PREFIX@/scripts/risk_svr.sh start" ;
+		echo "50 02 * * 1-5 @CMAKE_INSTALL_PREFIX@/scripts/risk_svr.sh stop" ;
+		echo "* 21-23 * * 1-5 @CMAKE_INSTALL_PREFIX@/scripts/engine_svr.sh pullup >> @CMAKE_INSTALL_PREFIX@/scripts/check_alive.log" ;
+		echo "* 00-04 * * 2-6 @CMAKE_INSTALL_PREFIX@/scripts/engine_svr.sh pullup >> @CMAKE_INSTALL_PREFIX@/scripts/check_alive.log" ;
+
+		echo "* * * * * @CMAKE_INSTALL_PREFIX@/TunnelAgent/scripts/check_alive.sh >> @CMAKE_INSTALL_PREFIX@/TunnelAgent/scripts/down.log 2>&1" ;
+		
+		echo "* * * * * @CMAKE_INSTALL_PREFIX@/scripts/alert_check_alive.sh >> @CMAKE_INSTALL_PREFIX@/scripts/alert_check_alive.log 2>&1" ;
+		
+		echo "30 17 * * * @CMAKE_INSTALL_PREFIX@/scripts/tools.sh arch >> @CMAKE_INSTALL_PREFIX@/scripts/arch.log 2>&1" ;
+		echo "#------------------ at crontab end ----------------"
+		) | crontab - || exit 1
+	fi
+}
+
+function AddPath()
+{
+	printf "Add @CMAKE_INSTALL_PREFIX@/lib to LD_LIBRARY_PATH and PYTHONPATH [yes|no]?"
+	read -r ans
+	if [[ ${ans} == "y" || ${ans} == "Y" || ${ans} == "yes" ]]
+	then
+		BASHRC="${HOME}/.bashrc"
+		COMMENT="# added by at installer"
+		if [[ -z `grep "${COMMENT}" ${BASHRC}` ]]; then
+			echo -e "\n${COMMENT}" >> "${BASHRC}"
+			echo "export PYTHONPATH=\"@CMAKE_INSTALL_PREFIX@/lib:\${PYTHONPATH}\"" >> "${BASHRC}"
+			echo "export LD_LIBRARY_PATH=\"@CMAKE_INSTALL_PREFIX@/lib:\${LD_LIBRARY_PATH}\"" >> "${BASHRC}"
+		fi
+	fi 
+}
+
+function Deploy()
+{
+	chown ${ME}:${ME} -R @CMAKE_INSTALL_PREFIX@/ 2>/dev/null || sudo chown ${ME}:${ME} -R @CMAKE_INSTALL_PREFIX@/
+
+	AddCron
+
+	sudo sh -c 'echo /var/crash/core-%e > /proc/sys/kernel/core_pattern'
+
+	@CMAKE_INSTALL_PREFIX@/scripts/tools.sh prepare
+
+	AddPath
+
+	echo "Done!"
+}
+
+Deploy
+
+exit 0

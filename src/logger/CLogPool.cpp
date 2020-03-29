@@ -12,7 +12,6 @@
 #include <fcntl.h>
 #include <time.h>
 #include "CLogPool.h"
-#include "compiler.h"
 #include "utils.h"
 
 

@@ -1,0 +1,273 @@
+* Logging system
+  
+ *Three types of log facilities in use*.
+ An integration header /Logger.h/ is provided:
+ - Define macro variable *FAST_LOGGER_* to use FastLogger
+ - Define macro variable *SIMPLE_LOGGER_* to use SimpleLogger
+ - The default logger is HeavyLogger, which use /log4cplus/ underneath
+   
+** SimpleLogger.h
+*** The most simple form, just print on std::out
+*** Limited use, only in /io/CMemConfigBase/, /io/CQueueBase/ and /io/CLocalQueue/
+*** TODO consider removing this service
+    
+    
+** FastLogger.h
+*** Self-defined logger, composed of /CFastLog/ and /CLogPool/.
+*** Used only in /libstrategy/, /execute_model/ /tdlib/ and /pyext/
+*** All python binding/extension use this /FastLogger/
+*** /FastLogger/ is exported to python module /libstrategy/
+    
+** HeavyLogger.h
+*** Wrapper around /log4cplus/
+*** Most widely used
+*** DONE contains condtional compiling with FastLogger
+    CLOSED: [2020-03-11 Mi 19:13]
+    
+    The logic is that some /io/ classes like /CRawIOReader/ and /CRawIOWriter/
+    are used both in Python binding and normal packages.
+    
+    Since Python binding all use /FastLogger/ and normal packages use /Logger/
+    thus the same header /Logger.h/ is used with Macro Definition /FAST_LOGGER_/
+    to choose which logger to use.
+** Log Level
+   The following level is the same for all three logger:
+   - LOG_INFO
+   - LOG_DBG
+   - LOG_ERR
+   - LOG_WARN
+   
+   /FastLogger/ and /HeavyLogger/ also have:
+   - LOG_TRACE
+   - ASSERT
+   - ASSERT_RET
+   - ENGLOG
+   - ALERT
+   
+   /FastLogger/ has one extra level, which is general:
+   - LOG_LVL
+   Use need to pass in *log_level* number in this case.
+   The number of commonly used level is defined in /FastLogger.h/ and /PublicFun.h/:
+   - LOG_DBG :: 10000
+   - LOG_INFO :: 10001
+   - LOG_WARN :: 10002
+   - LOG_ERR :: 10003
+   - LOG_TRACE :: 10004
+   - DEBUGLEVEL0 :: 0
+   - DEBUGLEVEL1 :: 1
+   - DEBUGLEVEL2 :: 2
+   - DEBUGLEVEL3 :: 3
+     
+* Python Interface
+** Python Extension
+*** /strategy/
+    Provides module /libstrategy/.
+**** Symbols
+***** globals
+      From /PyWrapper.h/:
+      * getInstrHash
+      * getStgHash
+      * getInstrumentInfo
+     
+      From /CTradeBaseInfo.h/:
+      * exchangeint2str
+     
+      From /BarMaker.cpp/
+      * getDailyCycle
+      * getSessionCycle
+      
+      From /CTradeBaseInfo.h/, static member functions
+      * getInstrumentInfoByHash :: CTradeBaseInfo::getInstrInfo
+      * getTradingDay
+      * setTradingDay
+      * setTradeBaseInitFlag
+      * addInstrInfo
+      * clearInstrInfo
+      * callSysOnSwitchDayCb
+     
+      From /RiskError.h/
+      * strError
+      
+      From /FastLogger.h/
+      * getNewLogger
+      * fastLog
+      * getStgLoggerId
+      * initFastLoggerConf
+
+      From /utils.h/
+      * getEmOrderRtnTypeString
+
+      From /StrategyShared.h/
+      * getStrategyConfig
+
+      From /CStrategyProcess.cpp/
+      * getCurMdTime
+ 
+***** class
+      
+        From /include/ATStructure.h/
+      * Tick ::  UnitedMarketData
+      * CBar ::  Bar
+      * LastTick ::  tLastTick
+      * OrderTrack ::  tOrderTrack
+      * RtnMsg ::  tRtnMsg
+      * InstrumentInfo :: tInstrumentInfo
+      
+        From /md/
+      * IMDHelper :: IMDHelper
+      * MDHelperComm :: CMDHelperCommWrapper, from CMDHelperComm
+      * MDHelperReplayIO :: CMDHelperReplayIOWrapper, from CMDHelperReplayIO
+      
+        From /td/
+      * ITDHelper :: ITDHelper
+      * TDHelperComm :: CTDHelperComm
+      * TDHelperFake :: CTDHelperFake
+      
+        From /strategy/
+      * SimpleStrategyBase :: CStrategy
+      * SimpleStrategy :: CPyStrategy, from CStrategy
+      * StrategyBase :: CPyStrategyBase, from CStrategyBase
+      * StrategyProcess :: CStrategyProcess
+       
+        From /account/
+      * UnitVol :: UnitVol
+      * UnitAmt :: UnitAmt
+      * UnitPx :: UnitPx
+      * UnitPnl :: UnitPnl
+      * ModAcc :: ModAcc
+      * ModInstr :: ModInstr
+      * ModPrd :: ModPrd
+      * AccBase :: AccBaseWrapper, from AccBase
+       
+        From /risk/
+      * RiskStg :: RiskStgWrapper, from RiskStg
+       
+        From /common/
+      * WareHouseReader :: CPyWareHouseReader, from CWareHouseReader
+     
+        From /io/
+      * RtnReader :: CPyRtnReader, wrapping CRawIOReader
+      * SignalReader :: CSignalReader
+      * SignalWriter :: CSignalWriter
+       
+***** enum
+     
+      From /include/ATConstants.h/
+      * Offset ::  emOffset
+      * OrderRtnType ::  emOrderRtnType
+      * Dir :: emDir
+       
+*** /execute_model/ or /tdlib/
+**** The two packages are two alternate implementation of /libexecstg.so/.
+**** The differences come from 
+    * /execute_model/ has differenct implementation of Python binding, like *CExecuteStrategy*.
+    * /execute_model/ also provides for detailed implementation of model, like *CLossModel*
+    * /execute_model/ has more sophisticated logging using /FastLog/
+    * /execute_model/ has more modulized configuration methods
+     
+**** Symbols
+     From /execute_model/
+    * ExecStrategyBase :: CPyExecuteStrategy, from CExecuteStrategy
+     
+*** /logdb/
+    Two modules provided:
+    * /testpython/
+    * /LogDB/
+     
+*** /io/ 
+    Provides module /pymemipc/ from unused sources in /io/
+   
+** Python Embedding
+*** /td/
+**** /CTDHelperPython/, through /PyExtExch/
+**** Integrated in /libstrategy.so/
+*** /md/
+**** /CMDHelperPython/, through /PyExtExch/
+**** Integrated in /libstrategy.so/
+*** /TunnelAgent/
+**** Binary target: /PyLoader/
+     
+** Targets with Python interface
+*** /libstrategy/ 
+   
+   *Depends on /pyext/ and provides binding for MD and TD* 
+  
+**** binding
+
+**** extension
+    
+*** /execute_model/
+
+*** /TunnelAgent/
+  
+    *Totally independent, only depends on Python*
+
+**** /TunnelAgent/
+    
+***** /CPythonExecutor/, /CWaiter/
+
+**** /PyLoader/
+
+*** /logdb/
+   
+*** /tdlib/
+
+* Time ( design of /CTimer/)
+
+** Two types of timer option
+   Choose the timer used by two macros as follows.
+
+*** CLOCK_REALTIME
+    Wall-clock time, which may suffer a jump gap.
+    
+*** CLOCK_MONOTONIC
+    Physical fixed-clock time, which is not subject system-time adjustment and records a constant time interval.
+
+** Packages using /CTimer/ service
+   - md
+   - strategy (included in libstrategy.so)
+   - execute_model
+   - account
+   - risk
+   - io (include in libio.a)
+   - signal_agent
+   - dump
+   - tools
+
+* Memory Management
+
+** Memory-mapped file
+
+*** Comparison against shared-memory technique
+
+** Packages using /mmap/
+   - io
+     + CIOBase
+     + CRawIOReader
+     + CRawIOWriter
+     + CRawIOModify
+     + OTMonitor
+   - td
+     + COrderTrackMmap
+
+* Multi-threading Support
+
+* Message Encoding
+  Message from CTP is encoded in GBK.
+  Class *CEncodeConv* from /common/ is used to convert GBK string to UTF8 string.
+
+* References
+
+** Terminology
+   - Instrument ::
+   - Bar ::
+   - Tick ::
+   - Product ::
+   - Account ::
+   - Helper ::
+   - Risk ::
+   - Logger ::
+   - TD ::
+   - MD ::
+   - WareHouse :: 
+

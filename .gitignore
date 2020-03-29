@@ -9,9 +9,11 @@ test.log
 # pubkey.pem
 src/lib
 remlog_*
-release
-ThirdParty
 *.o
-
-src/cmake-build-debug
-.idea
+build
+install
+release
+src/external/libev/src
+src/external/log4cplus/src
+con_dir
+trade_flow

@@ -1,0 +1,24 @@
+[submodule "src/ThirdParty/EES"]
+	path = src/ThirdParty/EES
+	url = https://github.com/natcollab/EES
+[submodule "src/ThirdParty/EESV2"]
+	path = src/ThirdParty/EESV2
+	url = https://github.com/natcollab/EESV2
+[submodule "src/ThirdParty/EESV3"]
+	path = src/ThirdParty/EESV3
+	url = https://github.com/natcollab/EESV3
+[submodule "src/ThirdParty/CTP"]
+	path = src/ThirdParty/CTP
+	url = https://github.com/natcollab/CTP
+[submodule "src/ThirdParty/CTPMini"]
+	path = src/ThirdParty/CTPMini
+	url = https://github.com/natcollab/CTPMini
+[submodule "src/ThirdParty/OpenOnload"]
+	path = src/ThirdParty/OpenOnload
+	url = https://github.com/natcollab/OpenOnload
+[submodule "src/ThirdParty/Xt"]
+	path = src/ThirdParty/Xt
+	url = https://github.com/natcollab/Xt
+[submodule "src/ThirdParty/sl_efh"]
+	path = src/ThirdParty/sl_efh
+	url = https://github.com/natcollab/sl_efh
