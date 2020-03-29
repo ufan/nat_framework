@@ -81,6 +81,7 @@ add_subdirectory(io)
 add_subdirectory(common)
 
 add_subdirectory(strategy)
+add_subdirectory(execute_model)
 add_subdirectory(md)
 add_subdirectory(td)
 
