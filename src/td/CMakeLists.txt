@@ -156,7 +156,7 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
 # Install: config files ############################################################
 
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/conf/
-  DESTINATION TDEngine/conf
+  DESTINATION conf
   FILES_MATCHING PATTERN "*.json"
   )
 

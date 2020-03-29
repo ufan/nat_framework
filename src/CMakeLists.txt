@@ -45,6 +45,11 @@ endif()
 # Always use '-fPIC' or '-fPIE' option
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
+# Set default install prefix to '/home/jarvis'
+if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+  set(CMAKE_INSTALL_PREFIX "/home/yong/nat" CACHE PATH "Default deployment direcotry" FORCE)
+endif()
+
 #=================================================================================
 # TODO:useful commands
 

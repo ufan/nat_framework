@@ -1,16 +1,17 @@
 #!/bin/bash
 
 # library path
-LIB=/home/yong/src/nat_framework/NAT/install/lib:/home/yong/src/nat_framework/NAT/install/lib/CTP:/home/yong/src/nat_framework/NAT/install/lib/Xele:/home/yong/src/nat_framework/NAT/install/lib/EES:/home/yong/src/nat_framework/NAT/install/lib/Xt
+LIB_PREFIX=@CMAKE_INSTALL_PREFIX@
+LIB=${LIB_PREFIX}/lib:${LIB_PREFIX}/lib/CTP:${LIB_PREFIX}/lib/Xele:${LIB_PREFIX}/lib/EES:${LIB_PREFIX}/lib/Xt:${LIB_PREFIX}/OpenOnload
 
 # configuration
-#TDENGINE=/home/yong/src/nat_framework/NAT/install/TDEngine/bin/TDEngineXt
-#TDCONF=/home/yong/src/nat_framework/NAT/install/conf/tdengine.json.xt
-TDENGINE=/home/yong/src/nat_framework/NAT/install/TDEngine/bin/TDEngine
-TDCONF=/home/yong/src/nat_framework/NAT/install/conf/tdengine.json
+#TDENGINE=${LIB_PREFIX}/TDEngine/bin/TDEngineXt
+#TDCONF=${LIB_PREFIX}/conf/tdengine.json.xt
+TDENGINE=${LIB_PREFIX}/TDEngine/bin/TDEngine
+TDCONF=${LIB_PREFIX}/TDEngine/conf/tdengine.json
 
-MDENGINE=/home/yong/src/nat_framework/NAT/install/MDEngine/bin/MDEngine
-MDCONF=/home/yong/src/nat_framework/NAT/install/conf/mdengine_test.json
+MDENGINE=${LIB_PREFIX}/MDEngine/bin/MDEngine
+MDCONF=${LIB_PREFIX}/MDEngine/conf/mdengine_test.json
 
 # unlimited core dump file size
 ulimit -c unlimited
@@ -77,7 +78,7 @@ function Start()
 	 
 	 for ((i=0;i<30;i++))
 	 do
-	 	STARTLOG=`tail -n 5 /home/yong/src/nat_framework/NAT/install/logs/Engine/TDEngine.log|awk -F'|' '$1>"'"${TIME}"'"{print $0}'|grep "start listening"`
+	 	STARTLOG=`tail -n 5 ${LIB_PREFIX}/logs/Engine/TDEngine.log|awk -F'|' '$1>"'"${TIME}"'"{print $0}'|grep "start listening"`
 	 	if [[ x"${STARTLOG}" != "x" ]]; then break; fi
 	 	sleep 2
 	 done

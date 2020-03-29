@@ -18,10 +18,11 @@ add_library(Nat::CommonHeader ALIAS CommonHeader)
 
 # Configure version number ####################################################
 configure_file(VersionConfig.h.in VersionConfig.h)
+configure_file(SysConf.h.in SysConf.h)
 
 target_include_directories(CommonHeader INTERFACE
                            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-                           $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}> # for VersionConfig.h
+                           $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
                            $<INSTALL_INTERFACE:include>
                            )
 

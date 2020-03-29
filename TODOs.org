@@ -75,3 +75,11 @@
 <2020-03-27 Fr>
 [[file:~/src/nat_framework/NAT/src/common/CMakeLists.txt::PUBLIC "ATSysUtils.h"]]
 
+* TODO Correct path format?
+<2020-03-29 So>
+[[file:~/src/nat_framework/NAT/src/include/SysConf.h::#define IO_SYSTEM_MSG_PATH IO_SYSTEM_MSG_DIR "msg"]]
+
+* TODO Deploy.sh unfinished
+<2020-03-29 So>
+[[file:~/src/nat_framework/NAT/src/scripts/deploy.sh][file:~/src/nat_framework/NAT/src/scripts/deploy.sh]]
+
