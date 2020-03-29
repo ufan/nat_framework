@@ -22,7 +22,7 @@ set(Boost_USE_MULTITHREADED    TRUE)
 # set(Boost_USE_STATIC_RUNTIME   TRUE)
 
 set(BOOST_VERSION 1.72.0)
-set(Boost_ROOT "/home/yong/boost/1_72_0") # can be omitted and provided by user
+set(Boost_ROOT "/home/yong/boost/1_72_0" CACHE PATH "Boost Library Directory") # can be omitted and provided by user
 find_package(Boost ${BOOST_VERSION} EXACT
   CONFIG
   REQUIRED COMPONENTS headers
