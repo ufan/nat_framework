@@ -6,7 +6,7 @@
   /git clone --recurse-submodules -b <branch_name> <repo_address>/
   
 * CMake
-  The preferred build system is *CMake*
+  The preferred build system is *CMake* by /cmake -DCMAKE_INSTALL_PPREFIX=<XXX> -DBoost_ROOT=<XXX>/. 
 ** Pre-requsites
 *** install python2.7
 *** install and build boost_python agains python2.7
@@ -20,6 +20,7 @@
 **** CTP
 **** EES
 **** Xt
+     
 * /make/ based build system
 ** copy ThirdParty under src/ directory
 ** edit /src/make/head.mk/, change *boost_DIR* and *PYTHON_BIN* accordingly
