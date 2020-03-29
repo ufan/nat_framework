@@ -89,6 +89,7 @@ add_subdirectory(account)
 add_subdirectory(bar)
 add_subdirectory(pyext)
 
+add_subdirectory(dump)
 add_subdirectory(crypt)
 
 add_subdirectory(scripts)

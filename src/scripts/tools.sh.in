@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# The shell provides following functions:
+# 1. Setup directory for logging for today
+# 2. Archive the yesterday's logging directory and open today's logging directory
+# 3. Archive today's conf directory if it's modified
+
 PWD=`pwd`
 
 function ArchConf()
@@ -9,17 +14,17 @@ function ArchConf()
 		CONFDIR=$1
 		OLDTAR=$2
 		ARCHDIR=$3
-		
+
 		HASH=`echo $CONFDIR|md5sum`
 		TMPDIR=.tmp${HASH:0:10}
-		
+
 		mkdir TMPDIR
 		tar xfz ${OLDTAR} -C TMPDIR/
 		if [[ $? -eq 0 ]]
 		then
 			TARDIR=`ls TMPDIR|head -n 1`
 			OLDCONF=TMPDIR/${TARDIR}
-			
+
 			if [[ -z `diff -r ${CONFDIR} ${OLDCONF}` ]]
 			then
 				rm -r TMPDIR
@@ -35,7 +40,7 @@ function ArchConf()
 
 	DIR=`dirname ${CONFDIR}`
 	BASE=`basename ${CONFDIR}`
-		
+
 	TODAY=`date +"%Y%m%d"`
 	(cd ${DIR}; tar cfz ${ARCHDIR}/${BASE}_${TODAY}.tgz ${BASE})
 	echo "$(date +'%Y%m%d %H:%M:%S')|Archive $CONFDIR"
@@ -72,29 +77,29 @@ function DailyMakeLogDir()
 		fi
 	fi
 	
-	BASE=/home/jarvis/logdir/logs_${NEXTDAY}
+	BASE=@CMAKE_INSTALL_PREFIX@/logdir/logs_${NEXTDAY}
 	mkdir -p ${BASE}/Engine
 	mkdir -p ${BASE}/Strategy
 	mkdir -p ${BASE}/Dump
-	rm /home/jarvis/logs 2>/dev/null
-	ln -s ${BASE} /home/jarvis/logs
+	rm @CMAKE_INSTALL_PREFIX@/logs 2>/dev/null
+	ln -s ${BASE} @CMAKE_INSTALL_PREFIX@/logs
 
 	RMDAY=`date +"%Y%m%d" -d "-5 days"`
-	rm -rf /home/jarvis/logdir/logs_${RMDAY}
+	rm -rf @CMAKE_INSTALL_PREFIX@/logdir/logs_${RMDAY}
 }
 
 function DailyArchLog()
 {
-	LOG=`readlink /home/jarvis/logs`
-	ArchLog ${LOG} /home/jarvis/archive
+	LOG=`readlink @CMAKE_INSTALL_PREFIX@/logs`
+	ArchLog ${LOG} @CMAKE_INSTALL_PREFIX@/archive
 	echo "$(date +'%Y%m%d %H:%M:%S')|Archive ${LOG}"
 }
 
 function DailyArchConf()
 {
-	cd /home/jarvis
-	TAR=`ls -t /home/jarvis/archive/conf*.tgz|head -n 1`
-	ArchConf /home/jarvis/conf ${TAR} /home/jarvis/archive
+	cd @CMAKE_INSTALL_PREFIX@
+	TAR=`ls -t @CMAKE_INSTALL_PREFIX@/archive/conf*.tgz|head -n 1`
+	ArchConf @CMAKE_INSTALL_PREFIX@/conf ${TAR} @CMAKE_INSTALL_PREFIX@/archive
 	cd -
 }
 

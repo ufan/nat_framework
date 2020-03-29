@@ -1,9 +1,9 @@
 #!/bin/bash
 
-LIB=/home/jarvis/lib:/home/jarvis/lib/ThirdParty/CTP
+LIB=@CMAKE_INSTALL_PREFIX@/lib:@CMAKE_INSTALL_PREFIX@/lib/ThirdParty/CTP
 
-ENGINE=/home/jarvis/dump/bin/CTPDumper
-CONF=/home/jarvis/dump/conf/dump.json
+ENGINE=@CMAKE_INSTALL_PREFIX@/dump/bin/CTPDumper
+CONF=@CMAKE_INSTALL_PREFIX@/dump/conf/dump.json
 
 function GetPid()
 {

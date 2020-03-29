@@ -83,3 +83,7 @@
 <2020-03-29 So>
 [[file:~/src/nat_framework/NAT/src/scripts/deploy.sh][file:~/src/nat_framework/NAT/src/scripts/deploy.sh]]
 
+* TODO check_alive.sh and risk_svr.sh needed
+<2020-03-29 So>
+[[file:~/src/nat_framework/NAT/src/scripts/install_template.sh::echo "* * * * * /home/jarvis/TunnelAgent/scripts/check_alive.sh >> /home/jarvis/TunnelAgent/scripts/down.log 2>&1" ;]]
+

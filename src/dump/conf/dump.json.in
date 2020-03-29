@@ -1,11 +1,11 @@
 {
-	"warehouse_path":"/home/jarvis/dump/warehouse",
-	"daily_info_path":"/home/jarvis/dump/daily_info",
-	"log4cplus":"/home/jarvis/dump/conf/dumplogger.cnf",
+	"warehouse_path":"@CMAKE_INSTALL_PREFIX@/dump/warehouse",
+	"daily_info_path":"@CMAKE_INSTALL_PREFIX@/dump/daily_info",
+	"log4cplus":"@CMAKE_INSTALL_PREFIX@/dump/conf/dumplogger.cnf",
 	"ctp_name":"CTPSN",
 	"CTP":
 	{
-		"flow_path" : "/home/jarvis/dump/flow/",
+		"flow_path" : "@CMAKE_INSTALL_PREFIX@/dump/flow/",
 		"md_uri" : ["tcp://172.18.32.125:41213"],
 		"td_uri" : ["tcp://172.18.32.125:41205"],
 		"timeout" : 5,
@@ -19,7 +19,7 @@
 	},
 	"CTPSN":
 	{
-		"flow_path" : "/home/jarvis/dump/flow/",
+		"flow_path" : "@CMAKE_INSTALL_PREFIX@/dump/flow/",
 		"md_uri" : ["tcp://180.168.146.187:10010","tcp://180.168.146.187:10011","tcp://218.202.237.33:10012"],
 		"td_uri" : ["tcp://180.168.146.187:10000","tcp://180.168.146.187:10001","tcp://218.202.237.33:10002"],
 		"timeout" : 5,
@@ -33,7 +33,7 @@
 	},
 	"CTPSNoff":
 	{
-		"flow_path" : "/home/jarvis/dump/flow/",
+		"flow_path" : "@CMAKE_INSTALL_PREFIX@/dump/flow/",
 		"md_uri" : ["tcp://180.168.146.187:10031"],
 		"td_uri" : ["tcp://180.168.146.187:10030"],
 		"timeout" : 5,

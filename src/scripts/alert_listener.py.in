@@ -1,0 +1,75 @@
+#!/usr/bin/env python
+#-*- encoding: utf8 -*-
+
+import glob
+import os
+import time
+
+listen_files = [
+    "@CMAKE_INSTALL_PREFIX@/logs/Engine/*.log",
+    "@CMAKE_INSTALL_PREFIX@/logs/Strategy/*.log",
+    "@CMAKE_INSTALL_PREFIX@/TunnelAgent/scripts/down.log",
+    "@CMAKE_INSTALL_PREFIX@/scripts/check_alive.log"
+]
+
+class Scanner(object):
+    def __init__(self):
+        object.__init__(self)
+        self.files = {}
+        for i in listen_files:
+            fs = glob.glob(i)
+            for name in fs:
+                f = open(name)
+                f.seek(0, 2)   # to the end
+                self.files[name] = f
+                
+    def __del__(self):
+        for i in self.files:
+            self.files.close()
+    
+    def detect_file_change(self):
+        all_names = set()
+        for i in listen_files:
+            fs = glob.glob(i)
+            for name in fs:
+                all_names.add(name)
+                
+        remove = set()
+        for k in self.files.iterkeys():
+            if k not in all_names:
+                remove.add(k)
+        for i in remove:
+            self.files[i].close()
+            del self.files[i]
+                
+        for i in all_names:
+            if i not in self.files:
+                f = open(i)
+                self.files[i] = f
+        
+    def scan(self):
+        for name, f in self.files.iteritems():
+            msg = ""
+            for l in f.readlines():
+                if "ALERT|" in l:
+                    msg += l
+            if msg:
+                self.alert(name + ":" + msg)
+        
+    def alert(self, msg):
+        os.system('wall "%s"' % msg)
+
+
+def loop_scan(gap_time):
+    scanner = Scanner()
+    while True:
+        scanner.scan()
+        scanner.detect_file_change()
+        time.sleep(gap_time)
+        
+        
+if __name__ == '__main__':
+    loop_scan(1)
+    
+
+    

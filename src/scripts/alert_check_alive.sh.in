@@ -1,6 +1,6 @@
 #!/bin/bash
 
-BIN=/home/jarvis/scripts/alert_listener.py
+BIN=@CMAKE_INSTALL_PREFIX@/scripts/alert_listener.py
 
 function GetPid()
 {
