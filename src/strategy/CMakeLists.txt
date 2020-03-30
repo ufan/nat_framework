@@ -70,5 +70,10 @@ install(EXPORT Strategy_export
   FILE StrategyTargets.cmake
   )
 
+# Install: demo directory ############################################################
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/demo
+  DESTINATION share
+  )
+
 # Test ########################################################################
 # TODO: test
