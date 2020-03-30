@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DSTDIR="/home/jarvis/global/io/md_engine/engine0/"
+DSTDIR="@CMAKE_INSTALL_PREFIX@/global/io/md_engine/engine0/"
 
 if [[ $# -lt 3 ]]
 then
