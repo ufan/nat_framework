@@ -10,7 +10,7 @@
 #include "CCtpTrader.h"
 #include "CConfig.h"
 #include "CGlobalParameter.h"
-#include "TraderLogger.h"
+#include "SimpleLogger.h"
 #include "CEncodeConv.h"
 
 static const char* parseOrderStatus(char flag)

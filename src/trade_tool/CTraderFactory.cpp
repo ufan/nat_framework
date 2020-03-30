@@ -8,7 +8,7 @@
 #include "CTraderFactory.h"
 #include "CCtpTrader.h"
 #include "CCtpMiniTrader.h"
-#include "TraderLogger.h"
+#include "SimpleLogger.h"
 #include "CEESTrader.h"
 
 CTraderFactory::CTraderFactory()

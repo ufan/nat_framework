@@ -6,7 +6,7 @@
  */
 
 #include "CCtpMiniTrader.h"
-#include "TraderLogger.h"
+#include "SimpleLogger.h"
 
 
 CCtpMiniTrader::CCtpMiniTrader()

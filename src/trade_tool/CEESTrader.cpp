@@ -2,7 +2,7 @@
 #include "CGlobalParameter.h"
 #include "CEESTrader.h"
 #include "CConfig.h"
-#include "TraderLogger.h"
+#include "SimpleLogger.h"
 #include "EnumStatus.h"
 #include "CEncodeConv.h"
 
