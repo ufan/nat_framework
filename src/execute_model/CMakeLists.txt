@@ -16,6 +16,10 @@
 add_library(ExecuteModel STATIC)
 add_library(Nat::ExecuteModel ALIAS ExecuteModel)
 
+# change the output name of the library
+set_target_properties(ExecuteModel
+  PROPERTIES OUTPUT_NAME execstg)
+
 target_sources(ExecuteModel
   PRIVATE   "CExecuteStrategy.cpp"
             "CABM.cpp"
