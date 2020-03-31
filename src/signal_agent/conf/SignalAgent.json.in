@@ -1,7 +1,7 @@
 {
 	"listen_ip" : "0.0.0.0",
 	"listen_port" : 6688,
-	"log4cplus" : "./salogger.cnf",
+	"log4cplus" : "@CMAKE_INSTALL_PREFIX@/SignalAgent/conf/salogger.cnf",
 	"timeout_s" : 6,
 	"scan_period_us" : 1000,
 	"unload_scan_period_ms" : 100,

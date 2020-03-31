@@ -57,7 +57,9 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
   )
 
 # Install: config files ############################################################
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/conf/
+configure_file(conf/TradeTool.cnf.in conf/TradeTool.cnf)
+
+install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/conf/
   DESTINATION TradeTool/conf
   FILES_MATCHING PATTERN "*.conf"
   )

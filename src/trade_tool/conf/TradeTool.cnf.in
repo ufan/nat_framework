@@ -15,7 +15,7 @@ passwd = 888888
 front = tcp://180.168.146.187:10003
 
 [EES]
-lib_path    = ../ThirdParty/EES
+lib_path    = @CMAKE_INSTALL_PREFIX@/lib/ThirdParty/EES
 trade_ip    = 183.129.220.106
 trade_port  = 40000
 trade_udo_port = 40001

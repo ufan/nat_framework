@@ -128,7 +128,9 @@ target_link_libraries(StgManager
   )
 
 # Install: config files ############################################################
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/conf/
+configure_file(conf/logger.cnf.in conf/logger.cnf)
+
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/conf/ ${CMAKE_CURRENT_BINARY_DIR}/conf/
   DESTINATION TunnelAgent/conf
   FILES_MATCHING PATTERN "*.cnf"
   )

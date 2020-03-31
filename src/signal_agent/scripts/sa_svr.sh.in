@@ -1,0 +1,60 @@
+#!/bin/bash
+
+
+BIN=@CMAKE_INSTALL_PREFIX@/SignalAgent/bin/SignalAgent
+CONF=@CMAKE_INSTALL_PREFIX@/SignalAgent/conf/SignalAgent.json
+
+
+function GetPid()
+{
+	PID=`ps -ef|grep ${BIN}|grep ${CONF}|grep -v grep|awk '{print $2}'`
+	echo ${PID}
+}
+
+function Start()
+{
+	PID=`GetPid`
+	if [[ -z ${PID} ]]
+	then
+		${BIN} -f ${CONF}
+	fi
+}
+
+function Stop()
+{
+	PID=`GetPid`
+	if [[ -n ${PID} ]]
+	then
+		kill ${PID}
+	fi
+}
+
+function check()
+{
+	PID=`GetPid`
+	if [[ -z ${PID} ]]
+	then
+		echo "ALERT|$(date +'%Y%m%d %H:%M:%S')|${BIN} down!"
+	fi
+}
+
+
+if [[ $1 == "start" ]]
+then
+	Start
+elif [[ $1 == "stop" ]]
+then
+	Stop
+elif [[ $1 == "restart" ]]
+then
+	Stop
+	Start
+elif [[ $1 == "check" ]]
+then
+	check
+else
+	echo "usage: $0 [start|stop|restart|check]"
+	exit -1
+fi
+
+
