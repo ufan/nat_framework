@@ -47,7 +47,7 @@ target_link_libraries(TradeTool
           Config
           EES::Trader
           CTP::CTP
-          dl
+          ${CMAKE_DL_LIBS}
  )
 
 # Install: the headers ############################################################

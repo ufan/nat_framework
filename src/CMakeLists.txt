@@ -95,6 +95,7 @@ add_subdirectory(dump)
 add_subdirectory(trade_tool)
 add_subdirectory(tools)
 add_subdirectory(crypt)
+add_subdirectory(tunnel_agent)
 
 add_subdirectory(scripts)
 

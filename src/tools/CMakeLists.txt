@@ -70,7 +70,7 @@ configure_file(scripts/warehouse2mmap.sh.in scripts/warehouse2mmap.sh)
 
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/scripts/ ${CMAKE_CURRENT_BINARY_DIR}/scripts/
   DESTINATION tools
-  FILES_MATCHING PATTER "*.sh"
+  FILES_MATCHING PATTERN "*.sh"
   )
 
 # Test ########################################################################
