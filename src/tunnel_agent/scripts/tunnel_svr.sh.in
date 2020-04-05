@@ -1,0 +1,29 @@
+#!/bin/bash
+
+LIB=@CMAKE_INSTALL_PREFIX@/lib
+BIN=@CMAKE_INSTALL_PREFIX@/TunnelAgent/bin/TunnelAgent
+CONF=@CMAKE_INSTALL_PREFIX@/TunnelAgent/conf/TunnelAgent.cnf
+
+function start()
+{
+	LD_LIBRARY_PATH=${LIB} ${BIN} -f ${CONF}
+}
+
+function stop()
+{
+	PID=`ps -ef|grep ${BIN}|grep ${CONF}|grep -v grep|awk '{print $2}'`
+    kill $PID
+}
+
+
+if [[ $1 == "start" ]]
+then
+	start
+elif [[ $1 == "stop" ]]
+then
+	stop
+elif [[ $1 == "restart" ]]
+then
+	stop
+	start
+fi

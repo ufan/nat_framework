@@ -72,8 +72,6 @@ function AddPath()
 
 function Deploy()
 {
-	chown ${ME}:${ME} -R @CMAKE_INSTALL_PREFIX@/ 2>/dev/null || sudo chown ${ME}:${ME} -R @CMAKE_INSTALL_PREFIX@/
-
 	AddCron
 
 	sudo sh -c 'echo /var/crash/core-%e > /proc/sys/kernel/core_pattern'

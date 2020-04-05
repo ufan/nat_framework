@@ -1,0 +1,16 @@
+#!/bin/bash
+
+BIN=@CMAKE_INSTALL_PREFIX@/TunnelAgent/bin/TunnelAgent
+CONF=@CMAKE_INSTALL_PREFIX@/TunnelAgent/conf/TunnelAgent.cnf
+
+function GetPid()
+{
+	PID=`ps -ef|grep ${BIN}|grep ${CONF}|grep -v grep|awk '{print $2}'`
+	echo ${PID}
+}
+
+PID=`GetPid`
+if [[ -z ${PID} ]]
+then
+	echo "ALERT|$(date +'%Y%m%d %H:%M:%S')|${BIN} down!"
+fi

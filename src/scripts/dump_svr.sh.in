@@ -1,0 +1,40 @@
+#!/bin/bash
+
+LIB=@CMAKE_INSTALL_PREFIX@/lib:@CMAKE_INSTALL_PREFIX@/lib/ThirdParty/CTP
+
+ENGINE=@CMAKE_INSTALL_PREFIX@/dump/bin/CTPDumper
+CONF=@CMAKE_INSTALL_PREFIX@/dump/conf/dump.json
+
+function GetPid()
+{
+	PID=`ps -ef|grep ${ENGINE}|grep ${CONF}|grep -v grep|awk '{print $2}'`
+	echo ${PID}
+}
+
+function Start()
+{
+	PID=`GetPid`
+	if [[ -z ${PID} ]]
+	then
+		ulimit -c unlimited
+		LD_LIBRARY_PATH=${LIB} ${ENGINE} ${CONF} 2>&1 &
+	fi
+}
+
+function Stop()
+{
+	PID=`GetPid`
+	if [[ -n ${PID} ]]
+	then
+		kill -s 2 ${PID}
+	fi
+}
+
+
+if [[ $1 == "start" ]]
+then
+	Start
+elif [[ $1 == "stop" ]]
+then
+	Stop
+fi

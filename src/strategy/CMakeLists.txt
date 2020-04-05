@@ -16,6 +16,10 @@
 add_library(Strategy STATIC)
 add_library(Nat::Strategy ALIAS Strategy)
 
+# change the output name of the library
+set_target_properties(Strategy
+  PROPERTIES OUTPUT_NAME strategy)
+
 target_sources(Strategy
   PRIVATE   "CStrategy.cpp"
             "CStrategyProcess.cpp"
@@ -64,6 +68,11 @@ install(EXPORT Strategy_export
   DESTINATION ${NAT_CMAKE_INSTALL_DIR}
   NAMESPACE Nat::
   FILE StrategyTargets.cmake
+  )
+
+# Install: demo directory ############################################################
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/demo
+  DESTINATION share
   )
 
 # Test ########################################################################

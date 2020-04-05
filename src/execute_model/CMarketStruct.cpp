@@ -3,6 +3,7 @@
 #include "MurmurHash2.h"
 #include "Logger.h"
 #include <math.h>
+#include "CTimer.h"
 
 CMarketStruct::CMarketStruct(){
     tradevol_ = 0;

@@ -1,0 +1,6 @@
+#!/bin/bash
+
+LIB=@CMAKE_INSTALL_PREFIX@/lib/ThirdParty/CTP
+BIN=@CMAKE_INSTALL_PREFIX@/TradeTool/TradeTool
+LD_LIBRARY_PATH=${LIB}:${LD_LIBRARY_PATH} ${BIN} $*
+

@@ -13,7 +13,7 @@
 #]===============================================================================]
 
 # Target: Crypt ##############################################################
-add_library(Crypt STATIC)
+add_library(Crypt OBJECT)
 
 target_sources(Crypt
   PRIVATE   "CCrypt.cpp"
@@ -30,22 +30,6 @@ target_link_libraries(Crypt
   PUBLIC Logger
          OpenSSL::SSL
          OpenSSL::Crypto
-  )
-
-# Install: the headers ############################################################
-
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
-  TYPE INCLUDE
-  FILES_MATCHING PATTERN "*.h"
-  )
-
-# Install the target ########################################
-install(TARGETS Crypt EXPORT Crypt_export)
-
-install(EXPORT Crypt_export
-  DESTINATION ${NAT_CMAKE_INSTALL_DIR}
-  NAMESPACE Nat::
-  FILE CryptTargets.cmake
   )
 
 # Test ########################################################################

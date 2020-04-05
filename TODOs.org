@@ -83,3 +83,15 @@
 <2020-03-29 So>
 [[file:~/src/nat_framework/NAT/src/scripts/deploy.sh][file:~/src/nat_framework/NAT/src/scripts/deploy.sh]]
 
+* TODO risk_svr.sh needed
+<2020-03-29 So>
+[[file:~/src/nat_framework/NAT/src/scripts/install_template.sh::echo "* * * * * /home/jarvis/TunnelAgent/scripts/check_alive.sh >> /home/jarvis/TunnelAgent/scripts/down.log 2>&1" ;]]
+
+* TODO not yet copied to SDK
+<2020-03-30 Mo>
+[[file:~/src/nat_framework/NAT/src/tools/makefile::cp $@ ${BASEDIR}/../release/SDK/$@]]
+
+* TODO What's the role of logdb?
+<2020-03-31 Di>
+[[file:~/src/nat_framework/NAT/src/logdb/makefile::LogDB.so: CLogDB.o CLogTable.o CPyLogTable.o CPyLogDB.o]]
+

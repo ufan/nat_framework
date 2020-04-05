@@ -40,7 +40,7 @@ target_include_directories(Utility
   )
 
 target_link_libraries(Utility
-  PRIVATE CommonHeader
+  PUBLIC CommonHeader
   )
 
 # Install: the headers ############################################################

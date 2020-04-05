@@ -75,12 +75,14 @@ set(NAT_CMAKE_INSTALL_DIR "lib/cmake/NatFramework-${CMAKE_PROJECT_VERSION}")
 # Subdiretories
 
 add_subdirectory(include)
+add_subdirectory(config)
 add_subdirectory(utility)
 add_subdirectory(logger)
 add_subdirectory(io)
 add_subdirectory(common)
 
 add_subdirectory(strategy)
+add_subdirectory(execute_model)
 add_subdirectory(md)
 add_subdirectory(td)
 
@@ -89,7 +91,13 @@ add_subdirectory(account)
 add_subdirectory(bar)
 add_subdirectory(pyext)
 
+add_subdirectory(dump)
+add_subdirectory(trade_tool)
+add_subdirectory(tools)
 add_subdirectory(crypt)
+add_subdirectory(tunnel_agent)
+add_subdirectory(server_utils)
+add_subdirectory(signal_agent)
 
 add_subdirectory(scripts)
 
