@@ -47,7 +47,7 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 # Set default install prefix to '/home/jarvis'
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-  set(CMAKE_INSTALL_PREFIX "/home/yong/nat" CACHE PATH "Default deployment direcotry" FORCE)
+  set(CMAKE_INSTALL_PREFIX "/home/jarvis" CACHE PATH "Default deployment direcotry" FORCE)
 endif()
 
 #=================================================================================
@@ -56,6 +56,8 @@ endif()
 # find_program(MAKE_EXE NAMES gamke namke make)
 #=================================================================================
 # External Dependency
+
+set(Boost_ROOT "/home/yong/boost/1_72_0" CACHE PATH "Boost Library Directory") # can be omitted and provided by user
 
 # open source projects
 add_subdirectory(external)

@@ -8,10 +8,13 @@
 * CMake
   The preferred build system is *CMake* by /cmake -DCMAKE_INSTALL_PPREFIX=<XXX> -DBoost_ROOT=<XXX>/. 
 ** Pre-requsites
-*** install python2.7
-*** install and build boost_python agains python2.7
-*** install CMake latest (>=3.15)
-*** autotools is needed to build libev
+*** /python2.7/
+*** /boost 1.72.00/ 
+    /boost_python/ against /python2.7/
+*** /CMake/ latest (>=3.15)
+*** /autotools/ is needed to build libev
+*** /openssl/
+    
 ** Dependencies
 *** External (i.e. source available)
 **** log4cplus
@@ -19,8 +22,36 @@
 *** ThirdParty (i.e. only binary library available)
 **** CTP
 **** EES
-**** Xt
+**** Xt     
      
+** Configure & Build
+   
+   Example snippet:
+   #+begin_src bash
+     mkdir build && cd build
+     cmake -DCMAKE_INSTALL_PREFIX=install_prefix -DENABLE_LIBEV_BUILD=ON ../src
+     make -j8
+     make install
+   #+end_src
+   
+*** CMAKE_INSTALL_PREFIX
+    The default installation prefix is */home/jarvis* if user does not pass in customized /CMAKE_INSTALL_RPEFXI/.
+
+*** ENABLE_LIBEV_BUILD
+    This option controls whether building library /libev/ in the cmake configuration stage.
+    The default value is *ON*.
+    /libev/ should at least be built once.
+    Normally, in the first time of cmake configuration, the option should be *ON* so that /libev/ is built.
+    In the following times, the option can be set to *OFF* to save time of configuration.
+    
+*** Boost_ROOT
+    The directory points to the installation direcotry of /boost/ library.
+    
+*** PYTHON2_ROOT_DIR
+    The directory of python2 installation. This option normally can be ignored.
+    /CMake/ could find the correct python2 by itself if there is only one version of python2 installed.
+    If several versions of /python2/ installed, this option should point to the one which is used to complie /boost/ library.
+    
 * /make/ based build system
 ** copy ThirdParty under src/ directory
 ** edit /src/make/head.mk/, change *boost_DIR* and *PYTHON_BIN* accordingly
