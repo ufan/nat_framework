@@ -1,0 +1,68 @@
+#!/bin/bash
+
+# library path
+LIB_PREFIX=@CMAKE_INSTALL_PREFIX@
+LIB=${LIB_PREFIX}/lib:${LIB_PREFIX}/lib/CTP:${LIB_PREFIX}/lib/Xele:${LIB_PREFIX}/lib/EES:${LIB_PREFIX}/lib/Xt:${LIB_PREFIX}/OpenOnload
+
+
+BIN=@CMAKE_INSTALL_PREFIX@/MDEngine/bin/MDEngine
+CONF=@CMAKE_INSTALL_PREFIX@/MDEngine/conf/mdengine_test.json
+
+
+# unlimited core dump file size
+ulimit -c unlimited
+
+
+function GetPid()
+{
+	  PID=`ps -ef|grep ${BIN}|grep ${CONF}|grep -v grep|awk '{print $2}'`
+	  echo ${PID}
+}
+
+function Start()
+{
+	  PID=`GetPid`
+	  if [[ -z ${PID} ]]
+	  then
+		    LD_LIBRARY_PATH=${LIB} ${BIN} -f ${CONF}
+	  fi
+}
+
+function Stop()
+{
+	  PID=`GetPid`
+	  if [[ -n ${PID} ]]
+	  then
+		    kill ${PID}
+	  fi
+}
+
+function check()
+{
+	  PID=`GetPid`
+	  if [[ -z ${PID} ]]
+	  then
+		    echo "ALERT|$(date +'%Y%m%d %H:%M:%S')|${BIN} down!"
+	  fi
+}
+
+
+if [[ $1 == "start" ]]
+then
+	  Start
+elif [[ $1 == "stop" ]]
+then
+	  Stop
+elif [[ $1 == "restart" ]]
+then
+	  Stop
+	  Start
+elif [[ $1 == "check" ]]
+then
+	  check
+else
+	  echo "usage: $0 [start|stop|restart|check]"
+	  exit -1
+fi
+
+

@@ -120,8 +120,17 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
 # Install: config files ############################################################
 
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/conf/
-  DESTINATION conf
+  DESTINATION MDEngine/conf
   FILES_MATCHING PATTERN "*.json"
+  )
+
+# Install: scripts ############################################################
+configure_file(scripts/md_svr.sh.in scripts/md_svr.sh @ONLY)
+
+install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/scripts
+  DESTINATION MDEngine
+  FILES_MATCHING PATTERN "*.sh"
+  PERMISSIONS OWNER_EXECUTE OWNER_READ OWNER_WRITE
   )
 
 # Install: executables ########################################################

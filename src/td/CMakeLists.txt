@@ -156,8 +156,17 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
 # Install: config files ############################################################
 
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/conf/
-  DESTINATION conf
+  DESTINATION TDEngine/conf
   FILES_MATCHING PATTERN "*.json"
+  )
+
+# Install: scripts ############################################################
+configure_file(scripts/td_svr.sh.in scripts/td_svr.sh @ONLY)
+
+install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/scripts
+  DESTINATION TDEngine
+  FILES_MATCHING PATTERN "*.sh"
+  PERMISSIONS OWNER_EXECUTE OWNER_READ OWNER_WRITE
   )
 
 # Install: executables ########################################################
