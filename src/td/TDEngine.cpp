@@ -58,8 +58,12 @@ bool run(string conf)
 	in >> j_conf;
 	in.close();
 
+	std::cout << "Logger configuration file: " << j_conf["/TDEngine/log4cplus"_json_pointer] << std::endl;
 	initLogger(j_conf["/TDEngine/log4cplus"_json_pointer]);
+
+	std::cout << "TD engine type: " << j_conf["/TDEngine/type"_json_pointer] << std::endl;
 	string type = j_conf["/TDEngine/type"_json_pointer];
+
 	p_engine = createEngine(type);
 	if(p_engine == nullptr) return false;
 

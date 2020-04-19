@@ -154,11 +154,17 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
   )
 
 # Install: config files ############################################################
+configure_file(conf/tdengine.json.in conf/tdengine.json @ONLY)
+configure_file(conf/tdengine_test.json.in conf/tdengine_test.json @ONLY)
+configure_file(conf/tdengine_offhour.json.in conf/tdengine_offhour.json @ONLY)
+configure_file(conf/tdlogger.cnf.in conf/tdlogger.cnf @ONLY)
 
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/conf/
-  DESTINATION TDEngine/conf
-  FILES_MATCHING PATTERN "*.json"
+install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/conf
+  DESTINATION TDEngine
   )
+
+# make the log directory
+install(DIRECTORY DESTINATION TDEngine/log)
 
 # Install: scripts ############################################################
 configure_file(scripts/td_svr.sh.in scripts/td_svr.sh @ONLY)

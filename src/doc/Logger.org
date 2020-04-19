@@ -1,0 +1,12 @@
+* Logger
+The logger library is /log4cplus/.
+Integration of /log4cplus/ is managed by *CMake* as a external project.
+/log4cplus/ is modeled after /log4j/, so the documentation of /log4cplus/ is the same as /log4j/.
+[[http://logging.apache.org/log4j/1.2/manual.html][Website of /log4j/]].
+
+** Usage
+The usage of /log4cplus/ in /NatFramework/ is:
+1. Only *root* logger is used, no logger hierarchy below *root* logger
+2. A configuration file is used to configure /log4cplus/. The path of the this configuration file is setup in *JSON* configuration file by the key "log4cplus".
+3. If "log4cplus" is set, but the logger configuration file does not exist, the output of logger is streamed to console screen by default.
+4. If "log4cplus" does not exist, the program will fail without error message.

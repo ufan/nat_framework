@@ -1,13 +1,16 @@
 {
 	"TDEngine":
 	{
-		"type":"ctpcomm"
+		"type":"ctp",
+		"log4cplus":"@CMAKE_INSTALL_PREFIX@/TDEngine/conf/tdlogger.cnf",
+		"request_id_range" : [1000, 1000000]
 	},
 	"CTPTD":
 	{
 		"name" : "td_engine",
 		"trade_flow_path" : "./trade_flow/",
-		"front_uri" : "tcp://181.168.146.187:10030",
+		"myid_8b" : "todo",
+		"front_uri" : "tcp://180.168.146.187:10030",
 		"timeout" : 5,
 		"Account" : [
 			{
@@ -29,5 +32,9 @@
 				"Password" : "jrqh@123"
 			}
 		]
-	}
+	},
+	"AccountDefault":
+	{
+	},
+	"Account": []
 }

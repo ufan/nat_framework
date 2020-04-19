@@ -35,17 +35,21 @@ bool ITDEngine::initEngine(const json& j_conf)
 		ALERT("init engine err.");
 		return false;
 	}
+  LOG_DBG("init engine succeeded.");
+
 	if(!getBaseInfo())
 	{
 		ALERT("getBaseInfo err.");
 		return false;
 	}
+  LOG_DBG("getBaseInfo successfully.");
+
 	if(!loadOrderTrack() || !updateOrderTrack())
 	{
 		ALERT("init order track err.");
 		return false;
 	}
-	LOG_DBG("request_id_:%d", request_id_);
+  LOG_DBG("loadOrderTrack and updateOrderTrack successfully.");
 
 	if(!initAccountUtilis(j_conf))
 	{
