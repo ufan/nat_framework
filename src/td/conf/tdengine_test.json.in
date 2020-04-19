@@ -9,7 +9,7 @@
 	{
 		"name" : "td_engine",
 		"trade_flow_path" : "./trade_flow/",
-		"myid_8b" : "todo",
+		"myid_8b" : "miaosibo",
 		"front_uri" : "tcp://180.168.146.187:10030",
 		"timeout" : 5,
 		"Account" : [
