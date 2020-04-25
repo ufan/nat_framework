@@ -23,6 +23,26 @@
      * not limitation on trading commands
    - non-free for /L2/ market data
     
+** 使用步骤
+  1)  创建SPI 和API 实例。
+      这里的SPI 是指开发者创建的自己的类，该类已经继承了接口中的SPI 接口类（CThostFtdcTraderSpi 或 CThostFtdcMdSpi）。
+      而API 即接口中提供的CThostFtdcMdApi 或CThostFtdcTraderApi。
+
+  2) 向API 实例注册SPI 实例。
+
+  3) 向API 实例注册前置地址。
+     交易接口需要注册交易前置地址，行情接口需要注册行情前置地址。
+
+  4) 订阅公有流（仅限交易接口，行情接口不需要）。
+     用于接收公有数据，如合约在场上的交易状态。默认模式是从上次断开连接处继续收取交易所发布数据（Resume 模式）开发者还可以指定全部重新获取（Restart），或从登陆后获取（Quick）。
+     订阅私有流（仅限交易接口，行情接口不需要）。
+
+  5) 用于接收私有数据，如报单回报。默认模式是从上次断开连接处继续收取交易所发布数据（Resume 模式）开发者还可以指定全部重新获取（Restart），或从登陆后获取（Quick）。
+
+  6) 初始化（Init）
+
+  7) 等待线程退出（Join）
+
 * FTD protocol
   FTD协议定义了期货数据的标准，为三大期货市场使用。
   这也是CTP可以同时连接三大期货市场的原因。
