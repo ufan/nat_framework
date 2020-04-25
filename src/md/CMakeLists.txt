@@ -118,8 +118,12 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
   )
 
 # Install: config files ############################################################
+# configure_file(conf/tdengine.json.in conf/tdengine.json @ONLY)
+# configure_file(conf/mdengine_test.json.in conf/mdengine_test.json @ONLY)
+configure_file(conf/mdengine_offhour.json.in conf/mdengine_offhour.json @ONLY)
+configure_file(conf/mdlogger.cnf.in conf/mdlogger.cnf @ONLY)
 
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/conf/
+install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/conf/
   DESTINATION MDEngine/conf
   FILES_MATCHING PATTERN "*.json"
   )

@@ -1,0 +1,11 @@
+/*
+ *    urconfig.properties
+ */
+log4cplus.rootLogger=TRACE, APPENDER
+
+log4cplus.appender.APPENDER=log4cplus::RollingFileAppender
+log4cplus.appender.APPENDER.MaxBackupIndex=3
+log4cplus.appender.APPENDER.MaxFileSize=100MB
+log4cplus.appender.APPENDER.File=@CMAKE_INSTALL_PREFIX@/MDEngine/log/MDEngine.log
+log4cplus.appender.APPENDER.layout=log4cplus::PatternLayout
+log4cplus.appender.APPENDER.layout.ConversionPattern=%D|%l|%p|%m%n

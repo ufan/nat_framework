@@ -16,6 +16,7 @@ configure_file(dump_svr.sh.in dump_svr.sh @ONLY)
 configure_file(tools.sh.in tools.sh @ONLY)
 configure_file(alert_listener.py.in alert_listenser.py @ONLY)
 configure_file(alert_check_alive.sh.in alert_check_alive.sh @ONLY)
+configure_file(config.sh.in config.sh @ONLY)
 
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/ ${CMAKE_CURRENT_BINARY_DIR}/
   DESTINATION scripts

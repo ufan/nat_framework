@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# library path
+export NAT_DIR=@CMAKE_INSTALL_PREFIX@
+export LD_LIBRARY_PATH=${NAT_DIR}/lib:${NAT_DIR}/lib/CTP:${NAT_DIR}/lib/Xele:${NAT_DIR}/lib/EES:${NAT_DIR}/lib/Xt:${NAT_DIR}/OpenOnload:${LD_LIBRARY_PATH}
+export PATH=${NAT_DIR}/bin:${NAT_DIR}/TDEngine/bin:${NAT_DIR}/MDEngine/bin:${NAT_DIR}/SignalAgent/bin:${NAT_DIR}/TradeTool:${NAT_DIR}/TunnelAgent:${NAT_DIR}/tools:${PATH}

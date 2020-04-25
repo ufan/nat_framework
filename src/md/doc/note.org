@@ -1,4 +1,4 @@
-* /md/ package
+* /md/ packag
 ** Helper
    Five types Helper provides:
    - CMDHelperComm ::
@@ -6,3 +6,67 @@
    - CMDHelperReplayIO ::
    - CMDHelperReplayCtpDump ::
    - CMDHelperPython :: 
+** Engine type
+*** Interface defined in *IMDEngine*
+    *IMDEngine* in the abstract base class for all types of md engine.
+    It defines the interface of md engine and the common implementation functions for all types of implementation.
+    
+**** Interface functions to be implemented in daughter class
+     All the following virtual functions are pure abstract.
+     This means no default behaviour defined, the developer is meant to provide his own implementation.
+     
+     - init() ::
+     - start() ::
+     - join() ::
+     - release() ::
+     - subscribe(const vector<string>) ::
+     - unsubscribe(const vector<string>) ::
+    
+**** Common functions available to all daughter class
+     The following functions are not virtual functions.
+     They provide some common behaviour which are needed in all types of implementation.
+     More importantly, they defines the engine's working procedure.
+     The underlying behaviour of a specific type of engine is processed by invoking the pure abstract functions defined above.
+     They are the user interface to end user.
+     
+     - initEngine(const json& j_conf) :: 
+       Initialize the engine with following steps
+       1) init() :: 
+       2) createPath() ::
+       3) md_writer_.setPageSize() :: if the "/MDEngine/PageSize" item exists in configuration
+       4) init data member /self_id_/ from /name_/
+       5) CSystemIO ::instance().inti()
+       6) getBaseInfo() :: get information of td engine the name of which is provided by configuration file from "/TDEngine" item
+     - runEngine() ::
+     - stop() ::
+     - engine_subscribe(vector<string> &instr) :: 
+     - engine_unsubscribe(vector<string> &instr) ::
+     - querySubscribedInstrument() :: return the list of subscribed instruments
+     - writeStartSignal() ::
+     - name() ::  return the name of this engine
+     - getBaseInfo(string td_engine_name, int timeout) :: 
+ 
+**** Data members
+     - do_running_ /(volatile bool)/ ::
+     - md_writer_ /(*CSafteRawIOWriter*)/ ::
+     - self_id_ /(int)/ ::
+     - day_night_mode_ /(uint8_t)/ :: Working mode of this engine. 
+       It's initialized in the initializor based on current time of the day when the engine is created.
+       It's day mode if engine is created from 6:00 ~ 18:00, otherwise it's night mode.
+     - name_ /(string)/ :: 
+     - subs_instr_ /(map<string,int>)/ :: a list of subscribed instruments
+     - config_ /(json)/ :: *JSON* configuration information provide by end user
+       
+*** /ctp/ from *CMDEngineCtp*
+*** /ees/ from *CMDEngineEES*
+*** /onload_ees/ from *CMDEngineEESOnload*
+
+** Configuration
+   - MDEngine :: main entry point
+     - type :: engine backend, available option "ctp", "ees", "onload_ees"
+     - log4cplus :: logger service configuration file
+   - CTPMD :: configuration for the engine based on *CTP*
+     - name :: name of the engine, it's used in *CMDEngineCtp::init()*
+     - con_dir :: used in *CMDEngineCtp::init()*
+     - front :: used in *CMDEngineCtp::init()*
+     - subscribe :: TODO

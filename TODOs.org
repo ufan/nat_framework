@@ -95,3 +95,7 @@
 <2020-03-31 Di>
 [[file:~/src/nat_framework/NAT/src/logdb/makefile::LogDB.so: CLogDB.o CLogTable.o CPyLogTable.o CPyLogDB.o]]
 
+* TODO what's the usage of 'subscribe' key
+<2020-04-25 Sa>
+[[file:~/src/nat_framework/NAT/src/md/doc/note.org::*Configuration][Configuration]]
+
