@@ -18,6 +18,16 @@ public:
 	CMDEngineCtp();
 	virtual ~CMDEngineCtp();
 
+	// ctp callbacks
+	void OnFrontConnected();
+	void OnFrontDisconnected(int nReason);
+	void OnRspError(CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
+	void OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
+	void OnRspSubMarketData(CThostFtdcSpecificInstrumentField *pSpecificInstrument, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
+	void OnRtnDepthMarketData(CThostFtdcDepthMarketDataField *p_data);
+
+protected:
+
 	virtual bool init();
 
 	virtual bool start();
@@ -29,14 +39,6 @@ public:
 	virtual void subscribe(const vector<string> &instr);
 
 	virtual void unsubscribe(const vector<string> &instr);
-
-	// ctp callbacks
-	void OnFrontConnected();
-	void OnFrontDisconnected(int nReason);
-	void OnRspError(CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
-	void OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
-	void OnRspSubMarketData(CThostFtdcSpecificInstrumentField *pSpecificInstrument, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
-	void OnRtnDepthMarketData(CThostFtdcDepthMarketDataField *p_data);
 
 private:
 	CThostFtdcMdApi			*p_api_;

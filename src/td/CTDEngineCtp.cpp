@@ -48,6 +48,10 @@ bool CTDEngineCtp::init(const json& j_conf)
 
 	timout_ns_ = ctp_conf["timeout"].get<long>() * 1000000000L;		// timeout in seconds
 	string trade_flow_path = ctp_conf["trade_flow_path"];
+	if(!createPath(trade_flow_path.data())){
+		LOG_ERR("create dir %s err", trade_flow_path.data());
+		return false;
+	}
 	connect(timout_ns_, trade_flow_path);
 	if(!is_connected())
 	{

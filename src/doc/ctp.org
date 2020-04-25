@@ -1,0 +1,49 @@
+* CTP (Comprehensive Transaction Platorm)
+  综合交易平台 (CTP) is developed by [[www.sfit.com.cn][上海期货信息技术有限公司(SFIT)]] based on Futures Trading Data exchange protocol (FTD).
+  目标客户群是期货公司。
+  由三个子系统组成：1) 交易系统 2) 结算系统 3) 风控系统.
+  开放的API是其中的交易系统部分，用于接受行情与下达交易指令。
+  其它两个系统由期货公司通过CTP管理平台管理，与终端用户无关。
+
+  CTP平台一般由期货公司与上期技术签订合约后，由上期技术部署再上期技术机房内，并由上期技术负责维护。
+  
+  SimNow提供了基于CTP的模拟盘，可以用于客户端测试。
+
+** 通讯模式 
+   CTP提供了三种通讯模式:
+   1）对话 : request-response
+   2) 广播 : broadcast
+   3）私有 : point-to-point
+   
+** 行情数据
+   - free: 2 tick/second
+   - no historic records
+   - limitation on request:
+     * max one times of request for market data
+     * not limitation on trading commands
+   - non-free for /L2/ market data
+    
+* FTD protocol
+  FTD协议定义了期货数据的标准，为三大期货市场使用。
+  这也是CTP可以同时连接三大期货市场的原因。
+
+*** Ftdc
+    'c' means 'compressed'.
+
+* 交易系统类别
+  交易系统是面对期货公司的产品，因为国内期货交易必须通过期货公司进行，个人不能直连期货交易所。
+  期货公司一般会部署不同种类的交易系统，用于处理不同的客户需求。
+  
+** 原生系统
+   四大期货交易所均有下属信息技术公司开发的交易系统接口：
+   1) 郑商所下属子公司 郑州易盛信息技术有限公司 接口代表：启明星API
+   2) 大商所下属子公司 大连飞创信息技术有限公司 接口代表：XSpeed
+   3) 上期所下属子公司 上海期货信息技术有限公司，接口代表：CTP、CTPMini
+   4) 中金所下属子公司 上海金融期货信息技术有限公司，接口代表：飞马
+  
+** 第三方系统
+   除了原生系统，也有第三方接口服务商(同样是通过期货公司购买，然后提供给客户）。
+   如：金仕达 飞鼠 量投科技 的 QDP接口 盈透证券 通联数据
+   
+** 行情提供商
+   如：上海文华财经 上海大智慧 深圳国泰安 万德资讯 深圳财富趋势 东方财富网 同花顺 恒生电子

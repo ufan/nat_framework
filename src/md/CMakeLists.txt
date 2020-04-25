@@ -123,10 +123,12 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
 configure_file(conf/mdengine_offhour.json.in conf/mdengine_offhour.json @ONLY)
 configure_file(conf/mdlogger.cnf.in conf/mdlogger.cnf @ONLY)
 
-install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/conf/
-  DESTINATION MDEngine/conf
-  FILES_MATCHING PATTERN "*.json"
+install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/conf
+  DESTINATION MDEngine
   )
+
+# make the log directory
+install(DIRECTORY DESTINATION MDEngine/log)
 
 # Install: scripts ############################################################
 configure_file(scripts/md_svr.sh.in scripts/md_svr.sh @ONLY)

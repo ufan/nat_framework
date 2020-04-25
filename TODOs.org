@@ -99,3 +99,11 @@
 <2020-04-25 Sa>
 [[file:~/src/nat_framework/NAT/src/md/doc/note.org::*Configuration][Configuration]]
 
+* TODO What's the log directory?
+<2020-04-25 Sa>
+[[file:~/src/nat_framework/NAT/src/scripts/tools.sh.in::BASE=@CMAKE_INSTALL_PREFIX@/logdir/logs_${NEXTDAY}]]
+
+* TODO Is this correct macro format??
+<2020-04-25 Sa>
+[[file:~/src/nat_framework/NAT/install/include/SysConf.h::#define IO_SYSTEM_MSG_PATH IO_SYSTEM_MSG_DIR "msg"]]
+

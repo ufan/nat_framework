@@ -8,7 +8,7 @@
 	"CTPTD":
 	{
 		"name" : "td_engine",
-		"trade_flow_path" : "@CMAKE_INSTALL_PREFIX@/TDEngine//trade_flow/",
+		"trade_flow_path" : "@CMAKE_INSTALL_PREFIX@/TDEngine/trade_flow/",
 		"front_uri" : "tcp://181.168.146.187:10030",
 		"timeout" : 5,
 		"Account" : [

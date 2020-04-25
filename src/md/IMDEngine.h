@@ -31,6 +31,23 @@ public:
 
 	string name() {return name_;}
 
+	vector<string> querySubscribedInstrument();
+
+	bool initEngine(const json& j_conf);
+
+	void runEngine();
+
+  void stop() { do_running_ = false; }
+
+  void engine_subscribe(const vector<string> &instr);
+
+  void engine_unsubscribe(const vector<string> &instr);
+
+  void writeStartSignal();
+
+  bool getBaseInfo(string td_engine_name, int timeout);
+
+ protected:
 	virtual bool init() = 0;
 
 	virtual bool start() = 0;
@@ -43,21 +60,6 @@ public:
 
 	virtual void unsubscribe(const vector<string> &instr) = 0;
 
-	vector<string> querySubscribedInstrument();
-
-	bool initEngine(const json& j_conf);
-
-    void writeStartSignal();
-
-	void runEngine();
-
-    void stop() { do_running_ = false; }
-
-    void engine_subscribe(const vector<string> &instr);
-
-    void engine_unsubscribe(const vector<string> &instr);
-
-    bool getBaseInfo(string td_engine_name, int timeout);
 
 protected:
 	volatile bool		do_running_		= true;

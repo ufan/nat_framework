@@ -29,6 +29,10 @@ bool CMDEngineCtp::init()
 	name_ = config_["/CTPMD/name"_json_pointer];
 
 	string con_dir = config_["/CTPMD/con_dir"_json_pointer];
+	if(!createPath(con_dir.data())){
+		LOG_ERR("create dir %s err", con_dir.data());
+		return false;
+	}
 	p_api_ = CThostFtdcMdApi::CreateFtdcMdApi(con_dir.c_str(), false);
 
 	p_api_->RegisterSpi(this);

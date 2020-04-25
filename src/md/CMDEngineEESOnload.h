@@ -16,6 +16,11 @@ class CMDEngineEESOnload: public IMDEngine
 public:
 	virtual ~CMDEngineEESOnload();
 
+	void processMd(const void *);
+
+	static CMDEngineEESOnload	instance_;
+
+ protected:
 	virtual bool init();
 
 	virtual bool start();
@@ -27,10 +32,6 @@ public:
 	virtual void subscribe(const vector<string> &instr);
 
 	virtual void unsubscribe(const vector<string> &instr);
-
-	void processMd(const void *);
-
-	static CMDEngineEESOnload	instance_;
 };
 
 #endif /* SRC_MD_CMDENGINEEESONLOAD_H_ */

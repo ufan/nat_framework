@@ -17,6 +17,11 @@ public:
 	CMDEngineEES();
 	virtual ~CMDEngineEES();
 
+	bool connectTcp();
+
+	bool initMulticast();
+
+protected:
 	virtual bool init();
 
 	virtual bool start();
@@ -28,12 +33,6 @@ public:
 	virtual void subscribe(const vector<string> &instr);
 
 	virtual void unsubscribe(const vector<string> &instr);
-
-	bool connectTcp();
-
-	bool initMulticast();
-
-protected:
 	virtual void OnEqsConnected();
 	virtual void OnEqsDisconnected();
 	virtual void OnLoginResponse(bool bsuccess, const char* pReason);

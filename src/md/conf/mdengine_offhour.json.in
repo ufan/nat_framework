@@ -10,7 +10,7 @@
 		  "name" : "engine0",
       "timeout" : 3,
 		  "con_dir" : "@CMAKE_INSTALL_PREFIX@/MDEngine/con_dir/",
-		  "front" : ["tcp://180.168.146.187:10031"],
+		  "front" : ["tcp://180.168.146.187:10131"],
 		  "BrokerID" : "9999",
 		  "UserID" : "101903",
 		  "Password" : "888888",

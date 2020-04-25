@@ -33,6 +33,16 @@ target_include_directories(CommonHeader INTERFACE
 #   $<INSTALL_INTERFACE:include>
 #   )
 
+# make the global directory   #######################################################
+# install(DIRECTORY DESTINATION global/io/td_engine)
+# install(DIRECTORY DESTINATION global/io/md_engine)
+# install(DIRECTORY DESTINATION global/io/system)
+# install(DIRECTORY DESTINATION global/io/signal)
+# install(DIRECTORY DESTINATION global/io/strategy)
+# install(DIRECTORY DESTINATION global/logs/Strategy)
+# install(DIRECTORY DESTINATION global/logs/order_track)
+# install(DIRECTORY DESTINATION global/logs/account)
+
 # Install the related headers #########################################################
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/ ${CMAKE_CURRENT_BINARY_DIR}/
         TYPE INCLUDE
