@@ -1,27 +1,52 @@
 * CTP (Comprehensive Transaction Platorm)
+  
+** 概述
   综合交易平台 (CTP) is developed by [[www.sfit.com.cn][上海期货信息技术有限公司(SFIT)]] based on Futures Trading Data exchange protocol (FTD).
-  是专门为期货公司开发的一套期货经济业务管理系统， 由三个子系统组成：1) 交易系统 2) 结算系统 3) 风控系统。
+  是专门为期货公司开发的一套期货经济业务管理系统(交易系统)，用于对接期货公司与交易所系统，它由三个子系统组成：1) 交易系统 2) 结算系统 3) 风控系统。
   该系统能够同时联通国内四家期货交易所，支持国内商品期货和股指期货的交易结算业务，并能自动生成、报送保证金监控文件和反洗钱监控文件。
   
-  该系统的开发借鉴了上期所"新一代交易所系统"(NGES)的核心技术[fn:1]。是众多柜台系统中使用较多的一个，提供主席功能。
-  开放给一般投资者的API是其中的交易系统部分，用于接受行情与下达交易指令。 其它两个系统由期货公司通过CTP管理平台管理，与终端用户无关。
+  该系统的开发借鉴了上期所"新一代交易所系统"(NGES, New Generation Exchange System)的核心技术[fn:1]。是众多柜台系统中使用较多的一个，提供主席功能。
+  开放给一般投资者的API是其中的交易系统部分(简称交易借口API)，用于接受行情与下达交易指令.
+  其它两个系统由期货公司通过CTP管理平台管理，与终端用户无关。
 
   #+CAPTION: CTP System Topology
   #+NAME: fig:ctp_topology
   #+attr_latex: :width 320px
   [[./ctp_topology.png]]
   
+  CTP系统支持国内所有期货交易所，同时扩展支持国内证券、债券、黄金现货以及国外期货业务。
   CTP平台一般由期货公司与上期技术签订合约后，由上期技术部署再上期技术机房内，并由上期技术负责维护。
+  不同期货公司可以共用同一套CTP系统。
+  CTP系统对交易和数据的处理权限完全来源于期货公司在交易所内的权限。
   
   SimNow提供了基于CTP的模拟盘，可以用于客户端测试 [fn:2]。
 
+** 系统架构
+   
+  #+CAPTION: CTP Architecture
+  #+NAME: fig:ctp_arch
+  #+attr_latex: :width 320px
+  [[./ctp_arch.png]]
 
-
+** 多活架构
+   
+  #+CAPTION: CTP Backup Architecture
+  #+NAME: fig:ctp_backup
+  #+attr_latex: :width 320px
+  [[./ctp_backup.png]]
+  
+** CTPMini
+   综合交易平台mini版(CTP mini)，是一款速度更快，更轻量级的CTP系统。相对于CTP来说，它追求的是更 小型化的配置，更节约化的资源配备。而用CTP的API开发的客户端程序也可以完美兼容CTP mini系统。
+   CTPMini方案用于解决期货公司会员单位排队等候机柜出租的迫切需求。在张江园区建设专用机房为会员单位提供标准化服务，该机房提供CTP 会员交易系统及服务器的标准化部署，并由上期技术的专业团队为机房服务用户代为维护。 
+   CTP Mini 单套系统由两台服务器组成(一台 windows 服务器包含郑州大连报盘，一 台 linux 服务器包含其余组件)，为单点模式,以不带库 csv 文件方式启动，初始化直接通 过 linux 服务器批量操作。
+   
 ** 通讯模式 
    CTP提供了三种通讯模式:
    1）对话 : request-response
    2) 广播 : broadcast
    3）私有 : point-to-point
+   
+** 数据流 (data flow)
    
 ** 行情数据
    - free: 2 tick/second
@@ -71,6 +96,8 @@
 * FTD protocol
   FTD协议定义了期货数据的标准，为三大期货市场使用。
   这也是CTP可以同时连接三大期货市场的原因。
+  CTP API与CTP后台的通信协议即基于TCP保证的FTD协议。
+  交易所与CTP的通信协议也基于FTD (reference needed here?).
 
 *** Ftdc
     'c' means 'compressed'.
