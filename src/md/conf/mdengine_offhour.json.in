@@ -12,8 +12,8 @@
 		  "con_dir" : "@CMAKE_INSTALL_PREFIX@/MDEngine/con_dir/",
 		  "front" : ["tcp://180.168.146.187:10131"],
 		  "BrokerID" : "9999",
-		  "UserID" : "101903",
-		  "Password" : "888888",
+		  "UserID" : "163973",
+		  "Password" : "Simnow19880418",
 		  "subscribe" : ["rb1810", "rb1805"]
 	  },
     "EESMD":

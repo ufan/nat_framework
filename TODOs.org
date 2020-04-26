@@ -107,3 +107,7 @@
 <2020-04-25 Sa>
 [[file:~/src/nat_framework/NAT/install/include/SysConf.h::#define IO_SYSTEM_MSG_PATH IO_SYSTEM_MSG_DIR "msg"]]
 
+* TODO What's usage of 'myid_8b'
+<2020-04-26 So>
+[[file:~/src/nat_framework/NAT/src/td/conf/tdengine_offhour.json.in::"myid_8b" : "miaosibo"]]
+
