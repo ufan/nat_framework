@@ -1,10 +1,16 @@
 * CTP (Comprehensive Transaction Platorm)
   综合交易平台 (CTP) is developed by [[www.sfit.com.cn][上海期货信息技术有限公司(SFIT)]] based on Futures Trading Data exchange protocol (FTD).
-  目标客户群是期货公司。
-  由三个子系统组成：1) 交易系统 2) 结算系统 3) 风控系统.
-  开放的API是其中的交易系统部分，用于接受行情与下达交易指令。
-  其它两个系统由期货公司通过CTP管理平台管理，与终端用户无关。
+  是专门为期货公司开发的一套期货经济业务管理系统， 由三个子系统组成：1) 交易系统 2) 结算系统 3) 风控系统。
+  该系统能够同时联通国内四家期货交易所，支持国内商品期货和股指期货的交易结算业务，并能自动生成、报送保证金监控文件和反洗钱监控文件。
+  
+  该系统的开发借鉴了上期所"新一代交易所系统"(NGES)的核心技术[fn:1]。是众多柜台系统中使用较多的一个，提供主席功能。
+  开放给一般投资者的API是其中的交易系统部分，用于接受行情与下达交易指令。 其它两个系统由期货公司通过CTP管理平台管理，与终端用户无关。
 
+  #+CAPTION: CTP System Topology
+  #+NAME: fig:trigger_logic
+  #+attr_latex: :width 320px
+  [[./ctp_topology.png]]
+  
   CTP平台一般由期货公司与上期技术签订合约后，由上期技术部署再上期技术机房内，并由上期技术负责维护。
   
   SimNow提供了基于CTP的模拟盘，可以用于客户端测试。
@@ -42,7 +48,15 @@
   6) 初始化（Init）
 
   7) 等待线程退出（Join）
-
+     
+** Terminology
+   - BrokerID :: 期货商偏码
+   - Front (TradeFront, MarketFront) :: 前置，分为交易前置和行情前置
+   - InvestroID (UserID, InvestUnitID) :: 投资者代码，客户再期货公司开户后由期货公司分配得到。UserID是操作员代码，InvestUnitID是投资单元代码。普通程序交易投资者三码合一。
+   - Password :: 开户时设置的密码，开户完首次登录CTP需要修改密码
+   - AppID :: 客户端软件代码, 适用于穿透式监管，需要向期货公司申请
+   - AuthCode :: 客户端软件认证码，适用于穿透式监管，需要向期货公司申请
+    
 * FTD protocol
   FTD协议定义了期货数据的标准，为三大期货市场使用。
   这也是CTP可以同时连接三大期货市场的原因。
@@ -67,3 +81,7 @@
    
 ** 行情提供商
    如：上海文华财经 上海大智慧 深圳国泰安 万德资讯 深圳财富趋势 东方财富网 同花顺 恒生电子
+
+* Footnotes
+
+[fn:1] NGES也公开交易系统API，用于交易所直连。但主要面向第三方柜台开发商(即平台厂商），而不是期货公司
