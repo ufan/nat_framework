@@ -41,12 +41,36 @@
    CTP Mini 单套系统由两台服务器组成(一台 windows 服务器包含郑州大连报盘，一 台 linux 服务器包含其余组件)，为单点模式,以不带库 csv 文件方式启动，初始化直接通 过 linux 服务器批量操作。
    
 ** 通讯模式 
-   CTP提供了三种通讯模式:
+   CTP提供了三种通讯模式(基于FTD协议):
    1）对话 : request-response
    2) 广播 : broadcast
-   3）私有 : point-to-point
+   3）私有 : point-to-point. returning information
+   
+   在对话模式下被返回的消息称为*响应*(response)，在私有模式和广播模式下被返回的消息称为*回报*(return).
    
 ** 数据流 (data flow)
+   FTD 协议中需要区分的两个重要概念就是通讯模式和数据流。数据流表示的是一个单向或双向的，连续的， 没有重复和遗漏的数据报文的序列。通讯模式则是一个数据流进行互动的工作模式。每个数据流应该对应一 个通讯模式，但是一个通讯模式下可能有多个数据流。
+   
+   不同的通讯模式有着不同的数据流管理原则。在对话模式下，一个数据流是一个连接的过程，在这个连接内 将保障各个信息的完整性和有序性。但是，当连接断开后，重新连接将开始一个新的数据流，这个数据流和 原来的数据流没有直接的关系。如果客户端在提交了一个请求之后，未收到该请求的响应之前断开了连接， 则再次连接后，该请求的响应并不会被新的数据流接收。
+
+   而对于私有模式和广播模式，一个数据流对应一个交易日内的完成某项功能的所有连接。除非强制指定，否 则客户端会在重新连接之后，默认的从上次断开连接的地方继续接收下去，而不是从头开始。
+   
+   流文件主要用来实现 Resume 模式下，重新收取交易所数据的功能，以及在使用综合交易平台风控接口时用 来批量查询数据。
+   行情接口生成的流文件：
+   | DialogRsp.con  | Recieved dialog response data flow |
+   | QueryRsp.con   | Recieved query response data flow  |
+   | TradingDay.con | Trading Day                      |
+
+   交易接口生成的流文件:
+   | DialogRsp.con  | Recieved dialog response data flow |
+   | QueryRsp.con   | Recieved query response data flow  |
+   | TradingDay.con | Trading Day                        |
+   | Public.con     | Recieved public return data flow   |
+   | Private.con    | Recieved private return data flow  |
+   
+   行情交易接口中，开发者对流文件只需要注意两点:
+   1. 客户端程序会对流文件进行大量的读写操作，如果客户端不对系统中的句柄数量进行管理的话，很可能出 现句柄被用光的情况。
+   2. 请注意在进行多账户开发时不能将多个账户收取的流文件放在同一个目录下，不然会造成一个账户能收到 回报，而其他的账户无法收取回报。
    
 ** 行情数据
    - free: 2 tick/second
