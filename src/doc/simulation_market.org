@@ -38,3 +38,8 @@
 ** [[http://www.simnow.com.cn/static/softwareDownload.action][综合交易平台API]] 
    
    The website of /SimNow/ provides the download link of *CTP* API.
+
+*** 支持版本 ( <= 6.3.15 穿透式)
+    由于监管层要求，所有柜台系统需要满足穿透式监管要求，CTP也不例外。
+    SimNow所有模拟环境都已经切换至穿透式，用户需要使用 CTP API 6.3.15以上版本，否则不能正常连接。
+

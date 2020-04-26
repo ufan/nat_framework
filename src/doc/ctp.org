@@ -7,13 +7,15 @@
   开放给一般投资者的API是其中的交易系统部分，用于接受行情与下达交易指令。 其它两个系统由期货公司通过CTP管理平台管理，与终端用户无关。
 
   #+CAPTION: CTP System Topology
-  #+NAME: fig:trigger_logic
+  #+NAME: fig:ctp_topology
   #+attr_latex: :width 320px
   [[./ctp_topology.png]]
   
   CTP平台一般由期货公司与上期技术签订合约后，由上期技术部署再上期技术机房内，并由上期技术负责维护。
   
-  SimNow提供了基于CTP的模拟盘，可以用于客户端测试。
+  SimNow提供了基于CTP的模拟盘，可以用于客户端测试 [fn:2]。
+
+
 
 ** 通讯模式 
    CTP提供了三种通讯模式:
@@ -30,9 +32,18 @@
    - non-free for /L2/ market data
     
 ** 使用步骤
-  1)  创建SPI 和API 实例。
-      这里的SPI 是指开发者创建的自己的类，该类已经继承了接口中的SPI 接口类（CThostFtdcTraderSpi 或 CThostFtdcMdSpi）。
-      而API 即接口中提供的CThostFtdcMdApi 或CThostFtdcTraderApi。
+   CTP交易系统API动态库中内置了一个线程，用于处理与CTP前置的连接，通信以及响应回调。
+   #+CAPTION:  CTP API Architecture
+   #+NAME: fig:ctp_api_arch
+   [[./ctp_api.jpg]]
+   
+   #+CAPTION:  CTP API Timesequence
+   #+NAME: fig:ctp_api_timesequence
+   [[./ctp_api_timesequence.jpg]]
+   
+  1) 创建SPI 和API 实例。
+     这里的SPI 是指开发者创建的自己的类，该类已经继承了接口中的SPI 接口类（CThostFtdcTraderSpi 或 CThostFtdcMdSpi）。
+     而API 即接口中提供的CThostFtdcMdApi 或CThostFtdcTraderApi。
 
   2) 向API 实例注册SPI 实例。
 
@@ -83,5 +94,7 @@
    如：上海文华财经 上海大智慧 深圳国泰安 万德资讯 深圳财富趋势 东方财富网 同花顺 恒生电子
 
 * Footnotes
+
+[fn:2] SimNow提供两组地址，标准组用于交易时间使用，7*24小时地址是非交易时段可以使用
 
 [fn:1] NGES也公开交易系统API，用于交易所直连。但主要面向第三方柜台开发商(即平台厂商），而不是期货公司
