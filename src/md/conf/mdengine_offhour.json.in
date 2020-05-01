@@ -2,7 +2,6 @@
 	"MDEngine":
 	{
 		  "type" : "ctp",
-      "subscribe" : [],
       "log4cplus" : "@CMAKE_INSTALL_PREFIX@/MDEngine/conf/mdlogger.cnf"
 	},
 	  "CTPMD":
@@ -14,7 +13,7 @@
 		  "BrokerID" : "9999",
 		  "UserID" : "163973",
 		  "Password" : "Simnow19880418",
-		  "subscribe" : ["rb1810", "rb1805"]
+		  "subscribe" : ["rb2010", "rb2103"]
 	  },
     "EESMD":
     {
