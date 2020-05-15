@@ -102,6 +102,7 @@ add_subdirectory(server_utils)
 add_subdirectory(signal_agent)
 
 add_subdirectory(scripts)
+add_subdirectory(test)
 
 #=================================================================================
 # TODO: find_package configuration

@@ -9,7 +9,7 @@
 	{
 		"name" : "td_engine",
 		"trade_flow_path" : "@CMAKE_INSTALL_PREFIX@/TDEngine/trade_flow/",
-		"front_uri" : "tcp://181.168.146.187:10130",
+		"front_uri" : "tcp://180.168.146.187:10100",
 		"timeout" : 5,
 		"Account" : [
 			{

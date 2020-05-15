@@ -79,7 +79,7 @@ bool CTDEngineCtp::load_account(int idx, const json& j_config)
     unit.broker_id = broker_id;
     unit.user_id = user_id;
     unit.passwd = password;
-	unit.user_product_info = user_product_info;
+    unit.user_product_info = user_product_info;
     unit.api = nullptr;
     unit.front_id = -1;
     unit.session_id = -1;
@@ -92,28 +92,28 @@ bool CTDEngineCtp::load_account(int idx, const json& j_config)
     // init input order struct
     CThostFtdcInputOrderField &order = unit.input_order;
     memset(&order, 0, sizeof(order));
-	strcpy(order.BrokerID, broker_id.c_str());
-	strcpy(order.InvestorID, user_id.c_str());
-	order.CombHedgeFlag[0] = THOST_FTDC_HF_Speculation;
-	order.ContingentCondition = THOST_FTDC_CC_Immediately;
-	order.VolumeCondition = THOST_FTDC_VC_AV;
-	order.MinVolume = 1;
-	order.ForceCloseReason = THOST_FTDC_FCC_NotForceClose;
-	order.IsAutoSuspend = 0;
-	order.UserForceClose = 0;
-	order.OrderPriceType = THOST_FTDC_OPT_LimitPrice;
-	order.TimeCondition = THOST_FTDC_TC_GFD;
-	*(long*)&(order.UserID) = int_user_id_;
-	order.UserID[sizeof(int_user_id_)] = '\0';
+    strcpy(order.BrokerID, broker_id.c_str());
+    strcpy(order.InvestorID, user_id.c_str());
+    order.CombHedgeFlag[0] = THOST_FTDC_HF_Speculation;
+    order.ContingentCondition = THOST_FTDC_CC_Immediately;
+    order.VolumeCondition = THOST_FTDC_VC_AV;
+    order.MinVolume = 1;
+    order.ForceCloseReason = THOST_FTDC_FCC_NotForceClose;
+    order.IsAutoSuspend = 0;
+    order.UserForceClose = 0;
+    order.OrderPriceType = THOST_FTDC_OPT_LimitPrice;
+    order.TimeCondition = THOST_FTDC_TC_GFD;
+    *(long*)&(order.UserID) = int_user_id_;
+    order.UserID[sizeof(int_user_id_)] = '\0';
 
-	// init action order struct
-	CThostFtdcInputOrderActionField &action_order = unit.action_order;
-	memset(&action_order, 0, sizeof(action_order));
-	strcpy(action_order.BrokerID, broker_id.c_str());
-	strcpy(action_order.InvestorID, user_id.c_str());
-	action_order.ActionFlag = THOST_FTDC_AF_Delete;
-	*(long*)&(action_order.UserID) = int_user_id_;
-	action_order.UserID[sizeof(int_user_id_)] = '\0';
+    // init action order struct
+    CThostFtdcInputOrderActionField &action_order = unit.action_order;
+    memset(&action_order, 0, sizeof(action_order));
+    strcpy(action_order.BrokerID, broker_id.c_str());
+    strcpy(action_order.InvestorID, user_id.c_str());
+    action_order.ActionFlag = THOST_FTDC_AF_Delete;
+    *(long*)&(action_order.UserID) = int_user_id_;
+    action_order.UserID[sizeof(int_user_id_)] = '\0';
 
     return true;
 }
@@ -151,67 +151,84 @@ void CTDEngineCtp::connect(long timeout_nsec, string trade_flow_path)
     }
 }
 
+// Send login request and settle request
+// The function works in Sync mode, i.e. it will wait until request sucess or timeout
 void CTDEngineCtp::login(long timeout_nsec)
 {
-    for (int idx = 0; idx < account_units_.size(); idx ++)
+  for (int idx = 0; idx < account_units_.size(); idx ++)
+  {
+    AccountUnitCTP& unit = account_units_[idx];
+    // login
+    if (!unit.logged_in)
     {
-        AccountUnitCTP& unit = account_units_[idx];
-        // login
-        if (!unit.logged_in)
-        {
-            struct CThostFtdcReqUserLoginField req = {};
-            strcpy(req.TradingDay, "");
-            strcpy(req.UserID, unit.user_id.c_str());
-            strcpy(req.BrokerID, unit.broker_id.c_str());
-            strcpy(req.Password, unit.passwd.c_str());
+      // send out login request
+      struct CThostFtdcReqUserLoginField req = {};
+      strcpy(req.TradingDay, "");
+      strcpy(req.UserID, unit.user_id.c_str());
+      strcpy(req.BrokerID, unit.broker_id.c_str());
+      strcpy(req.Password, unit.passwd.c_str());
 			strcpy(req.UserProductInfo, unit.user_product_info.c_str());
-            unit.login_rid = request_id_;
-            if (unit.api->ReqUserLogin(&req, request_id_++))
-            {
-                ALERT("[request] login failed! (Bid)%s (Uid)%s", req.BrokerID, req.UserID);
-            }
-            long start_time = CTimer::instance().getNano();
-            while (!unit.logged_in && CTimer::instance().getNano() - start_time < timeout_nsec)
-            {usleep(50000);}
-        }
-        // confirm settlement
-        if (!unit.settle_confirmed)
-        {
-            struct CThostFtdcSettlementInfoConfirmField req = {};
-            strcpy(req.BrokerID, unit.broker_id.c_str());
-            strcpy(req.InvestorID, unit.user_id.c_str());
-            unit.settle_rid = request_id_;
-            if (unit.api->ReqSettlementInfoConfirm(&req, request_id_++))
-            {
-            	ALERT("[request] settlement info failed! (Bid)%s (Iid)%s", req.BrokerID, req.InvestorID);
-            }
-            long start_time = CTimer::instance().getNano();
-            while (!unit.settle_confirmed && CTimer::instance().getNano() - start_time < timeout_nsec)
-            {usleep(50000);}
-        }
+      unit.login_rid = request_id_;
+
+      if (unit.api->ReqUserLogin(&req, request_id_++))
+      {
+        ALERT("[request] login failed! (Bid)%s (Uid)%s", req.BrokerID, req.UserID);
+      }
+
+      // wait for login response until timeout
+      long start_time = CTimer::instance().getNano();
+      while (!unit.logged_in && CTimer::instance().getNano() - start_time < timeout_nsec)
+      {
+        usleep(50000);
+      }
     }
+
+    // confirm settlement
+    if (!unit.settle_confirmed)
+    {
+      // send out SettlementConfirm request
+      struct CThostFtdcSettlementInfoConfirmField req = {};
+      strcpy(req.BrokerID, unit.broker_id.c_str());
+      strcpy(req.InvestorID, unit.user_id.c_str());
+      unit.settle_rid = request_id_;
+
+      if (unit.api->ReqSettlementInfoConfirm(&req, request_id_++))
+      {
+        ALERT("[request] settlement info failed! (Bid)%s (Iid)%s", req.BrokerID, req.InvestorID);
+      }
+
+      // wait for settlement confirm until timeout
+      long start_time = CTimer::instance().getNano();
+      while (!unit.settle_confirmed && CTimer::instance().getNano() - start_time < timeout_nsec)
+      {
+        usleep(50000);
+      }
+    }
+  }
 }
 
+// send logout request for each account to front
 void CTDEngineCtp::logout()
 {
-    for (int idx = 0; idx < account_units_.size(); idx++)
+  for (int idx = 0; idx < account_units_.size(); idx++)
+  {
+    AccountUnitCTP& unit = account_units_[idx];
+    if (unit.logged_in)
     {
-        AccountUnitCTP& unit = account_units_[idx];
-        if (unit.logged_in)
-        {
-            CThostFtdcUserLogoutField req = {};
-            strcpy(req.BrokerID, unit.broker_id.c_str());
-            strcpy(req.UserID, unit.user_id.c_str());
-            unit.login_rid = request_id_;
-            if (unit.api->ReqUserLogout(&req, request_id_++))
-            {
-            	ALERT("[request] logout failed! (Bid)%s (Uid)%s", req.BrokerID, req.UserID);
-            }
-        }
-        unit.authenticated = false;
-        unit.settle_confirmed = false;
-        unit.logged_in = false;
+      CThostFtdcUserLogoutField req = {};
+      strcpy(req.BrokerID, unit.broker_id.c_str());
+      strcpy(req.UserID, unit.user_id.c_str());
+      unit.login_rid = request_id_;
+
+      if (unit.api->ReqUserLogout(&req, request_id_++))
+      {
+        ALERT("[request] logout failed! (Bid)%s (Uid)%s", req.BrokerID, req.UserID);
+      }
     }
+    unit.authenticated = false;
+    unit.settle_confirmed = false;
+    unit.logged_in = false;
+  }
 }
 
 bool CTDEngineCtp::queryInstruments(long timeout_nsec)
@@ -237,42 +254,45 @@ bool CTDEngineCtp::queryInstruments(long timeout_nsec)
 
 void CTDEngineCtp::release_api()
 {
-    for (auto& unit: account_units_)
+  for (auto& unit: account_units_)
+  {
+    if (unit.api != nullptr)
     {
-        if (unit.api != nullptr)
-        {
-            unit.api->Release();
-            unit.api = nullptr;
-        }
-        unit.initialized = false;
-        unit.connected = false;
-        unit.authenticated = false;
-        unit.settle_confirmed = false;
-        unit.logged_in = false;
-        unit.api = nullptr;
+      unit.api->Release();
+      unit.api = nullptr;
     }
+    unit.initialized = false;
+    unit.connected = false;
+    unit.authenticated = false;
+    unit.settle_confirmed = false;
+    unit.logged_in = false;
+    unit.api = nullptr;
+  }
 }
 
+// check wether all accounts are login and settled
 bool CTDEngineCtp::is_logged_in() const
 {
-    for (auto& unit: account_units_)
-    {
-        if (!unit.logged_in || !unit.settle_confirmed)
-            return false;
-    }
-    return true;
+  for (auto& unit: account_units_)
+  {
+    if (!unit.logged_in || !unit.settle_confirmed)
+      return false;
+  }
+  return true;
 }
 
+// check whether all accounts' TraderApi are connected
 bool CTDEngineCtp::is_connected() const
 {
-    for (auto& unit: account_units_)
-    {
-        if (!unit.connected)
-            return false;
-    }
-    return true;
+  for (auto& unit: account_units_)
+  {
+    if (!unit.connected)
+      return false;
+  }
+  return true;
 }
 
+// Response for success connection
 void CTDEngineCtp::OnFrontConnected()
 {
     ENGLOG("[OnFrontConnected] (idx)%d", curAccountIdx_);
@@ -295,72 +315,83 @@ void CTDEngineCtp::OnFrontDisconnected(int nReason)
 void CTDEngineCtp::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin, CThostFtdcRspInfoField *pRspInfo,
                                  int nRequestID, bool bIsLast)
 {
+  // check whether rid is in valid range
 	if(unlikely(!checkRequestId(nRequestID))) return;
-    if (pRspInfo != nullptr && pRspInfo->ErrorID != 0)
+
+  // check whether the request is successful
+  if (pRspInfo != nullptr && pRspInfo->ErrorID != 0)
+  {
+    ALERT("[OnRspUserLogin] (errId)%d (errMsg)%s", pRspInfo->ErrorID, CEncodeConv::gbk2utf8(pRspInfo->ErrorMsg).c_str());
+  }
+  else // User Login Succeed!
+  {
+    ENGLOG("[OnRspUserLogin] (Bid)%s (Uid)%s (maxRef)%s (Fid)%d (Sid)%d", pRspUserLogin->BrokerID,
+           pRspUserLogin->UserID, pRspUserLogin->MaxOrderRef, pRspUserLogin->FrontID, pRspUserLogin->SessionID);
+
+    // find the corresponding account matching this rid
+    for (auto& unit: account_units_)
     {
-        ALERT("[OnRspUserLogin] (errId)%d (errMsg)%s", pRspInfo->ErrorID, CEncodeConv::gbk2utf8(pRspInfo->ErrorMsg).c_str());
+      if (unit.login_rid == nRequestID)
+      {
+        unit.action_order.FrontID = unit.front_id = pRspUserLogin->FrontID;
+        unit.action_order.SessionID = unit.session_id = pRspUserLogin->SessionID;
+        unit.logged_in = true;
+      }
     }
-    else
-    {
-        ENGLOG("[OnRspUserLogin] (Bid)%s (Uid)%s (maxRef)%s (Fid)%d (Sid)%d", pRspUserLogin->BrokerID,
-        		pRspUserLogin->UserID, pRspUserLogin->MaxOrderRef, pRspUserLogin->FrontID, pRspUserLogin->SessionID);
-        for (auto& unit: account_units_)
-        {
-            if (unit.login_rid == nRequestID)
-            {
-            	unit.action_order.FrontID = unit.front_id = pRspUserLogin->FrontID;
-            	unit.action_order.SessionID = unit.session_id = pRspUserLogin->SessionID;
-                unit.logged_in = true;
-            }
-        }
-        int max_ref = atoi(pRspUserLogin->MaxOrderRef) + 1;
-        request_id_ = (max_ref > request_id_) ? max_ref: request_id_;
-    }
+    int max_ref = atoi(pRspUserLogin->MaxOrderRef) + 1;
+    request_id_ = (max_ref > request_id_) ? max_ref: request_id_;
+  }
 }
 
 void CTDEngineCtp::OnRspSettlementInfoConfirm(CThostFtdcSettlementInfoConfirmField *pSettlementInfoConfirm,
                                              CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {
+  // check whether rid is in valid range
 	if(unlikely(!checkRequestId(nRequestID))) return;
-    if (pRspInfo != nullptr && pRspInfo->ErrorID != 0)
+
+  // check whether the request is successful
+  if (pRspInfo != nullptr && pRspInfo->ErrorID != 0)
+  {
+    ALERT("[OnRspSettlementInfoConfirm] (errId)%d (errMsg)%s", pRspInfo->ErrorID, CEncodeConv::gbk2utf8(pRspInfo->ErrorMsg).c_str());
+  }
+  else // settlement confirmed successfully
+  {
+    ENGLOG("[OnRspSettlementInfoConfirm] (brokerID)%s (investorID)%s (confirmDate)%s (confirmTime)%s", pSettlementInfoConfirm->BrokerID,
+           pSettlementInfoConfirm->InvestorID, pSettlementInfoConfirm->ConfirmDate, pSettlementInfoConfirm->ConfirmTime);
+
+    // find the corresponding account matching this rid
+    for (auto& unit: account_units_)
     {
-    	ALERT("[OnRspSettlementInfoConfirm] (errId)%d (errMsg)%s", pRspInfo->ErrorID, CEncodeConv::gbk2utf8(pRspInfo->ErrorMsg).c_str());
+      if (unit.settle_rid == nRequestID)
+      {
+        unit.settle_confirmed = true;
+      }
     }
-    else
-    {
-    	ENGLOG("[OnRspSettlementInfoConfirm] (brokerID)%s (investorID)%s (confirmDate)%s (confirmTime)%s", pSettlementInfoConfirm->BrokerID,
-    			pSettlementInfoConfirm->InvestorID, pSettlementInfoConfirm->ConfirmDate, pSettlementInfoConfirm->ConfirmTime);
-        for (auto& unit: account_units_)
-        {
-            if (unit.settle_rid == nRequestID)
-            {
-                unit.settle_confirmed = true;
-            }
-        }
-    }
+  }
 }
 
 void CTDEngineCtp::OnRspUserLogout(CThostFtdcUserLogoutField *pUserLogout, CThostFtdcRspInfoField *pRspInfo,
                                   int nRequestID, bool bIsLast)
 {
 	if(unlikely(!checkRequestId(nRequestID))) return;
-    if (pRspInfo != nullptr && pRspInfo->ErrorID == 0)
+
+  if (pRspInfo != nullptr && pRspInfo->ErrorID == 0)
+  {
+    ALERT("[OnRspUserLogout] (errId)%d (errMsg)%s", pRspInfo->ErrorID, CEncodeConv::gbk2utf8(pRspInfo->ErrorMsg).c_str());
+  }
+  else
+  {
+    ENGLOG("[OnRspUserLogout] (brokerId)%s (userId)%s", pUserLogout->BrokerID, pUserLogout->UserID);
+    for (auto& unit: account_units_)
     {
-    	ALERT("[OnRspUserLogout] (errId)%d (errMsg)%s", pRspInfo->ErrorID, CEncodeConv::gbk2utf8(pRspInfo->ErrorMsg).c_str());
+      if (unit.login_rid == nRequestID)
+      {
+        unit.logged_in = false;
+        unit.authenticated = false;
+        unit.settle_confirmed = false;
+      }
     }
-    else
-    {
-    	ENGLOG("[OnRspUserLogout] (brokerId)%s (userId)%s", pUserLogout->BrokerID, pUserLogout->UserID);
-        for (auto& unit: account_units_)
-        {
-            if (unit.login_rid == nRequestID)
-            {
-                unit.logged_in = false;
-                unit.authenticated = false;
-                unit.settle_confirmed = false;
-            }
-        }
-    }
+  }
 }
 
 void CTDEngineCtp::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)

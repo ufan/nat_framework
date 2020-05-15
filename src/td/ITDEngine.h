@@ -31,11 +31,11 @@ using json = nlohmann::json;
 
 class ITDEngine
 {
-public:
+ public:
 	template<int N=4>  // N must be power of 2
 	class CIDQueue
 	{
-	public:
+   public:
 		bool test(long long m)
 		{
 			int s = front < N ? front : N;
@@ -46,12 +46,12 @@ public:
 			id[front++ & (N-1)] = m;
 			return false;
 		}
-	public:
+   public:
 		int front = 0;
 		long long id[N];
 	};
 
-public:
+ public:
 	ITDEngine();
 	virtual ~ITDEngine();
 
@@ -59,13 +59,13 @@ public:
 
 	virtual bool init(const json& j_conf) = 0;
 
-    virtual void release() = 0;
+  virtual void release() = 0;
 
-    virtual int getAccountCnt() = 0;
+  virtual int getAccountCnt() = 0;
 
-    virtual bool updateOrderTrack() = 0;
+  virtual bool updateOrderTrack() = 0;
 
-public:
+ public:
 	bool initEngine(const json& j_conf);
 
 	bool initAccountUtilis(const json& j_conf);
@@ -74,24 +74,24 @@ public:
 
 	void writeStartSignal();
 
-    void listening();
+  void listening();
 
-    void stop() { do_running_ = false; release(); }
+  void stop() { do_running_ = false; release(); }
 
-    bool checkRequestId(int id) {return request_id_start_ <= id && id <= request_id_end_;}
+  bool checkRequestId(int id) {return request_id_start_ <= id && id <= request_id_end_;}
 
-    tOrderTrack& get_request_track(int id)
+  tOrderTrack& get_request_track(int id)
 	{
 		return request_track_[id & (MMAP_ORDER_TRACK_SIZE - 1)];
 	}
 
-    bool testOtId(int otid, long long mid)
-    {
-    	while(flag_.test_and_set(memory_order_acquire));
-    	auto res = otidfilter_[otid & (MMAP_ORDER_TRACK_SIZE - 1)].test(mid);
-    	flag_.clear(memory_order_release);
-    	return res;
-    }
+  bool testOtId(int otid, long long mid)
+  {
+    while(flag_.test_and_set(memory_order_acquire));
+    auto res = otidfilter_[otid & (MMAP_ORDER_TRACK_SIZE - 1)].test(mid);
+    flag_.clear(memory_order_release);
+    return res;
+  }
 
 	void writeErrRtn(const tIOInputOrderField* data, int errid, const char* msg, int msgtp=ODS(ERR));
 
@@ -111,35 +111,35 @@ public:
 
 	void rspOrderTrack(tSysIOHead *req);
 
-public:
-    /** is every accounts connected? */
-    virtual bool is_connected() const = 0;
-    /** is every accounts logged in? */
-    virtual bool is_logged_in() const = 0;
+ public:
+  /** is every accounts connected? */
+  virtual bool is_connected() const = 0;
+  /** is every accounts logged in? */
+  virtual bool is_logged_in() const = 0;
 
-public:
-    /** insert order */
-    virtual void req_order_insert(const tIOInputOrderField* data) = 0;
+ public:
+  /** insert order */
+  virtual void req_order_insert(const tIOInputOrderField* data) = 0;
 
-    /** request order action (only cancel is accomplished) */
-    virtual void req_order_action(const tIOrderAction* data) = 0;
+  /** request order action (only cancel is accomplished) */
+  virtual void req_order_action(const tIOrderAction* data) = 0;
 
-    virtual bool getBaseInfo() = 0;		// 获取基础信息，更新 CTradeBaseInfo
+  virtual bool getBaseInfo() = 0;		// 获取基础信息，更新 CTradeBaseInfo
 
-protected:
-    volatile bool						do_running_  = 	true;
+ protected:
+  volatile bool				do_running_  = 	true;
 	int									self_id_	 = 	0;
-	CReaderPool							read_pool_;
-	CSafeRawIOWriter					writer_;
+	CReaderPool					read_pool_;
+	CSafeRawIOWriter		writer_;
 	vector<unique_ptr<RiskTop> >		acc_utilis_;
-    int 								request_id_ 	= 1;
-    int									request_id_start_ = 1;
-    int 								request_id_end_ = 1000000;
+  int 								request_id_ 	= 1;  // current request id
+  int									request_id_start_ = 1; // lower limit
+  int 								request_id_end_ = 1000000; // higher limit
 	tOrderTrack							*request_track_ = nullptr;
-	COrderTrackMmap						otmmap_{true};
+	COrderTrackMmap					otmmap_{true};
 	CIDQueue<>							otidfilter_[MMAP_ORDER_TRACK_SIZE];
 
-	static atomic_flag					flag_;
+	static atomic_flag			flag_;
 };
 
 #endif /* SRC_TD_ITDENGINE_H_ */

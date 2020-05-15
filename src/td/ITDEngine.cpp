@@ -160,6 +160,7 @@ void ITDEngine::engine_on_close()
 	}
 }
 
+// event loop for client-side command processing
 void ITDEngine::listening()
 {
 	ENGLOG("start listening...");

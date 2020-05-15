@@ -36,3 +36,84 @@
     In case of new interface API of TD/MD using Python, the same strategy can still be used.
     As long as the interface functions provided, the same strategy engine can be used either C++ or Python based.
     
+** Engine type
+*** Interface defined in *ITDEngine*
+    *ITDEngine* in the abstract base class for all types of td engine.
+    It defines the interface of td engine and the common implementation functions for all types of implementation.
+    
+**** Interface functions to be implemented in daughter class
+     All the following virtual functions are pure abstract.
+     This means no default behaviour defined, the developer is meant to provide his own implementation.
+     
+     - init() :: used in /initEngine()/
+     - name() :: 
+     - release() ::
+     - getAccountCnt() ::
+     - updateOrderTrack() ::
+     - req_order_insert(const tIOInputOrderField*) ::
+     - req_order_action(const tIOrderAction*) ::
+     - getBaseInfo() ::
+     - is_connected() ::
+     - is_logged_in() :: 
+    
+**** Common functions available to all daughter class
+     The following functions are not virtual functions.
+     They 1) provide some common behaviour which are needed in all types of implementation.
+     2) define the engine's working procedure.
+     The underlying behaviour of a specific type of engine is processed by invoking the pure abstract functions defined above.
+     They are the user interface to end user.
+     
+     Interfaces:
+     - initEngine(const json& j_conf) :: 
+       Initialize the engine with following steps
+       1) init() :: 
+       2) createPath() ::
+       3) connect() ::
+       4) login() ::
+        
+     - listening() ::
+
+     - stop() ::
+
+     Common implementaions:
+     -  :: 
+       
+**** Data members
+     - do_running_ /(volatile bool)/ :: flag controlling the loop exit 
+     - self_id_ /(int)/ :: hash id of this engine object, hashed from its name
+     - read_pool_ /(CReaderPool)/ :: ??
+     - writer_ /(*CSafteRawIOWriter*)/ :: ??
+     - acc_utils_ /(std::vector(unique_ptr<RiskTop>>/ :: ??
+     - request_id_ :: current request_id, index of the query command, ref CTP manual 'nRequestID'
+     - request_id_start_ :: from json config key: /request_id_rang/, lower limit of request_id range
+     - request_id_end_ :: from json config key: /request_id_rang/, higher limit of request_id range 
+     - request_track /(tOrderTrack*)/ :: pointer to the collection of order track
+     - otmmap_ /COrderTrackMmap)/ ::
+     - otidfilter_ /CIDQueue<4> [MMAP_ORDER_TRACK_SIZE]/ ::
+     - flag_ /static atomic_flag/ :: 
+       
+*** /ctp/ from *CTDEngineCtp*
+
+**** Data members
+    - account_units_ /vector<AccountUnitCTP>/ ::
+    - int_user_id_ /long/ ::
+    - user_product_info /string/ :: 
+*** /ees/ from *CTDEngineEES*
+*** /xt/ from *CTDEngineXt*
+
+** Configuration
+   
+  - TDEngine :: main entry
+    - type :: type of the engine: "ctp", "ees", "xt"
+    - log4cplus :: configuration for the logger
+    - request_id_range :: TODO ??
+  - CTPTD :: configuration for CTP-based engine
+    - name :: name of this engine
+    - front_uri :: front address
+    - timeout :: connection timeout
+    - trade_flow_path :: directory for CTP Trader flow
+    - Account :: list of accounts
+      - BrokerID :: broker id
+      - UserID :: user's id assigned by the broker
+      - Password :: user's password
+    - myid_8b :: user id in string format  in CTP system / User product info

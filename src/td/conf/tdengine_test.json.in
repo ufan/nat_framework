@@ -9,16 +9,16 @@
 	{
 		"name" : "td_engine",
 		"trade_flow_path" : "@CMAKE_INSTALL_PREFIX@/TDEngine/trade_flow/",
-		"myid_8b" : "miaosibo",
-		"front_uri" : "tcp://180.168.146.187:10030",
+		"front_uri" : "tcp://180.168.146.187:10130",
 		"timeout" : 5,
 		"Account" : [
 			{
 				"BrokerID" : "9999",
-				"UserID" : "101903",
-				"Password" : "888888"
+				"UserID" : "163973",
+				"Password" : "Simnow19880418"
 			}
-		]
+		],
+		"myid_8b" : "miaosibo"
 	},
 	"XTTD":
 	{
