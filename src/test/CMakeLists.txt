@@ -29,10 +29,23 @@ target_link_libraries(ChangePwd
           Utility
  )
 
-# Install: executables ########################################################
-install(TARGETS ChangePwd
-  DESTINATION test/bin
+# Executables:  ##############################################################
+add_executable(TestTrader)
+
+target_sources(TestTrader
+  PRIVATE TestTrader.cpp
   )
 
-# Test ########################################################################
-# TODO: test
+target_include_directories(TestTrader
+  PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
+  )
+
+target_link_libraries(TestTrader
+  PRIVATE CTP::CTP
+  Utility
+  )
+
+# Install: executables ########################################################
+install(TARGETS ChangePwd TestTrader
+  DESTINATION test/bin
+  )

@@ -47,7 +47,7 @@ class PwdSpi : public CThostFtdcTraderSpi
 
 	virtual void OnFrontDisconnected(int nReason)
   {
-    std::cout << "Disconnected ocurr!\n";
+    std::cout << "Disconnected occured! reason = " << nReason << std::endl;
     Stop();
   }
 
