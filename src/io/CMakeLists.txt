@@ -46,6 +46,20 @@ target_link_libraries(IO
   PUBLIC Logger
   )
 
+# Target: IOMonitor IOTools OTMonitor #############################################
+add_executable(IOMonitor)
+
+target_sources(IOMonitor
+  PRIVATE "IOMonitor.cpp"
+  )
+
+target_link_libraries(IOMonitor
+  PRIVATE Logger
+          IO
+          CommonHeader
+          Utility
+  )
+
 # Install: the headers ############################################################
 
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
@@ -61,6 +75,11 @@ install(EXPORT IO_export
         NAMESPACE Nat::
         FILE IOTargets.cmake
         )
+
+# Install: executables ########################################################
+install(TARGETS IOMonitor
+        DESTINATION tools/bin
+  )
 
 # Test ##################################################################
 # TODO: test

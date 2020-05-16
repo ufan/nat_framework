@@ -74,6 +74,7 @@ class ITDEngine
 
 	void writeStartSignal();
 
+  // event loop in the  master thread
   void listening();
 
   void stop() { do_running_ = false; release(); }
@@ -127,7 +128,7 @@ class ITDEngine
   virtual bool getBaseInfo() = 0;		// 获取基础信息，更新 CTradeBaseInfo
 
  protected:
-  volatile bool				do_running_  = 	true;
+  volatile bool				do_running_  = 	true; // flag controlling the exit of event loop
 	int									self_id_	 = 	0;
 	CReaderPool					read_pool_;
 	CSafeRawIOWriter		writer_;

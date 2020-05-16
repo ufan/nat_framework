@@ -5,6 +5,12 @@
  *      Author: hongxu
  */
 
+/*
+ * Central repository of all Instruments
+ *
+ * Commented by Yong.Z
+ */
+
 #ifndef SRC_TD_CTRADEBASEINFO_H_
 #define SRC_TD_CTRADEBASEINFO_H_
 

@@ -29,16 +29,20 @@ bool CTDEngineCtp::init(const json& j_conf)
 {
 	json ctp_conf = j_conf["CTPTD"];
 
+  // engine name
 	name_ = ctp_conf["name"];
 
+  // self-defined product info, needed in user login
 	string myid = ctp_conf["myid_8b"];
 	strncpy((char*)&int_user_id_, myid.c_str(), sizeof(int_user_id_));
 	user_product_info = myid;
 
 	max_ref_id_ = request_id_start_ - 1;
 
+  // front address
 	front_uri_ = ctp_conf["front_uri"];
 
+  // init accounts to be managed
 	auto& acc_json = ctp_conf["Account"];
 	account_units_.resize(acc_json.size());
 	for(int i = 0; i < acc_json.size(); i++)
@@ -46,12 +50,17 @@ bool CTDEngineCtp::init(const json& j_conf)
 		load_account(i, acc_json[i]);
 	}
 
-	timout_ns_ = ctp_conf["timeout"].get<long>() * 1000000000L;		// timeout in seconds
+  // timeout value
+	timout_ns_ = ctp_conf["timeout"].get<long>() * 1000000000L;
+
+  // create trade flow directory
 	string trade_flow_path = ctp_conf["trade_flow_path"];
 	if(!createPath(trade_flow_path.data())){
 		LOG_ERR("create dir %s err", trade_flow_path.data());
 		return false;
 	}
+
+  // connect to front for each account
 	connect(timout_ns_, trade_flow_path);
 	if(!is_connected())
 	{
@@ -59,6 +68,7 @@ bool CTDEngineCtp::init(const json& j_conf)
 		return false;
 	}
 
+  // login for each account
 	login(timout_ns_);
 	if(!is_logged_in())
 	{
@@ -89,7 +99,7 @@ bool CTDEngineCtp::load_account(int idx, const json& j_config)
     unit.logged_in = false;
     unit.settle_confirmed = false;
 
-    // init input order struct
+    // init insert order struct
     CThostFtdcInputOrderField &order = unit.input_order;
     memset(&order, 0, sizeof(order));
     strcpy(order.BrokerID, broker_id.c_str());
@@ -120,35 +130,35 @@ bool CTDEngineCtp::load_account(int idx, const json& j_config)
 
 void CTDEngineCtp::connect(long timeout_nsec, string trade_flow_path)
 {
-    for (int idx = 0; idx < account_units_.size(); idx ++)
+  for (int idx = 0; idx < account_units_.size(); idx ++)
+  {
+    AccountUnitCTP& unit = account_units_[idx];
+    if (unit.api == nullptr)
     {
-        AccountUnitCTP& unit = account_units_[idx];
-        if (unit.api == nullptr)
-        {
-            CThostFtdcTraderApi* api = CThostFtdcTraderApi::CreateFtdcTraderApi(trade_flow_path.c_str());
-            if (!api)
-            {
-                throw std::runtime_error("CTP_TD failed to create api");
-            }
-            api->RegisterSpi(this);
-            unit.api = api;
-        }
-        if (!unit.connected)
-        {
-            curAccountIdx_ = idx;
-            unit.api->RegisterFront((char*)front_uri_.c_str());
-            unit.api->SubscribePublicTopic(THOST_TERT_QUICK); // need check
-            unit.api->SubscribePrivateTopic(THOST_TERT_QUICK); // need check
-            if (!unit.initialized)
-            {
-                unit.api->Init();
-                unit.initialized = true;
-            }
-            long start_time = CTimer::instance().getNano();
-            while (!unit.connected && CTimer::instance().getNano() - start_time < timeout_nsec)
-            {usleep(50000);}
-        }
+      CThostFtdcTraderApi* api = CThostFtdcTraderApi::CreateFtdcTraderApi(trade_flow_path.c_str());
+      if (!api)
+      {
+        throw std::runtime_error("CTP_TD failed to create api");
+      }
+      api->RegisterSpi(this);
+      unit.api = api;
     }
+    if (!unit.connected)
+    {
+      curAccountIdx_ = idx;
+      unit.api->RegisterFront((char*)front_uri_.c_str());
+      unit.api->SubscribePublicTopic(THOST_TERT_QUICK); // need check
+      unit.api->SubscribePrivateTopic(THOST_TERT_QUICK); // need check
+      if (!unit.initialized)
+      {
+        unit.api->Init();
+        unit.initialized = true;
+      }
+      long start_time = CTimer::instance().getNano();
+      while (!unit.connected && CTimer::instance().getNano() - start_time < timeout_nsec)
+      {usleep(50000);}
+    }
+  }
 }
 
 // Send login request and settle request
@@ -241,14 +251,17 @@ bool CTDEngineCtp::queryInstruments(long timeout_nsec)
 		ALERT("[request] ReqQryInstrument err:%d, ", ret);
 		return false;
 	}
-    long start_time = CTimer::instance().getNano();
-    while (!CTradeBaseInfo::is_init_ && CTimer::instance().getNano() - start_time < timeout_nsec)
-    {usleep(50000);}
-    if(!CTradeBaseInfo::is_init_)
-    {
-    	ALERT("[request] ReqQryInstrument timeout");
-    	return false;
-    }
+
+  long start_time = CTimer::instance().getNano();
+  while (!CTradeBaseInfo::is_init_ && CTimer::instance().getNano() - start_time < timeout_nsec) {
+    usleep(50000);
+  }
+
+  if(!CTradeBaseInfo::is_init_)
+  {
+    ALERT("[request] ReqQryInstrument timeout");
+    return false;
+  }
 	return true;
 }
 
@@ -668,12 +681,14 @@ void CTDEngineCtp::req_order_insert(const tIOInputOrderField* data)
 		auto& util = acc_utilis_[data->acc_idx];
 		int off = data->off;
 		int ret = 0;
+    // checking the risk first
 		if(unlikely(ret = util->check(data->dir, off, data->price, data->vol, data->instr_hash)))
 		{
 			writeErrRtn(data, ret, "risk check failed");
 		}
-		else
+		else 
 		{
+      // send the request to trader front
 			AccountUnitCTP& unit = account_units_[data->acc_idx];
 			auto& order = unit.input_order;
 			int2string(order.OrderRef, request_id_);
@@ -687,6 +702,7 @@ void CTDEngineCtp::req_order_insert(const tIOInputOrderField* data)
 			int ret = unit.api->ReqOrderInsert(&order, request_id_);
 			if(ret == 0)	// succ, then request_id_ should ++
 			{
+        // insert this order into request track
 				//elapse_begin(call_api_after);
 				tOrderTrack& request_track = get_request_track(request_id_);
 				request_track.status = ODS(TDSEND);
@@ -786,14 +802,23 @@ void CTDEngineCtp::release()
 
 bool CTDEngineCtp::updateOrderTrack()
 {
-	usleep(1000000);	// ctp limit request frequency, so sleep 1s here.
-	if(CTradeBaseInfo::trading_day_ != otmmap_.getBuf()->trading_day) otmmap_.clearTrack();
+  // ctp limit request frequency, so sleep 1s here.
+	usleep(1000000);
+
+  // reset the order track mmap buffer if a new trading day begins
+	if(CTradeBaseInfo::trading_day_ != otmmap_.getBuf()->trading_day)
+  {
+    otmmap_.clearTrack();
+  }
+
+  // get the current trading day
 	strcpy(otmmap_.getBuf()->trading_day, CTradeBaseInfo::trading_day_.c_str());
-    for (int idx = 0; idx < account_units_.size(); idx ++)
-    {
-    	query_complete_flag_ = false;
-    	curAccountIdx_ = idx;
-        AccountUnitCTP& unit = account_units_[idx];
+
+  for (int idx = 0; idx < account_units_.size(); idx ++)
+  {
+    query_complete_flag_ = false;
+    curAccountIdx_ = idx;
+    AccountUnitCTP& unit = account_units_[idx];
 		CThostFtdcQryOrderField query;
 		memset(&query, 0, sizeof(query));
 		strcpy(query.BrokerID, unit.broker_id.c_str());
@@ -808,15 +833,15 @@ bool CTDEngineCtp::updateOrderTrack()
 		while (!query_complete_flag_ && CTimer::instance().getNano() - start_time < timout_ns_)
 		{usleep(50000);}
 		if(!query_complete_flag_) return false;
-    }
-    request_id_ = max_ref_id_ + 1;
+  }
+  request_id_ = max_ref_id_ + 1;
 
 	if(!updateTradedAmount())
 	{
 		ALERT("updateTradedAmount failed.");
 		return false;
 	}
-    return true;
+  return true;
 }
 
 void CTDEngineCtp::OnRspQryOrder(CThostFtdcOrderField *pOrder, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)

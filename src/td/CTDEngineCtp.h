@@ -23,10 +23,10 @@ using namespace std;
  */
 struct AccountUnitCTP
 {
-  CThostFtdcInputOrderField 			input_order;
-  CThostFtdcInputOrderActionField		action_order;
+  CThostFtdcInputOrderField 			input_order; // order insert
+  CThostFtdcInputOrderActionField		action_order; // order action
 
-  CThostFtdcTraderApi* api;
+  CThostFtdcTraderApi* api; // trader api instance, with a thread inside
 
   // extra information
   int     front_id 	= -1;

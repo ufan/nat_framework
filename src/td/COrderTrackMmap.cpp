@@ -30,21 +30,24 @@ COrderTrackMmap::~COrderTrackMmap()
 	unload();
 }
 
+// open or create the order track mmap file
 bool COrderTrackMmap::load(string name, bool is_write)
 {
+  // create the directory where the order tracks will be saved
 	if(!createPath(ORDER_TRACK_MMAP_PATH))
 	{
 		LOG_ERR("create dir" ORDER_TRACK_MMAP_PATH "err");
 		return false;
 	}
 
+  // create the order track file with engine's name as file name
 	string path = string(ORDER_TRACK_MMAP_PATH) + name + ".ot";
 	fd_ = open(path.c_str(), (is_write) ? (O_RDWR | O_CREAT) : O_RDONLY, (mode_t)0666);
-    if (fd_ < 0)
-    {
-        LOG_ERR("Cannot open file %s, err:%s", path.c_str(), strerror(errno));
-        return false;
-    }
+  if (fd_ < 0)
+  {
+    LOG_ERR("Cannot open file %s, err:%s", path.c_str(), strerror(errno));
+    return false;
+  }
 
 	struct stat statbuff;
 	if(fstat(fd_, &statbuff) < 0)
@@ -57,12 +60,12 @@ bool COrderTrackMmap::load(string name, bool is_write)
 	const uint32_t size = sizeof(tOrderTrackMmap);
 	if(is_write)
 	{
-    	if(!tryFileLock(fd_, 0))
-    	{
-    		LOG_ERR("file %s already has a writer.", path.c_str());
-    		close(fd_); fd_ = -1;
-    		return false;
-    	}
+    if(!tryFileLock(fd_, 0))
+    {
+      LOG_ERR("file %s already has a writer.", path.c_str());
+      close(fd_); fd_ = -1;
+      return false;
+    }
 
 		if(ftruncate(fd_, size) < 0)
 		{
@@ -78,22 +81,25 @@ bool COrderTrackMmap::load(string name, bool is_write)
 		return false;
 	}
 
-    buf_ = (tOrderTrackMmap*)mmap(0, size, (is_write) ? (PROT_READ | PROT_WRITE) : PROT_READ, MAP_SHARED, fd_, 0);
-    if ((void*)buf_ == MAP_FAILED)
-    {
-    	close(fd_); fd_ = -1;
-    	LOG_ERR(" mapping file to buffer err:%s", strerror(errno));
-        return false;
-    }
+  // create memory-mapped file into buffer, this buffer is shared between process
+  // capacity of the buffer equals to the size of order track
+  buf_ = (tOrderTrackMmap*)mmap(0, size, (is_write) ? (PROT_READ | PROT_WRITE) : PROT_READ, MAP_SHARED, fd_, 0);
+  if ((void*)buf_ == MAP_FAILED)
+  {
+    close(fd_); fd_ = -1;
+    LOG_ERR(" mapping file to buffer err:%s", strerror(errno));
+    return false;
+  }
 
+  // try to ask kernel to allocate memory effieciently
 	if (is_lock_ && (madvise(buf_, size, MADV_SEQUENTIAL) != 0 || mlock(buf_, size) != 0))
 	{
-        //munmap(buf_, size);
-        //close(fd_); fd_ = -1;
-        LOG_WARN("madvise or mlock error. abandon lock memory");
-        //return false;
+    //munmap(buf_, size);
+    //close(fd_); fd_ = -1;
+    LOG_WARN("madvise or mlock error. abandon lock memory");
+    //return false;
 	}
-    return true;
+  return true;
 }
 
 void COrderTrackMmap::unload()

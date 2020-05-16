@@ -25,11 +25,14 @@ ITDEngine::~ITDEngine()
 
 bool ITDEngine::initEngine(const json& j_conf)
 {
+	/******************* Configure front related   *****************************/
+
 	auto &j_range = j_conf["/TDEngine/request_id_range"_json_pointer];
 	request_id_start_ = j_range[0];
 	request_id_end_ = j_range[1];
 	request_id_ = request_id_start_;
 
+  // init trader front: accounts init, connection, authentication and login for each account
 	if(!init(j_conf))
 	{
 		ALERT("init engine err.");
@@ -37,6 +40,7 @@ bool ITDEngine::initEngine(const json& j_conf)
 	}
   LOG_DBG("init engine succeeded.");
 
+  // init CTradeBaseInfo using the first account: fetch instrument information from front
 	if(!getBaseInfo())
 	{
 		ALERT("getBaseInfo err.");
@@ -44,6 +48,7 @@ bool ITDEngine::initEngine(const json& j_conf)
 	}
   LOG_DBG("getBaseInfo successfully.");
 
+  // init order track mmap file
 	if(!loadOrderTrack() || !updateOrderTrack())
 	{
 		ALERT("init order track err.");
@@ -51,45 +56,58 @@ bool ITDEngine::initEngine(const json& j_conf)
 	}
   LOG_DBG("loadOrderTrack and updateOrderTrack successfully.");
 
+  // init risk management
 	if(!initAccountUtilis(j_conf))
 	{
 		ALERT("init account utilis err.");
 		return false;
 	}
 
-	// init tdsend writer
+	/******************* Configure event-loop related   *****************************/
+
+  // hash id of this engine from engine name
 	self_id_ = (int)HASH_STR(name().c_str());
+
+  // create io directory using the engine name
 	string io_dir = string(IO_TDENGINE_BASE_PATH) + name();
 	if(!createPath(io_dir))
 	{
 		ALERT("create td_io directory %s failed.", io_dir.c_str());
 		return false;
 	}
+
+  // init tdsend writer
 	if(!writer_.init(io_dir + "/tdsend"))
 	{
 		ALERT("init writer err.");
 		return false;
 	}
 
+  // init system io
 	if(!CSystemIO::instance().init())
 	{
 		ALERT("init system io writer err.");
 		return false;
 	}
+
 	// add system io reader
 	read_pool_.add(0, CSystemIO::instance().createReader());	// 0 for system io
+
 	return true;
 }
 
 bool ITDEngine::initAccountUtilis(const json& j_conf)
 {
 	int acc_cnt = getAccountCnt();
+
+  // the information is from top-level 'Account'
 	auto& acc_conf = j_conf["Account"];
 	for(int i = 0; i < acc_cnt; ++i)
 	{
 		acc_utilis_.emplace_back(new RiskTop);
 		auto& acc = acc_utilis_.back();
 
+    // use the default config if no specific config exists
 		auto conf = j_conf["AccountDefault"];
 		if(i < acc_conf.size()) conf = acc_conf[i];
 		string acc_name = name() + string(".sub") + to_string(i);
@@ -148,7 +166,7 @@ inline void ITDEngine::engine_req_order_action(const tIOrderAction* data)
 
 void ITDEngine::writeStartSignal()
 {
-	int cmd = IO_TD_START;
+  int cmd = IO_TD_START;
 	writer_.write(&cmd, sizeof(cmd));
 }
 
@@ -178,16 +196,16 @@ void ITDEngine::listening()
 			{
 				switch(*(int*)p)
 				{
-				case IO_SEND_ORDER:
-				{
-					req_order_insert((const tIOInputOrderField*)p);
-					break;
-				}
-				case IO_ORDER_ACTION:
-				{
-					engine_req_order_action((const tIOrderAction*)p);
-					break;
-				}
+          case IO_SEND_ORDER:
+            {
+              req_order_insert((const tIOInputOrderField*)p);
+              break;
+            }
+          case IO_ORDER_ACTION:
+            {
+              engine_req_order_action((const tIOrderAction*)p);
+              break;
+            }
 				}
 			}
 			else if(((tSysIOHead*)p)->to == self_id_)	// system io
@@ -195,49 +213,49 @@ void ITDEngine::listening()
 				tSysIOHead *p_head = (tSysIOHead*)p;
 				switch(p_head->cmd)
 				{
-				case IO_TD_ADD_CLIENT:
-				{
-					read_pool_.add(p_head->source, p_head->data, -1, -1);
-					tSysIOHead ack = {IO_TD_ACK_ADD_CLIENT, p_head->source, self_id_, p_head->back_word};
-					CSystemIO::instance().getWriter().write(&ack, sizeof(ack));
-					LOG_DBG("add client %d:%s, reader_cnt:%d", p_head->source, p_head->data, read_pool_.size());
-					break;
-				}
-				case IO_TD_REMOVE_CLIENT:
-				{
-					read_pool_.erase(p_head->source);
-					LOG_DBG("remove client %d", p_head->source);
-					break;
-				}
-				case IO_TD_QUIT:
-				{
-					do_running_ = false;
-					break;
-				}
-				case IO_TD_REQ_BASE_INFO:
-				{
-					string data = CTradeBaseInfo::toSysIOStruct(p_head->source, self_id_, p_head->back_word);
-					CSystemIO::instance().getWriter().write(data.data(), data.size());
-					LOG_DBG("response base info query.");
-					break;
-				}
-				case IO_TD_REQ_ORDER_TRACK:
-				{
-					rspOrderTrack(p_head);
-					break;
-				}
+          case IO_TD_ADD_CLIENT:
+            {
+              read_pool_.add(p_head->source, p_head->data, -1, -1);
+              tSysIOHead ack = {IO_TD_ACK_ADD_CLIENT, p_head->source, self_id_, p_head->back_word};
+              CSystemIO::instance().getWriter().write(&ack, sizeof(ack));
+              LOG_DBG("add client %d:%s, reader_cnt:%d", p_head->source, p_head->data, read_pool_.size());
+              break;
+            }
+          case IO_TD_REMOVE_CLIENT:
+            {
+              read_pool_.erase(p_head->source);
+              LOG_DBG("remove client %d", p_head->source);
+              break;
+            }
+          case IO_TD_QUIT:
+            {
+              do_running_ = false;
+              break;
+            }
+          case IO_TD_REQ_BASE_INFO:
+            {
+              string data = CTradeBaseInfo::toSysIOStruct(p_head->source, self_id_, p_head->back_word);
+              CSystemIO::instance().getWriter().write(data.data(), data.size());
+              LOG_DBG("response base info query.");
+              break;
+            }
+          case IO_TD_REQ_ORDER_TRACK:
+            {
+              rspOrderTrack(p_head);
+              break;
+            }
 
-				case IO_USER_ADD_EXEC_ORDER:
-				{
-					tIOUserAddExecOrder *pcmd = (tIOUserAddExecOrder*)p;
-					auto& util = acc_utilis_[pcmd->acc_idx];
-					util->onNew(pcmd->dir, pcmd->off, pcmd->price, pcmd->vol, pcmd->instr_hash, -1);
-					if(auto pmod = util->getModInstr(pcmd->instr_hash))
-					{
-						pmod->onTrd(pcmd->dir, pcmd->off, pcmd->price, pcmd->vol, pcmd->vol, pcmd->price, pcmd->vol);
-					}
-					break;
-				}
+          case IO_USER_ADD_EXEC_ORDER:
+            {
+              tIOUserAddExecOrder *pcmd = (tIOUserAddExecOrder*)p;
+              auto& util = acc_utilis_[pcmd->acc_idx];
+              util->onNew(pcmd->dir, pcmd->off, pcmd->price, pcmd->vol, pcmd->instr_hash, -1);
+              if(auto pmod = util->getModInstr(pcmd->instr_hash))
+              {
+                pmod->onTrd(pcmd->dir, pcmd->off, pcmd->price, pcmd->vol, pcmd->vol, pcmd->price, pcmd->vol);
+              }
+              break;
+            }
 				}
 			}
 		}
