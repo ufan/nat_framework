@@ -1,19 +1,19 @@
 {
-	"MDEngine":
-	{
-		  "type" : "ctp",
-      "log4cplus" : "@CMAKE_INSTALL_PREFIX@/MDEngine/conf/mdlogger.cnf"
-	},
+	  "MDEngine":
+	  {
+		    "type" : "ctp",
+        "log4cplus" : "@CMAKE_INSTALL_PREFIX@/MDEngine/conf/mdlogger.cnf",
+		    "subscribe" : ["rb2010", "rb2103"]
+	  },
 	  "CTPMD":
 	  {
-		  "name" : "engine0",
-      "timeout" : 3,
-		  "con_dir" : "@CMAKE_INSTALL_PREFIX@/MDEngine/con_dir/",
-		  "front" : ["tcp://180.168.146.187:10131"],
-		  "BrokerID" : "9999",
-		  "UserID" : "163973",
-		  "Password" : "Simnow19880418",
-		  "subscribe" : ["rb2010", "rb2103"]
+		    "name" : "md_engine",
+        "timeout" : 3,
+		    "con_dir" : "@CMAKE_INSTALL_PREFIX@/MDEngine/con_dir/",
+		    "front" : ["tcp://180.168.146.187:10110"],
+		    "BrokerID" : "9999",
+		    "UserID" : "163973",
+		    "Password" : "NowSim88418",
 	  },
     "EESMD":
     {

@@ -33,6 +33,7 @@ IMDEngine::~IMDEngine()
 
 bool IMDEngine::initEngine(const json& j_conf)
 {
+  // Create Spi instance and register the front
 	config_ = j_conf;
 	if(!init())
 	{
@@ -40,31 +41,39 @@ bool IMDEngine::initEngine(const json& j_conf)
 		return false;
 	}
 
+  // create io directory using the engine name as subdirectory
 	string write_path = string(IO_MDENGINE_BASE_PATH) + name_;
 	if(!createPath(write_path))
 	{
 		ALERT("create md_io directory %s failed.", write_path.c_str());
 		return false;
 	}
+
+  // raw io writer: md
 	if(j_conf["MDEngine"].find("PageSize") != j_conf["MDEngine"].end())
 	{
 		long page_size = j_conf["/MDEngine/PageSize"_json_pointer];
 		page_size *= MB;
 		md_writer_.setPageSize(page_size);
 	}
+
 	if(!md_writer_.init(write_path + "/md"))
 	{
 		ALERT("init %s md writer err.", name_.c_str());
 		return false;
 	}
 
+  // hash id from name
 	self_id_ = (int)HASH_STR(name().c_str());
+
+  // init system io
 	if(!CSystemIO::instance().init())
 	{
 		ALERT("init system io writer err.");
 		return false;
 	}
 
+  // get base information from tdengine
 	if(!getBaseInfo(j_conf["/TDEngine/engine_name"_json_pointer], j_conf["/TDEngine/timeout"_json_pointer]))
 	{
 		ALERT("getBaseInfo failed.");
@@ -73,6 +82,7 @@ bool IMDEngine::initEngine(const json& j_conf)
 	return true;
 }
 
+// Write 'start md' command
 void IMDEngine::writeStartSignal()
 {
 	int cmd = IO_MD_START;
@@ -83,13 +93,15 @@ void IMDEngine::runEngine()
 {
 	ENGLOG("md_engine start...");
 
-	// start read md thread
+	// start md engine thread and connect and login to the front
 	if(!start())
 	{
 		release();
 		ALERT("engine start failed.");
 		return;
 	}
+
+  // subscribe to pre-defined list of instruments in json configuration
 	auto &j = config_["MDEngine"];
 	if(j.find("subscribe") != j.end())
 	{
@@ -183,6 +195,7 @@ void IMDEngine::runEngine()
 	ENGLOG("md_engine stopped.");
 }
 
+// Get the list of subscribed instruments
 vector<string> IMDEngine::querySubscribedInstrument()
 {
 	vector<string> res;
@@ -193,6 +206,9 @@ vector<string> IMDEngine::querySubscribedInstrument()
 	return res;
 }
 
+// Subscribe instruments:
+// 1. If it's newly subscribed, push it to md engine for subsription
+// 2. If it's already listed in subscribed collection, increment the usage counter by 1
 void IMDEngine::engine_subscribe(const vector<string> &instr)
 {
 	auto instr_set = CTradeBaseInfo::productToInstrSet(instr);
@@ -213,6 +229,9 @@ void IMDEngine::engine_subscribe(const vector<string> &instr)
 	subscribe(real_subs);
 }
 
+// Unsubscribe instruments:
+// 1. If no user are using it, push it to md engine for unsubscribing
+// 2. Else just decrement the usage counter by 1, keep subscription
 void IMDEngine::engine_unsubscribe(const vector<string> &instr)
 {
 	auto instr_set = CTradeBaseInfo::productToInstrSet(instr);
@@ -232,6 +251,7 @@ void IMDEngine::engine_unsubscribe(const vector<string> &instr)
 	unsubscribe(real_unsubs);
 }
 
+// Get base information by td engine name
 bool IMDEngine::getBaseInfo(string td_engine_name, int timeout)
 {
 	int td_engine_id = (int)HASH_STR(td_engine_name.c_str());

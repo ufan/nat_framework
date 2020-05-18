@@ -63,12 +63,12 @@ public:
 
 protected:
 	volatile bool		do_running_		= true;
-	CSafeRawIOWriter 	md_writer_;
-	int					self_id_ 		= 0;
+	CSafeRawIOWriter 	md_writer_; // command writer
+	int					self_id_ 		= 0; // id of this engine, it's hash id from name
 	uint8_t				day_night_mode_ = MODE_DAY;
-	string				name_;
-	map<string, int>	subs_instr_;
-	json				config_;
+	string				name_; // name of this engine
+	map<string, int>	subs_instr_; // counters collection of subsribed instruments
+	json				config_; // json configuration object
 };
 
 #endif /* SRC_MD_IMDENGINE_H_ */

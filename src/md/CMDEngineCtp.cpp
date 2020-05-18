@@ -28,6 +28,7 @@ bool CMDEngineCtp::init()
 {
 	name_ = config_["/CTPMD/name"_json_pointer];
 
+  // create directory for data flow
 	string con_dir = config_["/CTPMD/con_dir"_json_pointer];
 	if(!createPath(con_dir.data())){
 		LOG_ERR("create dir %s err", con_dir.data());
@@ -49,16 +50,22 @@ bool CMDEngineCtp::start()
 {
 	long timeout = config_["/CTPMD/timeout"_json_pointer];
 	p_api_->Init();
+
+  // wait for connection until timeout
 	long end = time(NULL) + timeout;
-	while(!(volatile bool)is_login_ && time(NULL) < end) usleep(200000);  // 200ms
+	while(!(volatile bool)is_login_ && time(NULL) < end)
+    usleep(200000);  // 200ms
+
 	return is_login_;
 }
 
+// Join the md engine thread
 void CMDEngineCtp::join()
 {
 	p_api_->Join();
 }
 
+// Release md engine resource
 void CMDEngineCtp::release()
 {
 	if(p_api_)
@@ -70,6 +77,7 @@ void CMDEngineCtp::release()
 	is_login_ = false;
 }
 
+// Send subscribe request to the front
 void CMDEngineCtp::subscribe(const vector<string> &instr)
 {
 	// subscribe instrument
@@ -91,6 +99,7 @@ void CMDEngineCtp::subscribe(const vector<string> &instr)
 	}
 }
 
+// Send Unsubscribe request from the front
 void CMDEngineCtp::unsubscribe(const vector<string> &instr)
 {
 	// subscribe instrument
@@ -112,13 +121,13 @@ void CMDEngineCtp::unsubscribe(const vector<string> &instr)
 	}
 }
 
+// Callback on connection success and login immediately
 void CMDEngineCtp::OnFrontConnected()
 {
 	ENGLOG("front connected.");
 
 	CThostFtdcReqUserLoginField req;
 	memset(&req, 0, sizeof(req));
-
 	strcpy(req.BrokerID, config_["/CTPMD/BrokerID"_json_pointer].get<string>().c_str());
 	strcpy(req.UserID, config_["/CTPMD/UserID"_json_pointer].get<string>().c_str());
 	strcpy(req.Password, config_["/CTPMD/Password"_json_pointer].get<string>().c_str());
@@ -150,6 +159,7 @@ void CMDEngineCtp::OnRspUserLogin(CThostFtdcRspUserLoginField* pRspUserLogin,
 	ENGLOG("login succ.");
 }
 
+// Response from front after sending subscribe command
 void CMDEngineCtp::OnRspSubMarketData(
 		CThostFtdcSpecificInstrumentField* pSpecificInstrument,
 		CThostFtdcRspInfoField* pRspInfo, int nRequestID, bool bIsLast)
@@ -161,6 +171,8 @@ void CMDEngineCtp::OnRspSubMarketData(
 	}
 }
 
+// Callback on returned subscribed instrument data
+// Push the newly available market data into memory
 void CMDEngineCtp::OnRtnDepthMarketData(CThostFtdcDepthMarketDataField* p_data)
 {
 	tIOMarketData *io = (tIOMarketData*)md_writer_.prefetch(sizeof(tIOMarketData));
@@ -180,6 +192,8 @@ void CMDEngineCtp::OnRtnDepthMarketData(CThostFtdcDepthMarketDataField* p_data)
 	p.exch_time = (getSecondsFromClockStr(p_data->UpdateTime) + CTimer::instance().getDayBeginTime()) * 1000000000L + p_data->UpdateMillisec * 1000000L;
 	if(day_night_mode_ == MODE_NIGHT) {if(p_data->UpdateTime[0] == '0') p.exch_time += 86400L * 1000000000L;}
 	else {if(p_data->UpdateTime[0] == '2') p.exch_time -= 86400L * 1000000000L;}
+
+  // push it into memory for usage
 	md_writer_.commit();
 }
 
