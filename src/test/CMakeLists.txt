@@ -45,7 +45,23 @@ target_link_libraries(TestTrader
   Utility
   )
 
+# Executables:  ##############################################################
+add_executable(TestMd)
+
+target_sources(TestMd
+  PRIVATE TestMd.cpp
+  )
+
+target_include_directories(TestMd
+  PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
+  )
+
+target_link_libraries(TestMd
+  PRIVATE CTP::CTP
+  Utility
+  )
+
 # Install: executables ########################################################
-install(TARGETS ChangePwd TestTrader
+install(TARGETS ChangePwd TestTrader TestMd
   DESTINATION test/bin
   )

@@ -1,100 +1,102 @@
 {
-	"TDEngine":
-	{
-		"type":"ctp",
-		"log4cplus":"@CMAKE_INSTALL_PREFIX@/TDEngine/conf/tdlogger.cnf",
-		"request_id_range" : [1000, 1000000]
-	},
-	"CTPTD":
-	{
-		"name" : "td_engine",
-		"trade_flow_path" : "@CMAKE_INSTALL_PREFIX@/TDEngine/trade_flow/",
-		"front_uri" : "tcp://180.168.146.187:10100",
-		"timeout" : 5,
-		"Account" : [
-			{
-				"BrokerID" : "9999",
-				"UserID" : "163973",
-				"Password" : "Simnow19880418"
-			}
-		],
-		"myid_8b" : "miaosibo"
-	},
-	"XTTD":
-	{
-		"name" : "td_engine_xt",
-		"ip_port" : "172.22.4.103:65300",
-		"timeout" : 5,
-		"Account" : [
-			{
-				"FundAccount" : "999119835",
-				"UserID" : "ben",
-				"Password" : "jrqh@123"
-			}
-		]
-	},
-	"AccountDefault":
-	{
-		"RiskForGeneral":
-		{
-			"allowed_instrument":["All"],
-			"allowed_max_unfilled_order_number":1
-		},
-		"RiskForOrder":
-		{
-			"allowed_price_tick":
-			{
-				"default":100000
-			},
-			"allowed_order_size":
-			{
-				"default":200000
-			},
-			"intensity_cycle_order_count":
-			{
-				"default":10
-			},
-			"intensity_cycle_time_span":
-			{
-				"default":0
-			}
-		},
-		"RiskForInstrument":
-		{
-			"allowed_long_volume":
-			{
-				"default":1000000
-			},
-			"allowed_short_volume":
-			{
-				"default":200000000
-			},
-			"allowed_net_volume":
-			{
-				"default":20000000
-			}
-		},
-		"RiskForProduct":
-		{
-			"allowed_long_volume":
-			{
-				"default":200000000
-			},
-			"allowed_short_volume":
-			{
-				"default":20000000
-			},
-			"allowed_net_volume":
-			{
-				"default":200000000
-			}
-		},
-		"RiskForAccount":
-		{
-			"allowed_long_amount":10000000000.00,
-			"allowed_short_amount":10000000000.00,
-			"allowed_net_amount":10000000000.00
-		}
-	},
-	"Account": []
+	  "TDEngine":
+	  {
+		    "type":"ctp",
+		    "log4cplus":"@CMAKE_INSTALL_PREFIX@/TDEngine/conf/tdlogger.cnf",
+		    "request_id_range" : [1000, 1000000]
+	  },
+	  "CTPTD":
+	  {
+		    "name" : "td_engine",
+		    "trade_flow_path" : "@CMAKE_INSTALL_PREFIX@/TDEngine/trade_flow/",
+		    "front_uri" : "tcp://180.168.146.187:10100",
+        "AuthCode" : "0000000000000000",
+        "AppID" : "simnow_client_test",
+		    "timeout" : 5,
+		    "Account" : [
+			      {
+				        "BrokerID" : "9999",
+				        "UserID" : "163973",
+				        "Password" : "NowSim88418"
+			      }
+		    ],
+		    "myid_8b" : "unused"
+	  },
+	  "XTTD":
+	  {
+		    "name" : "td_engine_xt",
+		    "ip_port" : "172.22.4.103:65300",
+		    "timeout" : 5,
+		    "Account" : [
+			      {
+				        "FundAccount" : "999119835",
+				        "UserID" : "ben",
+				        "Password" : "jrqh@123"
+			      }
+		    ]
+	  },
+	  "AccountDefault":
+	  {
+		    "RiskForGeneral":
+		    {
+			      "allowed_instrument":["All"],
+			      "allowed_max_unfilled_order_number":1
+		    },
+		    "RiskForOrder":
+		    {
+			      "allowed_price_tick":
+			      {
+				        "default":100000
+			      },
+			      "allowed_order_size":
+			      {
+				        "default":200000
+			      },
+			      "intensity_cycle_order_count":
+			      {
+				        "default":10
+			      },
+			      "intensity_cycle_time_span":
+			      {
+				        "default":0
+			      }
+		    },
+		    "RiskForInstrument":
+		    {
+			      "allowed_long_volume":
+			      {
+				        "default":1000000
+			      },
+			      "allowed_short_volume":
+			      {
+				        "default":200000000
+			      },
+			      "allowed_net_volume":
+			      {
+				        "default":20000000
+			      }
+		    },
+		    "RiskForProduct":
+		    {
+			      "allowed_long_volume":
+			      {
+				        "default":200000000
+			      },
+			      "allowed_short_volume":
+			      {
+				        "default":20000000
+			      },
+			      "allowed_net_volume":
+			      {
+				        "default":200000000
+			      }
+		    },
+		    "RiskForAccount":
+		    {
+			      "allowed_long_amount":10000000000.00,
+			      "allowed_short_amount":10000000000.00,
+			      "allowed_net_amount":10000000000.00
+		    }
+	  },
+	  "Account": []
 }

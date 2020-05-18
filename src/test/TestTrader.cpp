@@ -1,6 +1,7 @@
 #include "ThostFtdcTraderApi.h"
 #include "CEncodeConv.h"
 #include "unistd.h"
+#include "sys/types.h"
 #include <csignal>
 #include <iostream>
 #include <string>
@@ -39,7 +40,7 @@ class TestTraderSpi : public CThostFtdcTraderSpi
     std::memset(&reqAuth, 0, sizeof(reqAuth));
     std::strcpy(reqAuth.BrokerID, fBrokerID.c_str());
     std::strcpy(reqAuth.UserID, fUserID.c_str());
-    std::strcpy(reqAuth.UserProductInfo, "pro_info");
+    std::strcpy(reqAuth.UserProductInfo, "pro_info"); // it's not necessary
     std::strcpy(reqAuth.AuthCode, "0000000000000000");
     std::strcpy(reqAuth.AppID, "simnow_client_test");
 
@@ -88,11 +89,12 @@ class TestTraderSpi : public CThostFtdcTraderSpi
 
       // send login request
       CThostFtdcReqUserLoginField reqLogin;
-      strcpy(reqLogin.TradingDay, "20200516");
-      strcpy(reqLogin.UserID, fUserID.c_str());
-      strcpy(reqLogin.BrokerID, fBrokerID.c_str());
-      strcpy(reqLogin.Password, fPassword.c_str());
-			strcpy(reqLogin.UserProductInfo, "pro_info");
+      std::memset(&reqLogin, 0, sizeof(reqLogin));
+      std::strcpy(reqLogin.TradingDay, "20200516"); // not necessary
+      std::strcpy(reqLogin.UserID, fUserID.c_str());
+      std::strcpy(reqLogin.BrokerID, fBrokerID.c_str());
+      std::strcpy(reqLogin.Password, fPassword.c_str());
+      std::strcpy(reqLogin.UserProductInfo, "pro_info"); // not necessary
       if(fApiHandle->ReqUserLogin(&reqLogin,fRequestId++)) {
         std::cout << "Failed sending user login request...\n";
       }
@@ -112,7 +114,110 @@ class TestTraderSpi : public CThostFtdcTraderSpi
     }
     else{
       std::cout << "Login successfully!\n";
+      std::cout << "\t Trading Day: " << pRspUserLogin->TradingDay << std::endl;
+      std::cout << "\t Login Time: " << pRspUserLogin->LoginTime << std::endl;
+      std::cout << "\t User ID: " << pRspUserLogin->UserID << std::endl;
+      std::cout << "\t System Name: " << pRspUserLogin->SystemName << std::endl;
+      std::cout << "\t Front ID: " << pRspUserLogin->FrontID << std::endl;
+      std::cout << "\t Session ID: " << pRspUserLogin->SessionID << std::endl;
+      std::cout << "\t MaxOrderRef: " << pRspUserLogin->MaxOrderRef << std::endl;
+      std::cout << "\t SHFE Time: " << pRspUserLogin->SHFETime << std::endl;
+      std::cout << "\t DCE Time: " << pRspUserLogin->DCETime << std::endl;
+      std::cout << "\t CZCE Time: " << pRspUserLogin->CZCETime << std::endl;
+      std::cout << "\t FFEX Time: " << pRspUserLogin->FFEXTime << std::endl;
+      std::cout << "\t INE Time: " << pRspUserLogin->INETime << std::endl;
+
+      // req settlement
+      CThostFtdcQrySettlementInfoField qryStlInfo;
+      std::memset(&qryStlInfo, 0, sizeof(qryStlInfo));
+      std::strcpy(qryStlInfo.BrokerID, fBrokerID.c_str());
+      std::strcpy(qryStlInfo.InvestorID, fUserID.c_str());
+      // strcpy(qryStlInfo.TradingDay, "20200516");
+      // strcpy(qryStlInfo.AccountID, fUserID.c_str());
+      // strcpy(qryStlInfo.CurrencyID,"");
+      if(fApiHandle->ReqQrySettlementInfo(&qryStlInfo,fRequestId++)){
+        std::cout << "Failed sending query settlement info...\n";
+      }
+      else{
+        std::cout << "Waiting for query settlement info response...\n";
+      }
+
+      // req settlement confirm
+      CThostFtdcQrySettlementInfoConfirmField qryStlInfoConfirm;
+      std::memset(&qryStlInfoConfirm, 0, sizeof(qryStlInfoConfirm));
+      std::strcpy(qryStlInfoConfirm.BrokerID, fBrokerID.c_str());
+      std::strcpy(qryStlInfoConfirm.InvestorID, fUserID.c_str());
+      // strcpy(qryStlInfoConfirm.AccountID, "");
+      // strcpy(qryStlInfoConfirm.CurrencyID, "");
+      if(fApiHandle->ReqQrySettlementInfoConfirm(&qryStlInfoConfirm,fRequestId++)){
+        std::cout << "Failed sending query settlement info confirm ...\n";
+      }
+      else{
+        std::cout << "Waiting for query settlement info confirm response...\n";
+      }
     }
+  }
+
+	virtual void OnRspQrySettlementInfo(CThostFtdcSettlementInfoField *pSettlementInfo, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
+  {
+    if (pRspInfo != nullptr && pRspInfo->ErrorID != 0)
+    {
+      std::cout << "Qry Settlement Info failed: " << CEncodeConv::gbk2utf8(pRspInfo->ErrorMsg).c_str() << std::endl;
+    }
+    else{
+      std::cout << "QrySettlementInfo successfully!\n";
+      std::cout << "\t Trading Day: " << pSettlementInfo->TradingDay << std::endl;
+      std::cout << "\t Settlement ID: " << pSettlementInfo->SettlementID << std::endl;
+      std::cout << "\t Broker ID: " << pSettlementInfo->BrokerID << std::endl;
+      std::cout << "\t Investor ID: " << pSettlementInfo->InvestorID << std::endl;
+      std::cout << "\t Sequence No: " << pSettlementInfo->SequenceNo << std::endl;
+      std::cout << "\t Content: " << pSettlementInfo->Content << std::endl;
+      std::cout << "\t AccountID: " << pSettlementInfo->AccountID << std::endl;
+      std::cout << "\t CurrencyID: " << pSettlementInfo->CurrencyID << std::endl;
+    }
+  }
+
+	virtual void OnRspQrySettlementInfoConfirm(CThostFtdcSettlementInfoConfirmField *pSettlementInfoConfirm, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
+  {
+    if (pRspInfo != nullptr && pRspInfo->ErrorID != 0)
+    {
+      std::cout << "Qry Settlement Info Confirm failed: " << CEncodeConv::gbk2utf8(pRspInfo->ErrorMsg).c_str() << std::endl;
+    }
+    else{
+      std::cout << "QrySettlementInfo Confirm successfully!\n";
+      std::cout << "\t Broker ID: " << pSettlementInfoConfirm->BrokerID << std::endl;
+      std::cout << "\t Investor ID: " << pSettlementInfoConfirm->InvestorID << std::endl;
+      std::cout << "\t Confirm Date: " << pSettlementInfoConfirm->ConfirmDate << std::endl;
+      std::cout << "\t Confirm Time: " << pSettlementInfoConfirm->ConfirmTime << std::endl;
+      std::cout << "\t Settlement ID: " << pSettlementInfoConfirm->SettlementID << std::endl;
+      std::cout << "\t AccountID: " << pSettlementInfoConfirm->AccountID << std::endl;
+      std::cout << "\t CurrencyID: " << pSettlementInfoConfirm->CurrencyID << std::endl;
+    }
+
+    // check trading account
+    CThostFtdcQryTradingAccountField req;
+    std::memset(&req,0,sizeof(req));
+    std::strcpy(req.BrokerID, fBrokerID.c_str());
+    std::strcpy(req.InvestorID, fUserID.c_str());
+    if(fApiHandle->ReqQryTradingAccount(&req,fRequestId++)){
+      std::cout << "Failed sending query trading account ...\n";
+    }
+    else{
+      std::cout << "Waiting for query trading account...\n";
+    }
+  }
+
+	virtual void OnRspQryTradingAccount(CThostFtdcTradingAccountField *pTradingAccount, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
+  {
+    if (pRspInfo != nullptr && pRspInfo->ErrorID != 0)
+    {
+      std::cout << "Qry Trading Account failed: " << CEncodeConv::gbk2utf8(pRspInfo->ErrorMsg).c_str() << std::endl;
+    }
+    else{
+      std::cout << "Qry Trading Account successfully!\n";
+      std::cout << "\t Available: " << pTradingAccount->Available << std::endl;
+    }
+
   }
 
   // Callback on error response
@@ -136,7 +241,7 @@ class TestTraderSpi : public CThostFtdcTraderSpi
     {
       std::cout << "Failed request logout\n";
     }
-    fApiHandle->Release();
+    // fApiHandle->Release();
   }
 
 	// virtual void OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast) {};
@@ -237,6 +342,7 @@ int main(int argc, char *argv[])
   pUserApi->SubscribePrivateTopic(THOST_TERT_QUICK); // need check
 
   // 4. Init event loop thread and request connection to front
+  // seteuid(geteuid());
   pUserApi->Init();
 
   // 5. Waiting for the end of event loop thread

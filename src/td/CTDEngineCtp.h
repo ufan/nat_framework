@@ -42,7 +42,9 @@ struct AccountUnitCTP
   // some rids, 'rid' means 'nRequestID' in CTP
   int     settle_rid;
   int     login_rid;
+  int     auth_rid;
 
+  // account information
   string broker_id;
   string user_id;
   string passwd;
@@ -86,6 +88,7 @@ class CTDEngineCtp: public ITDEngine, public CThostFtdcTraderSpi
 
  public:
 	virtual void OnFrontConnected();
+  virtual void OnRspAuthenticate(CThostFtdcRspAuthenticateField *pRspAuthenticateField, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
 	virtual void OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
 	virtual void OnRspSettlementInfoConfirm(CThostFtdcSettlementInfoConfirmField *pSettlementInfoConfirm, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
 	virtual void OnFrontDisconnected(int nReason);
@@ -106,6 +109,8 @@ class CTDEngineCtp: public ITDEngine, public CThostFtdcTraderSpi
   int 					curAccountIdx_ 	= 0; // current account index manipulated
   vector<AccountUnitCTP> 	account_units_; // collection of accounts managed, multiple accounts possible
   string				front_uri_; // front address
+  string        auth_code_;
+  string        app_id_;
   string 				name_; // name of the engine instance
   long					timout_ns_		= 5000000000L;
   bool					query_complete_flag_ = false;

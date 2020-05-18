@@ -42,6 +42,10 @@ bool CTDEngineCtp::init(const json& j_conf)
   // front address
 	front_uri_ = ctp_conf["front_uri"];
 
+  // AuthCode and AppID, all accounts share the same
+  auth_code_ = ctp_conf["AuthCode"];
+  app_id_ = ctp_conf["AppID"];
+
   // init accounts to be managed
 	auto& acc_json = ctp_conf["Account"];
 	account_units_.resize(acc_json.size());
@@ -168,6 +172,33 @@ void CTDEngineCtp::login(long timeout_nsec)
   for (int idx = 0; idx < account_units_.size(); idx ++)
   {
     AccountUnitCTP& unit = account_units_[idx];
+
+    // authenticate
+    if (!unit.authenticated)
+    {
+      // send out authenticate request
+      CThostFtdcReqAuthenticateField reqAuth;
+      memset(&reqAuth, 0, sizeof(reqAuth));
+      strcpy(reqAuth.BrokerID, unit.broker_id.c_str());
+      strcpy(reqAuth.UserID, unit.user_id.c_str());
+      strcpy(reqAuth.UserProductInfo, unit.user_product_info.c_str()); // it's not necessary
+      strcpy(reqAuth.AuthCode, auth_code_.c_str());
+      strcpy(reqAuth.AppID, app_id_.c_str());
+      unit.auth_rid = request_id_;
+
+      if (unit.api->ReqAuthenticate(&reqAuth, request_id_++))
+      {
+        ALERT("[request] authenticate failed! (Bid)%s (Uid)%s", reqAuth.BrokerID, reqAuth.UserID);
+      }
+
+      // wait for response until timeout
+      long start_time = CTimer::instance().getNano();
+      while (!unit.authenticated && CTimer::instance().getNano() - start_time < timeout_nsec)
+      {
+        usleep(50000);
+      }
+    }
+
     // login
     if (!unit.logged_in)
     {
@@ -288,7 +319,7 @@ bool CTDEngineCtp::is_logged_in() const
 {
   for (auto& unit: account_units_)
   {
-    if (!unit.logged_in || !unit.settle_confirmed)
+    if (!unit.authenticated || !unit.logged_in || !unit.settle_confirmed)
       return false;
   }
   return true;
@@ -315,14 +346,45 @@ void CTDEngineCtp::OnFrontConnected()
 void CTDEngineCtp::OnFrontDisconnected(int nReason)
 {
 	ALERT("[OnFrontDisconnected] reason=%d", nReason);
+  for (auto& unit: account_units_)
+  {
+    unit.connected = false;
+    unit.authenticated = false;
+    unit.settle_confirmed = false;
+    unit.logged_in = false;
+  }
+  stop();
+}
+
+// Callback on authenticate request
+void CTDEngineCtp::OnRspAuthenticate(CThostFtdcRspAuthenticateField *pRspAuthenticateField, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
+{
+  // check whether rid is in valid range
+	if(unlikely(!checkRequestId(nRequestID))) return;
+
+  if (pRspInfo != nullptr && pRspInfo->ErrorID != 0)
+  {
+    ALERT("[OnRspAuthenticate] (errId)%d (errMsg)%s", pRspInfo->ErrorID, CEncodeConv::gbk2utf8(pRspInfo->ErrorMsg).c_str());
+  }
+  else{
+    // print out authenticate response
+    ENGLOG("[OnRspAuthenticate] (Bid)%s (Uid)%s (AppId)%s (AppType)%d (ProInfo)%s",
+           pRspAuthenticateField->BrokerID,
+           pRspAuthenticateField->UserID,
+           pRspAuthenticateField->AppID,
+           pRspAuthenticateField->AppType,
+           pRspAuthenticateField->UserProductInfo
+           );
+
+    // find the corresponding account matching this rid
     for (auto& unit: account_units_)
     {
-        unit.connected = false;
-        unit.authenticated = false;
-        unit.settle_confirmed = false;
-        unit.logged_in = false;
+      if (unit.auth_rid == nRequestID)
+      {
+        unit.authenticated = true;
+      }
     }
-    stop();
+  }
 }
 
 void CTDEngineCtp::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin, CThostFtdcRspInfoField *pRspInfo,
