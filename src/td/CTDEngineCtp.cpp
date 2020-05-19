@@ -499,7 +499,7 @@ void CTDEngineCtp::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CT
 			info.tick_price = pInstrument->PriceTick;
 			memcpy(info.expire_date, pInstrument->ExpireDate, sizeof(info.expire_date));
 			info.is_trading = pInstrument->IsTrading;
-      ENGLOG("[OnRspQryInstrument] (InstrID)%s (ProdID)% (PriceTick)%f",
+      ENGLOG("[OnRspQryInstrument] (InstrID)%s (ProdID)%s (PriceTick)%f",
              pInstrument->InstrumentID, pInstrument->ProductID, info.tick_price);
 		}
 		if(bIsLast)
