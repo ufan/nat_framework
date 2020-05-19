@@ -481,6 +481,7 @@ void CTDEngineCtp::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CT
 	{
 		if(pInstrument)
 		{
+      ENGLOG("[OnRspQryInstrument] (InstrID)%s", pInstrument->InstrumentID);
 			uint32_t hash = INSTR_NAME_TO_HASH(pInstrument->InstrumentID);
 			tInstrumentInfo &info = CTradeBaseInfo::instr_info_[hash];
 			info.instr_hash = hash;
