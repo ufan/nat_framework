@@ -13,7 +13,7 @@ string 					CTradeBaseInfo::trading_day_;
 unordered_map<uint32_t, tInstrumentInfo> CTradeBaseInfo::instr_info_;
 switchday_fn 		CTradeBaseInfo::switch_day_cb_ = nullptr;
 
-
+// Set to an existing trade base, used in MDEngine
 void CTradeBaseInfo::set(const tIOTDBaseInfo *p)
 {
 	trading_day_ = p->trading_day;
@@ -26,6 +26,7 @@ void CTradeBaseInfo::set(const tIOTDBaseInfo *p)
 	is_init_ = true;
 }
 
+// Update the trade base in day-switching
 bool CTradeBaseInfo::update(const tIOTDBaseInfo *p)
 {
 	if(trading_day_ != p->trading_day)
@@ -40,6 +41,7 @@ bool CTradeBaseInfo::update(const tIOTDBaseInfo *p)
 	return false;
 }
 
+// Compose the datagram using the trade base information
 string CTradeBaseInfo::toSysIOStruct(int to, int source, int back_word)
 {
 	uint32_t size = sizeof(tSysIOHead) + sizeof(tIOTDBaseInfo) + instr_info_.size() * sizeof(tInstrumentInfo);
@@ -63,6 +65,7 @@ string CTradeBaseInfo::toSysIOStruct(int to, int source, int back_word)
 	return data;
 }
 
+// Get the list of instruments matching 'product' id
 vector<tInstrumentInfo> CTradeBaseInfo::getInstrInProduct(string product)
 {
 	bool is_all = product == "all" || product == "All";
