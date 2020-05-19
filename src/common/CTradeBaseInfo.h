@@ -27,7 +27,7 @@ using switchday_fn = function<void(string)>;
 
 class CTradeBaseInfo
 {
-public:
+ public:
 	static void set(const tIOTDBaseInfo *p);
 
 	static bool	update(const tIOTDBaseInfo *p);
@@ -39,32 +39,33 @@ public:
 	static std::set<string> productToInstrSet(const vector<string> &product);
 	static std::set<string> productOrInstrumentToInstrSet(const vector<string> &product);
 
-    static string getTradingDay() {return CTradeBaseInfo::trading_day_;}
-    static void setTradingDay(string day) {CTradeBaseInfo::trading_day_ = day;}
+  static string getTradingDay() {return CTradeBaseInfo::trading_day_;}
+  static void setTradingDay(string day) {CTradeBaseInfo::trading_day_ = day;}
 
-    static void setInitFlag(bool flag) {is_init_ = flag;}
+  static void setInitFlag(bool flag) {is_init_ = flag;}
 
-    static void addInstrInfo(tInstrumentInfo info);
+  static void addInstrInfo(tInstrumentInfo info);
 
-    static void clearInstrInfo() {instr_info_.clear();}
+  static void clearInstrInfo() {instr_info_.clear();}
 
-    static void callOnSwitchDayCb();
+  static void callOnSwitchDayCb();
 
-    static const tInstrumentInfo* getInstrInfo(uint32_t hash)
-    {
-        auto itr = instr_info_.find(hash);
-        if(itr != instr_info_.end())
-        {
-            return &(itr->second);
-        }
-        return nullptr;
-    }
+  static const tInstrumentInfo* getInstrInfo(uint32_t hash)
+  {
+    auto itr = instr_info_.find(hash);
+    if(itr != instr_info_.end())
+      {
+        return &(itr->second);
+      }
+    return nullptr;
+  }
 
-public:
-	static bool							is_init_;
-	static string 						trading_day_;
+ public:
+	static bool							  is_init_; // flag for intialization
+	static string 						trading_day_; // current trading day
+  // collection of all instruments currently listed on market
 	static unordered_map<uint32_t, tInstrumentInfo>	instr_info_;
-	static switchday_fn					switch_day_cb_;
+	static switchday_fn					switch_day_cb_; // callback function for day-switching
 };
 
 inline void setSwitchDayCallBack(switchday_fn fn) {CTradeBaseInfo::switch_day_cb_ = fn;}

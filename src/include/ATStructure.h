@@ -245,15 +245,15 @@ struct tLastTick
 
 struct tInstrumentInfo
 {
-	uint32_t		instr_hash;
-	char_31 		instr;
-	int				exch;
-	char_31			product;
-	uint32_t		product_hash;
-	int				vol_multiple;
-	double 			tick_price;
+	uint32_t		instr_hash; // hash of instrument id
+	char_31 		instr; // instrument id
+	int				  exch; // exchange id
+	char_31			product; // product id
+	uint32_t		product_hash; // hash of product id
+	int				  vol_multiple; // 
+	double 			tick_price; // price unit
 	char_9			expire_date;
-	bool			is_trading;
+	bool			  is_trading;
 
 	std::string getInstrStr() {return instr;}
 	void setInstrStr(std::string str)

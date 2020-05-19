@@ -272,22 +272,27 @@ void CTDEngineCtp::logout()
   }
 }
 
+// Query all the instrument information.
 bool CTDEngineCtp::queryInstruments(long timeout_nsec)
 {
 	int ret = 0;
 	CThostFtdcQryInstrumentField req;
+  // empty field means query all instrument information
 	memset(&req, 0, sizeof(req));
+  // All accounts share the same set of instrument information, so only need to query once
 	if(0 != (ret = account_units_[0].api->ReqQryInstrument(&req, request_id_++)))
 	{
 		ALERT("[request] ReqQryInstrument err:%d, ", ret);
 		return false;
 	}
 
+  // Waiting until timeout
   long start_time = CTimer::instance().getNano();
   while (!CTradeBaseInfo::is_init_ && CTimer::instance().getNano() - start_time < timeout_nsec) {
     usleep(50000);
   }
 
+  // If not all instruments returned, fail
   if(!CTradeBaseInfo::is_init_)
   {
     ALERT("[request] ReqQryInstrument timeout");
@@ -469,6 +474,8 @@ void CTDEngineCtp::OnRspUserLogout(CThostFtdcUserLogoutField *pUserLogout, CThos
   }
 }
 
+// Push the returned instrument information into TradeBaseInfo.
+// Each invokation of the callback means insertion of one new instrument.
 void CTDEngineCtp::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {
 	if(unlikely(!checkRequestId(nRequestID))) return;
@@ -481,7 +488,6 @@ void CTDEngineCtp::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CT
 	{
 		if(pInstrument)
 		{
-      ENGLOG("[OnRspQryInstrument] (InstrID)%s", pInstrument->InstrumentID);
 			uint32_t hash = INSTR_NAME_TO_HASH(pInstrument->InstrumentID);
 			tInstrumentInfo &info = CTradeBaseInfo::instr_info_[hash];
 			info.instr_hash = hash;
@@ -493,6 +499,8 @@ void CTDEngineCtp::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CT
 			info.tick_price = pInstrument->PriceTick;
 			memcpy(info.expire_date, pInstrument->ExpireDate, sizeof(info.expire_date));
 			info.is_trading = pInstrument->IsTrading;
+      ENGLOG("[OnRspQryInstrument] (InstrID)%s (ProdID)% (PriceTick)%f",
+             pInstrument->InstrumentID, pInstrument->ProductID, info.tick_price);
 		}
 		if(bIsLast)
 		{
@@ -851,9 +859,12 @@ void CTDEngineCtp::req_order_action(const tIOrderAction* data)
 	}
 }
 
+// Init the CTradeBaseInfo
 bool CTDEngineCtp::getBaseInfo()
 {
+  // Get current trading day from front
 	CTradeBaseInfo::trading_day_ = account_units_[0].api->GetTradingDay();
+  // Get all the listed instruments from front and push them into TradeBaseInfo
 	return queryInstruments(timout_ns_);
 }
 

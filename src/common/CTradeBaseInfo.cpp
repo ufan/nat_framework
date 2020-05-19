@@ -9,9 +9,9 @@
 #include "CTradeBaseInfo.h"
 
 bool						CTradeBaseInfo::is_init_ = false;
-string 						CTradeBaseInfo::trading_day_;
+string 					CTradeBaseInfo::trading_day_;
 unordered_map<uint32_t, tInstrumentInfo> CTradeBaseInfo::instr_info_;
-switchday_fn 				CTradeBaseInfo::switch_day_cb_ = nullptr;
+switchday_fn 		CTradeBaseInfo::switch_day_cb_ = nullptr;
 
 
 void CTradeBaseInfo::set(const tIOTDBaseInfo *p)
