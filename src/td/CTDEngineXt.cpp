@@ -311,13 +311,13 @@ inline EOperationType CTDEngineXt::ConvJarvisOffsetToXtOffset(int dir, int off)
 inline tOrderTrack* CTDEngineXt::findOrderId(int order_id)
 {
 	for(int i = 0; i < MMAP_ORDER_TRACK_SIZE; ++i)
-	{
-		if(request_track_[i].front_id == 1
-				&& request_track_[i].session_id == order_id)
-		{
-			return request_track_ + i;
-		}
-	}
+    {
+      if(request_track_[i].front_id == 1
+         && request_track_[i].session_id == order_id)
+        {
+          return request_track_ + i;
+        }
+    }
 	return nullptr;
 }
 

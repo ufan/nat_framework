@@ -59,7 +59,7 @@ struct tSysIOHead
 	int				to;
 	int				source;
 	int				back_word;		// 回带字段
-	char			data[0];
+	char			data[0]; // extention of GNU C, zero-length array for holding variable-length content
 };
 
 struct tIOMarketData

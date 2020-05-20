@@ -30,17 +30,17 @@ COrderTrackMmap::~COrderTrackMmap()
 	unload();
 }
 
-// open or create the order track mmap file
+// Create the order track memory-mapped file
 bool COrderTrackMmap::load(string name, bool is_write)
 {
-  // create the directory where the order tracks will be saved
+  // Create the directory where the order tracks will be saved
 	if(!createPath(ORDER_TRACK_MMAP_PATH))
 	{
 		LOG_ERR("create dir" ORDER_TRACK_MMAP_PATH "err");
 		return false;
 	}
 
-  // create the order track file with engine's name as file name
+  // Create the order track file with engine's name as file name
 	string path = string(ORDER_TRACK_MMAP_PATH) + name + ".ot";
 	fd_ = open(path.c_str(), (is_write) ? (O_RDWR | O_CREAT) : O_RDONLY, (mode_t)0666);
   if (fd_ < 0)
@@ -49,6 +49,7 @@ bool COrderTrackMmap::load(string name, bool is_write)
     return false;
   }
 
+  // Get the status struct of the newly-opened file
 	struct stat statbuff;
 	if(fstat(fd_, &statbuff) < 0)
 	{
@@ -57,9 +58,12 @@ bool COrderTrackMmap::load(string name, bool is_write)
 		return false;
 	}
 
+  // The size of the mmap file is the same as tOrderTrackMmap instance
 	const uint32_t size = sizeof(tOrderTrackMmap);
 	if(is_write)
 	{
+    // Try to lock the mmap file for writing
+    // It has the effect of limiting the mmap file writable only to current process if success
     if(!tryFileLock(fd_, 0))
     {
       LOG_ERR("file %s already has a writer.", path.c_str());
@@ -67,6 +71,7 @@ bool COrderTrackMmap::load(string name, bool is_write)
       return false;
     }
 
+    // Make sure the required size of space if available
 		if(ftruncate(fd_, size) < 0)
 		{
 			close(fd_); fd_ = -1;
@@ -74,6 +79,7 @@ bool COrderTrackMmap::load(string name, bool is_write)
 			return false;
 		}
 	}
+  // If opened for reading, make sure the size match
 	else if(statbuff.st_size < size)
 	{
 		close(fd_); fd_ = -1;
@@ -81,8 +87,7 @@ bool COrderTrackMmap::load(string name, bool is_write)
 		return false;
 	}
 
-  // create memory-mapped file into buffer, this buffer is shared between process
-  // capacity of the buffer equals to the size of order track
+  // Create memory-mapped file into buffer, this buffer is shared between process
   buf_ = (tOrderTrackMmap*)mmap(0, size, (is_write) ? (PROT_READ | PROT_WRITE) : PROT_READ, MAP_SHARED, fd_, 0);
   if ((void*)buf_ == MAP_FAILED)
   {
@@ -102,11 +107,11 @@ bool COrderTrackMmap::load(string name, bool is_write)
   return true;
 }
 
+// Unlock and unmap
 void COrderTrackMmap::unload()
 {
 	if(fd_ >= 0)
 	{
-	    //unlock and unmap
 	    if (is_lock_ && munlock(buf_, sizeof(tOrderTrackMmap)) != 0)
 	    {
 	        LOG_ERR("munlock err:%s", strerror(errno));
@@ -122,6 +127,7 @@ void COrderTrackMmap::unload()
 	}
 }
 
+// Clear the current tracked orders, rest to empty
 void COrderTrackMmap::clearTrack()
 {
 	if(fd_ >= 0 && buf_)

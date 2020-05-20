@@ -275,13 +275,14 @@ struct tSubsInstrInfo
 	tLastTick		lst_tick;
 };
 
+// The storage struct for tracked orders
 #define MMAP_ORDER_TRACK_SIZE (256 * KB)  // must be power of 2
 struct tOrderTrackMmap
 {
 	uint8_t			ver = 1;
 	uint64_t		reserved;
-	char			trading_day[12];
-	tOrderTrack		order_track[MMAP_ORDER_TRACK_SIZE];
+	char			  trading_day[12];
+	tOrderTrack	order_track[MMAP_ORDER_TRACK_SIZE];
 };
 
 #define HASH_STR(str)  (MurmurHash2(str, strlen(str), 0x20180504))

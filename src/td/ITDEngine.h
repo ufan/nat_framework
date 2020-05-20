@@ -77,10 +77,14 @@ class ITDEngine
   // event loop in the  master thread
   void listening();
 
+  // stop the engine and release resources
   void stop() { do_running_ = false; release(); }
 
+  // checking whether the request id within predefined range
   bool checkRequestId(int id) {return request_id_start_ <= id && id <= request_id_end_;}
 
+  // Get the order track with 'id' index
+  // MMAP_ORDR_TRACK_SIZE is the capacity of the tracked order collection
   tOrderTrack& get_request_track(int id)
 	{
 		return request_track_[id & (MMAP_ORDER_TRACK_SIZE - 1)];
@@ -136,8 +140,8 @@ class ITDEngine
   int 								request_id_ 	= 1;  // current request id
   int									request_id_start_ = 1; // lower limit
   int 								request_id_end_ = 1000000; // higher limit
-	tOrderTrack							*request_track_ = nullptr;
-	COrderTrackMmap					otmmap_{true};
+	tOrderTrack							*request_track_ = nullptr; // pointer to the tracked order collection
+	COrderTrackMmap					otmmap_{true}; // the real storage place of the tracked orders
 	CIDQueue<>							otidfilter_[MMAP_ORDER_TRACK_SIZE];
 
 	static atomic_flag			flag_;

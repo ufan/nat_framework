@@ -251,7 +251,7 @@ void IMDEngine::engine_unsubscribe(const vector<string> &instr)
 	unsubscribe(real_unsubs);
 }
 
-// Get base information by td engine name
+// Get base information by td engine name and init the trade base info
 bool IMDEngine::getBaseInfo(string td_engine_name, int timeout)
 {
 	int td_engine_id = (int)HASH_STR(td_engine_name.c_str());

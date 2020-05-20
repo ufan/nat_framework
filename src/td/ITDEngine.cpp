@@ -48,7 +48,7 @@ bool ITDEngine::initEngine(const json& j_conf)
 	}
   LOG_DBG("getBaseInfo successfully.");
 
-  // init order track mmap file
+  // init order track mmap file storage  and fetch the listed order from front
 	if(!loadOrderTrack() || !updateOrderTrack())
 	{
 		ALERT("init order track err.");
@@ -139,10 +139,13 @@ bool ITDEngine::initAccountUtilis(const json& j_conf)
 	return true;
 }
 
+// Init the tracked order mmap file
 bool ITDEngine::loadOrderTrack()
 {
+  // Load writable track order mmap file
 	if(otmmap_.load(name(), true))
 	{
+    // Get the memory buffer pointer of mmap file
 		tOrderTrackMmap *p = otmmap_.getBuf();
 		p->ver = 1;
 		p->reserved = 0;

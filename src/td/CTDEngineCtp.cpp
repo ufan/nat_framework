@@ -744,6 +744,8 @@ void CTDEngineCtp::OnErrRtnOrderAction(CThostFtdcOrderActionField *pOrderAction,
 	}
 }
 
+// Request OrderInsert to front
+// order_ref = request_id_ = trackOrder index
 void CTDEngineCtp::req_order_insert(const tIOInputOrderField* data)
 {
 	//elapse_begin(start_order);
@@ -757,23 +759,24 @@ void CTDEngineCtp::req_order_insert(const tIOInputOrderField* data)
 		{
 			writeErrRtn(data, ret, "risk check failed");
 		}
-		else 
+		else
 		{
-      // send the request to trader front
+      // find the corresponding account
 			AccountUnitCTP& unit = account_units_[data->acc_idx];
 			auto& order = unit.input_order;
-			int2string(order.OrderRef, request_id_);
+			int2string(order.OrderRef, request_id_); // order_ref comes from current request_id_
 			strcpy(order.InstrumentID, data->instr);
 			order.VolumeTotalOriginal = data->vol;
 			order.CombOffsetFlag[0] = off;
 			order.Direction = data->dir;
 			order.LimitPrice = data->price;
 
+      // send the request to matching trader front
 			//elapse_begin(call_api);
 			int ret = unit.api->ReqOrderInsert(&order, request_id_);
 			if(ret == 0)	// succ, then request_id_ should ++
 			{
-        // insert this order into request track
+        // insert this order into request tracked order
 				//elapse_begin(call_api_after);
 				tOrderTrack& request_track = get_request_track(request_id_);
 				request_track.status = ODS(TDSEND);
@@ -804,7 +807,7 @@ void CTDEngineCtp::req_order_insert(const tIOInputOrderField* data)
 				p->rtn_msg.vol = data->vol;
 				p->rtn_msg.dir = data->dir;
 				p->rtn_msg.off = data->off;
-				p->rtn_msg.order_ref = request_id_++;
+				p->rtn_msg.order_ref = request_id_++; // request_id_ increment here, as no more usage in scope
 				p->rtn_msg.front_id = request_track.front_id;
 				p->rtn_msg.session_id = request_track.session_id;
 				writer_.commit();
@@ -874,6 +877,7 @@ void CTDEngineCtp::release()
 	release_api();
 }
 
+// Update the tracked orders
 bool CTDEngineCtp::updateOrderTrack()
 {
   // ctp limit request frequency, so sleep 1s here.
@@ -888,6 +892,7 @@ bool CTDEngineCtp::updateOrderTrack()
   // get the current trading day
 	strcpy(otmmap_.getBuf()->trading_day, CTradeBaseInfo::trading_day_.c_str());
 
+  // query the orders for each account
   for (int idx = 0; idx < account_units_.size(); idx ++)
   {
     query_complete_flag_ = false;
@@ -903,9 +908,12 @@ bool CTDEngineCtp::updateOrderTrack()
 			ALERT("ReqQryOrder failed: %d", ret);
 			return  false;
 		}
+
+    // waiting for the response until timeout
 		long start_time = CTimer::instance().getNano();
 		while (!query_complete_flag_ && CTimer::instance().getNano() - start_time < timout_ns_)
 		{usleep(50000);}
+
 		if(!query_complete_flag_) return false;
   }
   request_id_ = max_ref_id_ + 1;
@@ -921,12 +929,16 @@ bool CTDEngineCtp::updateOrderTrack()
 void CTDEngineCtp::OnRspQryOrder(CThostFtdcOrderField *pOrder, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {
 	if(unlikely(!checkRequestId(nRequestID))) return;
+
 	if(bIsLast) query_complete_flag_ = true;
+
 	if(pOrder)
 	{
 		if(unlikely(!CHK_USERID(pOrder))) return;
+
 		int order_ref = atoi(pOrder->OrderRef);
 		if(unlikely(!checkRequestId(order_ref))) return;
+
 		tOrderTrack& track = get_request_track(order_ref);
 		pOrder->OrderStatus = ODS(TDSEND);
 		switch(pOrder->OrderStatus)
