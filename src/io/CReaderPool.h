@@ -15,6 +15,9 @@
 #include "CRawIOReader.h"
 using namespace std;
 
+/*
+ * CReaderPool is a collection of CRawIOReader, using hash id as key
+ */
 class CReaderPool
 {
 	typedef unique_ptr<CRawIOReader> CRawIOReaderPtr;
@@ -31,6 +34,7 @@ public:
 	CReaderPool() {}
 	virtual ~CReaderPool() {}
 
+  // Checking the existence of a reader with 'hash'
 	bool hasHash(uint32_t hash)
 	{
 		for(auto itr = readers_.begin(); itr != readers_.end(); ++itr)
@@ -43,6 +47,7 @@ public:
 		return false;
 	}
 
+  // Adding a reader with id 'hash' using 'path', 'from_page' and 'from_nano' as filter
 	bool add(uint32_t hash, string path, int from_page, long from_nano)
 	{
 		if(hasHash(hash)) return false;
@@ -58,6 +63,7 @@ public:
 		readers_.emplace_back(CRawIOReaderPtr(p), hash);
 	}
 
+  // Read the first available frame in all readers in the pool
 	const char* read(uint32_t &len, uint32_t &hash)
 	{
 		for(auto &i : readers_)
@@ -72,6 +78,7 @@ public:
 		return NULL;
 	}
 
+  // Read the earliest frame among all readers
 	const char* seqRead(uint32_t &len, uint32_t &hash)
 	{
 		CReaderInfo *cur_reader = NULL;
@@ -94,6 +101,7 @@ public:
 		return NULL;
 	}
 
+  // Move out a reader
 	void erase(uint32_t hash)
 	{
 		for(auto itr = readers_.begin(); itr != readers_.end(); ++itr)

@@ -43,6 +43,7 @@ protected:
 	int 		page_num_;
 };
 
+// Read the next frame, returning the pointer the data bytes and 'len' of the data bytes
 inline const char* CRawIOReader::read(uint32_t& len)
 {
 	if(fd_ >= 0)
@@ -80,6 +81,7 @@ inline const char* CRawIOReader::read(uint32_t& len)
 	return NULL;
 }
 
+// Skip to the next frame
 inline void CRawIOReader::passFrame()
 {
 	if(fd_ >= 0)
@@ -101,6 +103,7 @@ inline void CRawIOReader::passFrame()
 	}
 }
 
+// Get the current frame
 inline const tFrameHead* CRawIOReader::getCurFrame()
 {
 	if(fd_ >= 0)
@@ -135,6 +138,7 @@ inline const tFrameHead* CRawIOReader::getCurFrame()
 	return NULL;
 }
 
+// Get the frame header based on the frame's data bytes pointer
 inline tFrameHead* getIOFrameHead(const void *buf) {return (tFrameHead*)((const char*)buf - sizeof(tFrameHead));}
 
 #endif /* SRC_IO_CRAWIOREADER_H_ */

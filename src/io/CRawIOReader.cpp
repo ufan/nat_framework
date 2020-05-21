@@ -27,6 +27,10 @@ CRawIOReader::~CRawIOReader()
 
 }
 
+// Find the correct the Page and mapped into memory for reading
+// Default is the latest one, if 'from_nano' is negative
+// 'from_nano' defines the first frame to be read from,
+// of which the filling time is just after 'from_nano'
 bool CRawIOReader::init(string path, long from_nano)
 {
 	setPrefix(path);
@@ -36,12 +40,19 @@ bool CRawIOReader::init(string path, long from_nano)
 
 bool CRawIOReader::init(string path, int from_page, long from_nano)
 {
+  // unload current Page file
 	unload();
+
+  // Set path prefix
 	setPrefix(path);
+
+  // Start from the latest Page file if 'from_page' is negative
 	if(from_page < 0)
 	{
 		from_page = getTailNum();
 	}
+
+  // load the latest Page file or if no Page file exist
 	page_num_ = from_page < 0 ? 0 : from_page;
 	if(load(page_num_))
 	{
@@ -50,6 +61,8 @@ bool CRawIOReader::init(string path, int from_page, long from_nano)
 	return true;
 }
 
+// Move cursor to the frame_noth frame in current Page
+// frame_no < 0 means moving to the tail of current Page
 void CRawIOReader::seek(int frame_no)
 {
 	if(frame_no < 0)
@@ -68,6 +81,7 @@ void CRawIOReader::seek(int frame_no)
 	}
 }
 
+// Load the next finished Page file
 inline bool CRawIOReader::passPage()
 {
 	if(fd_ < 0)
@@ -82,16 +96,24 @@ inline bool CRawIOReader::passPage()
 	return false;
 }
 
+// Find the frame just after time 'nano'
+// If no frame filled after 'nano', just move the cursor to the tail of the current Page
+// Internal use in class, can't handle the situation when nano is very small even for current Page
+// Use setReadPos to correctly find the frame in all situations
 void CRawIOReader::seekTime(long nano)
 {
+  // If invalid argument passedin, move cursor to the tail of current Page
 	if(nano < 0)
 	{
 		cursor_ = buf_ + ((tPageHead*)buf_)->tail;
 		return;
 	}
 
+  // Find the Page file which may contain frame before timestamp 'nano'
+  // If not, then set to current Page's tail
 	while(((volatile tPageHead* volatile)buf_)->last_nano < nano)
 	{
+    // If it's the current unfinished Page file, move cursor the the tail
 		if(!passPage())
 		{
 			if(fd_ >= 0)
@@ -102,12 +124,15 @@ void CRawIOReader::seekTime(long nano)
 		}
 	}
 
+  // A previous Page file may contain the frame now
+  // Move the cursor to the first fame which was filled after 'nano'
 	while(((tFrameHead*)cursor_)->nano < nano)
 	{
 		cursor_ += ((tFrameHead*)cursor_)->len + sizeof(tFrameHead);
 	}
 }
 
+// Set the Page file and cursor to the frame which is just after 'nano'
 void CRawIOReader::setReadPos(long nano)
 {
 	if(fd_ >= 0)
@@ -131,20 +156,27 @@ void CRawIOReader::setReadPos(long nano)
 	}
 }
 
+// Load existing Page file with 'num' as suffix
 bool CRawIOReader::load(int num)
 {
+  // Compose the filename
 	string path = prefix_ + to_string(num);
 
+  // Open the file in read-only mode.
+  // The file must exist otherwise fail.
 	fd_ = open(path.c_str(), O_RDONLY, (mode_t)0666);
-    if (fd_ < 0)
+  if (fd_ < 0)
     {
-        if(unlikely(errno != ENOENT))
+      if(unlikely(errno != ENOENT))
         {
         	LOG_ERR("Cannot open file %s, err %d:%s", path.c_str(), errno, strerror(errno));
         }
-        return false;
+      return false;
     }
 
+  // Check the size of opened Page file.
+  // The file must have the correct format by checking
+  // whether the capacity is at least larger than PageHead
 	struct stat statbuff;
 	if(fstat(fd_, &statbuff) < 0)
 	{
@@ -160,31 +192,35 @@ bool CRawIOReader::load(int num)
 		return false;
 	}
 
-    buf_ = (char*)mmap(0, size_, PROT_READ, MAP_SHARED, fd_, 0);
-    if ((void*)buf_ == MAP_FAILED)
+  // Map the file into memory
+  buf_ = (char*)mmap(0, size_, PROT_READ, MAP_SHARED, fd_, 0);
+  if ((void*)buf_ == MAP_FAILED)
     {
     	close(fd_); fd_ = -1;
-        LOG_ERR(" mapping file to buffer err:%s", strerror(errno));
-        return false;
+      LOG_ERR(" mapping file to buffer err:%s", strerror(errno));
+      return false;
     }
 
-    if(!checkPageHead(buf_))
+  // Check the format by checking PageHead
+  if(!checkPageHead(buf_))
     {
-        munmap(buf_, size_);
-        close(fd_); fd_ = -1;
+      munmap(buf_, size_);
+      close(fd_); fd_ = -1;
     	LOG_ERR("file %s format err.", path.c_str());
     	return false;
     }
 
-    if (is_lock_ && (madvise(buf_, size_, MADV_SEQUENTIAL) != 0 || mlock(buf_, size_) != 0))
+  // Try to avoid the page-out of the mapped memory
+  if (is_lock_ && (madvise(buf_, size_, MADV_SEQUENTIAL) != 0 || mlock(buf_, size_) != 0))
     {
-        //munmap(buf_, size_);
-        //close(fd_); fd_ = -1;
-        LOG_WARN("madvise or mlock error. abandon lock memory");
-        //return false;
+      //munmap(buf_, size_);
+      //close(fd_); fd_ = -1;
+      LOG_WARN("madvise or mlock error. abandon lock memory");
+      //return false;
     }
 
-    cursor_ = ((tPageHead*)buf_)->buf;
-    return true;
+  // Put the current cursor_ at the first frame of opened Page
+  cursor_ = ((tPageHead*)buf_)->buf;
+  return true;
 }
 
