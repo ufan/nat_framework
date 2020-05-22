@@ -97,7 +97,8 @@ inline bool CRawIOReader::passPage()
 }
 
 // Find the frame just after time 'nano'
-// If no frame filled after 'nano', just move the cursor to the tail of the current Page
+// If no frame filled after 'nano' or 'nano' is negative,
+// just move the cursor to the tail of the current Page
 // Internal use in class, can't handle the situation when nano is very small even for current Page
 // Use setReadPos to correctly find the frame in all situations
 void CRawIOReader::seekTime(long nano)

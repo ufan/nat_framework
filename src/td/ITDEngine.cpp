@@ -181,7 +181,7 @@ void ITDEngine::engine_on_close()
 	}
 }
 
-// event loop for client-side command processing
+// Event loop for IO Page command processing
 void ITDEngine::listening()
 {
 	ENGLOG("start listening...");
@@ -191,11 +191,15 @@ void ITDEngine::listening()
 	while(do_running_)
 	{
 		uint32_t len = 0;
-		uint32_t ioid;
+		uint32_t ioid; // hash_id_ of the Page IO type
+
+    // Fetch next un-processed cmd in reader pool
+    // The default reader pool is SystemIO
+    // TraderIO reader can be added by request from CTDHelperComm
 		const char *p = read_pool_.seqRead(len, ioid);
 		if(p)
 		{
-			if(0 != ioid)								// trader io
+			if(0 != ioid)								// trader io, this IO is added by CTDHelperComm
 			{
 				switch(*(int*)p)
 				{

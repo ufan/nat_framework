@@ -13,6 +13,14 @@
 using namespace std;
 
 
+/*
+ * CRawIOWriter focus on writing in one process with exclusive write permission
+ * for the Pages managed by it.
+ * It addes the underlying Page Format checking, comparing CIOBase.
+ * It also defines the interface for the writing new frame data into Page.
+ * It's not thread-safe, designed to be used in single-thread environment.
+ */
+
 class CRawIOWriter : public CIOBase
 {
 public:
@@ -31,11 +39,22 @@ public:
 	bool load(int num);
 
 protected:
-	int 		page_num_;
-	uint32_t	prefetch_tail_;
-	uint32_t	page_size_;
-	bool		is_test_lock_onload_;
+	int 		page_num_; // the current index of Page
+	uint32_t	prefetch_tail_; // the end position of the prefetched frame in Page memory
+	uint32_t	page_size_; // the size of current Page
+	bool		is_test_lock_onload_; // flag trying to lock the Page file when loading it
 };
+
+//===================================================================================
+
+/*
+ * CSafeRawIOWriter is built upon the CRawIOWriter with a focus on the data synchronization
+ * in multi-threading environment.
+ * In another term, CSafeRawIOWriter is thread-safe, while CRawIOWriter is not.
+ * On the other hand, it will not lock the file on load. It must be used in a single process.
+ * Using CSafeRawIOWriter in different process to manage the same set of Pages may have
+ * undefined behavior.
+ */
 
 class CSafeRawIOWriter : public CRawIOWriter
 {

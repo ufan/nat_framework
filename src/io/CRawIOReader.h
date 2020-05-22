@@ -16,9 +16,10 @@ public:
 	CRawIOReader();
 	virtual ~CRawIOReader();
 
+  // default open and move the latest frame in the latest page
 	bool init(string path, long from_nano=-1);
 
-	// from_page = -1 for the last page, from_nano = -1 for the last data
+	// from_page = -1 for the latest page, from_nano = -1 for the latest frame
 	bool init(string path, int from_page, long from_nano);
 
 	// -1 for tail
@@ -43,7 +44,8 @@ protected:
 	int 		page_num_;
 };
 
-// Read the next frame, returning the pointer the data bytes and 'len' of the data bytes
+// Read the next frame, returning the pointer to the data bytes
+// and 'len' of the data bytes
 inline const char* CRawIOReader::read(uint32_t& len)
 {
 	if(fd_ >= 0)

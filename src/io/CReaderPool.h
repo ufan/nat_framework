@@ -18,6 +18,7 @@ using namespace std;
 /*
  * CReaderPool is a collection of CRawIOReader, using hash id as key
  */
+
 class CReaderPool
 {
 	typedef unique_ptr<CRawIOReader> CRawIOReaderPtr;

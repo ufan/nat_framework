@@ -13,6 +13,14 @@
 
 #define GLOBAL_SAFE_RAW_IO_LOCK_FILE "/tmp/at_safe_io.lock"
 
+/*
+ * CGlobalSafeRawIOWriter aims to be used as inter-process communication channel.
+ * Multiple processes are allowed to fill in the Pages managed by it.
+ * The race condition for the same Page managed by multiple process is solved by CGlobalLock.
+ * Whenever a frame need to be filled in, the owning process will lock the Page exclusively
+ * until filling finishing.
+ */
+
 class CGlobalSafeRawIOWriter : public CRawIOWriter
 {
 public:

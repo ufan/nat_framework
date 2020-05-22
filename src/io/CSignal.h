@@ -12,6 +12,11 @@
 #include "CRawIOReader.h"
 #include "SysConf.h"
 
+/*
+ * CSignalReader and CSignalWriter are specialized CRawIOReader/CRawIOWriter
+ * for managing a specific directory 'SIGNAL_BASE_DIR'
+ */
+
 constexpr uint32_t 	SIGNAL_PAGE_SIZE = 64 * 1024 * 1024;  // 64M
 
 class CSignalReader : public CRawIOReader

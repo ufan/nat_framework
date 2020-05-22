@@ -133,10 +133,10 @@ class ITDEngine
 
  protected:
   volatile bool				do_running_  = 	true; // flag controlling the exit of event loop
-	int									self_id_	 = 	0;
-	CReaderPool					read_pool_;
-	CSafeRawIOWriter		writer_;
-	vector<unique_ptr<RiskTop> >		acc_utilis_;
+	int									self_id_	 = 	0; // hash id of this TDEngine
+	CReaderPool					read_pool_; // pool of IO Page readers, the first one is SystemIO
+	CSafeRawIOWriter		writer_; // for writing TDEngine IO Pages
+	vector<unique_ptr<RiskTop> >		acc_utilis_; // collection of risk utilities for each account
   int 								request_id_ 	= 1;  // current request id
   int									request_id_start_ = 1; // lower limit
   int 								request_id_end_ = 1000000; // higher limit

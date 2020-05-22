@@ -22,7 +22,7 @@
 
 
 CRawIOWriter::CRawIOWriter(uint32_t page_size) : page_num_(-1), prefetch_tail_(0), page_size_(page_size),
-	is_test_lock_onload_(true)
+                                                 is_test_lock_onload_(true) // try to lock the file on load, fail if can't lock
 {
 
 }
@@ -196,10 +196,10 @@ bool CRawIOWriter::load(int num)
       return false;
     }
 
-  // Try to lock this file for exclusive write permission.
-  // Fail means conflicts in the usage of CRawIOWriter,
-  // i.e. the file with the specified path prefix should be
-  // managed only by one instance of CRawIOWriter.
+  // Try to lock this file for exclusive write permission for this process.
+  // Fail means conflicts in the usage of CRawIOWriter. The Pages under 'path'
+  // prefix can only be filled in by one process at a time.
+  // User can also turn off this behavior by setting 'is_test_lock_onload_'
 	if(is_test_lock_onload_ && !tryFileLock(fd_, 0))
     {
       LOG_ERR("file %s already has a writer.", path.c_str());
@@ -215,8 +215,10 @@ bool CRawIOWriter::load(int num)
       return false;
     }
 
-  // Set the size of mmap file if newly created
-  // Also get the information whether it's newly-created or not.
+  // Set the size of this Page file.
+  // It's newly created set to default size, if not new, set the the actual size of file
+  // The file is regarded as newly-created as long as it's size is smaller than the size
+  // of PageHead.
 	bool isnew = false;
 	if(statbuff.st_size < sizeof(tPageHead))	// a new file
     {

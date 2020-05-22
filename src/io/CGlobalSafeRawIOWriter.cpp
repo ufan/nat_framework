@@ -18,6 +18,7 @@ bool CGlobalSafeRawIOWriter::init(string path)
 		return false;
 	}
 
+  // hash id is the representation of the Pages to be managed
 	hash_ = MurmurHash2(path.c_str(), path.size(), 0x20180426);
 
 	s_safe_io_lock_.lock(hash_);

@@ -13,6 +13,12 @@
 #include "SysConf.h"
 #include "utils.h"
 
+/*
+ * CSystemIO is an singlton in charge of the System IO pages.
+ * It's aimed to be used as communication channel in multi-process
+ * and multi-threading environment.
+ */
+
 class CSystemIO
 {
 	static const unsigned int MEM_SIZE = 64 * 1024 * 1024; // 64M
@@ -35,10 +41,13 @@ public:
 
 	CGlobalSafeRawIOWriter& getWriter() {return sys_writer_;}
 
+  // Get a reader for reading the IO Page data
 	CRawIOReader* createReader()
 	{
 		CRawIOReader *sys_reader = new CRawIOReader();
 		sys_reader->setMemMode(false);
+
+    // start from the fisrt frame of the first Page file
 		sys_reader->init(IO_SYSTEM_MSG_PATH, -1 , -1);
 		return sys_reader;
 	}

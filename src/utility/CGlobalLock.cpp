@@ -59,6 +59,8 @@ CGlobalLock::~CGlobalLock()
 void CGlobalLock::lock(uint64_t hash)
 {
 	while (flag_.test_and_set(memory_order_acquire));
+
+  // lock the byte, if already locked, wait for its unlock
 	setFileLock(fd_, hash % file_size_);
 }
 

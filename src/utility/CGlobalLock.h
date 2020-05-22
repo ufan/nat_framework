@@ -12,6 +12,14 @@
 #include <atomic>
 using namespace std;
 
+/*
+ * CGlobalLock implements a lock mechanism based on the file write lock in Linux.
+ * A lock file is created and each byte in the file can be used to lock one
+ * resource.
+ * The class is also thread-safe, i.e. it also solves data race conflict in multi-threading.
+ * The typical usage of CGlobalLock is a static data member of the IOWriter class.
+ */
+
 class CGlobalLock
 {
 public:
@@ -20,12 +28,16 @@ public:
 
 	bool init(const char *lockfile, int lock_file_size=4096);
 
+  // lock the resource represented by 'hash'
 	void lock(uint64_t hash);
 
+  // unlock the resource represented by 'hash'
 	void unlock(uint64_t hash);
 
+  // try to lock the resource represented by 'hash'
 	bool trylock(uint64_t hash);
 
+  // whether lockfile created
 	bool isWork() {return fd_ >= 0;}
 
 private:

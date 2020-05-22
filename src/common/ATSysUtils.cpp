@@ -13,11 +13,21 @@
 #include "MurmurHash2.h"
 
 
+// The interface function for writing cmd into SystemIO and fetching response
+// Write 'cmd' from 'source' to 'to' with extra_data into SystemIO
+// Then immediately fetching the response with:
+// type 'rsp_cmd' from 'to' sending to 'source'.
 string sysRequest(int cmd, int rsp_cmd, int to, int source, int timeout, const void *extra_data, uint32_t extra_len)
 {
+  // for back_word counting, it's the unique identifier of this cmd/rsp-cmd pair
 	static int s_request_id = 0;
+
+  // create a SystemIO reader before writing cmd into SystemIO,
+  // so that rsp_cmd is guaranteed to be filled in after the
+  // current reading position
 	unique_ptr<CRawIOReader> sys_reader(CSystemIO::instance().createReader());
 
+  // compose the 'cmd' frame data
 	string buf;
 	if(extra_data != nullptr && extra_len > 0)
 	{
@@ -35,9 +45,15 @@ string sysRequest(int cmd, int rsp_cmd, int to, int source, int timeout, const v
 	{
 		memcpy(p_head->data, extra_data, extra_len);
 	}
+
+  // write 'cmd' frame into SystemIO Page
 	CSystemIO::instance().getWriter().write(p_head, buf.size());
+
+  // for IO_UNKNOWN cmd, no response expected, just return immediately
 	if(rsp_cmd == IO_UNKNOWN) return nullptr;
 
+  // For other cmd types, a rsponse is expected.
+  // Searching the rsp_cmd in the SystemIO Page
 	uint32_t end = time(NULL) + timeout;
 	while(time(NULL) < end)
 	{
@@ -45,6 +61,7 @@ string sysRequest(int cmd, int rsp_cmd, int to, int source, int timeout, const v
 		const tSysIOHead *p = (const tSysIOHead*)sys_reader->read(len);
 		if(p)
 		{
+      // Only rsp_cmd, source, to, and back_word id matches
 			if(p->cmd == rsp_cmd && p->source == to
 					&& p->to == source && p->back_word == s_request_id)
 			{
