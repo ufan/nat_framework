@@ -61,7 +61,19 @@ target_link_libraries(TestMd
   Utility
   )
 
+# Executables:  ##############################################################
+add_executable(TestFlock)
+
+target_sources(TestFlock
+  PRIVATE TestFlock.cpp
+  )
+
+target_link_libraries(TestFlock
+  PRIVATE Utility
+          IO
+  )
+
 # Install: executables ########################################################
-install(TARGETS ChangePwd TestTrader TestMd
+install(TARGETS ChangePwd TestTrader TestMd TestFlock
   DESTINATION test/bin
   )
