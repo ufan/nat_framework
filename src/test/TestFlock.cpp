@@ -86,11 +86,13 @@ int main(int argc, char *argv[])
     return -1;
   }
 
-	if( !read_flag && is_lock && !tryFileLock(fd, offset))
+	if( !read_flag )
   {
-    cout << "file already has a writer." << endl;
-    close(fd); fd = -1;
-    return -1;
+    if(is_lock && !tryFileLock(fd, offset)) {
+      cout << "file already has a writer." << endl;
+      close(fd); fd = -1;
+      return -1;
+    }
   }
   else {
     struct flock lk;
@@ -105,6 +107,7 @@ int main(int argc, char *argv[])
       cout << "file already has a locker." << endl;
       return -1;
     }
+    cout << "Request RDLCK\n";
   }
 
 	struct stat statbuff;
