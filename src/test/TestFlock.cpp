@@ -93,6 +93,12 @@ int main(int argc, char *argv[])
       close(fd); fd = -1;
       return -1;
     }
+    
+    if(is_lock && !setFileLock(fd, offset)) {
+      cout << "file already has a writer." << endl;
+      close(fd); fd = -1;
+      return -1;
+    }
   }
   else {
     struct flock lk;

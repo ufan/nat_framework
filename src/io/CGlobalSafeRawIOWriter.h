@@ -19,6 +19,8 @@
  * The race condition for the same Page managed by multiple process is solved by CGlobalLock.
  * Whenever a frame need to be filled in, the owning process will lock the Page exclusively
  * until filling finishing.
+ * The class is not thread-safe, thus should not be used in multi-thread environment.
+ * Use CSafeRawIOWriter in MT envrironment instead.
  */
 
 class CGlobalSafeRawIOWriter : public CRawIOWriter
