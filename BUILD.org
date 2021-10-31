@@ -10,7 +10,19 @@
 ** Pre-requsites
 *** /python2.7/
 *** /boost 1.72.00/ 
-    /boost_python/ against /python2.7/
+
+    1. checkout version 1.72.0 in the git repo:
+      #+BEGIN_SRC bash
+        git checkout -f -b boost-1.72.0 boost-1.72.0
+        rm .git/modules/disjoint_sets
+        git submodule update --init
+      #+END_SRC 
+    2. build and install boost (/boost_python/ should be built against /python2.7/)
+       #+BEGIN_SRC bash
+         ./bootstrap --prefix=/home/yong/boost/1.72.0 --with-python=python2
+         ./b2 install
+       #+END_SRC
+
 *** /CMake/ latest (>=3.15)
 *** /autotools/ is needed to build libev
 *** /openssl/
