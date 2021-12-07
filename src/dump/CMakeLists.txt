@@ -47,10 +47,13 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
 # Install: config files ############################################################
 
 configure_file(conf/dump.json.in conf/dump.json @ONLY)
-install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/conf/
-  DESTINATION dump/conf
-  FILES_MATCHING PATTERN "*.json"
+configure_file(conf/dumplogger.cnf.in conf/dumplogger.cnf @ONLY)
+install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/conf
+  DESTINATION dump
   )
+
+# make the log directory
+install(DIRECTORY DESTINATION dump/log)
 
 # Install: executables ########################################################
 install(TARGETS CTPDumper

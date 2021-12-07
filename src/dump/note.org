@@ -1,0 +1,24 @@
+* warehouse binary file format
+
+  | size in words                     | field                                | value       |
+  |-----------------------------------+--------------------------------------+-------------|
+  | Header                            |                                      |             |
+  |-----------------------------------+--------------------------------------+-------------|
+  | int[1]                            | FILE_HEADER_VER                      | 1           |
+  | int[1]                            | DUMP_MD_HEAD_VER                     | 1           |
+  | int[1]                            | UnitedMarketDataType                 | CTP_v638    |
+  | char[16]                          | null                                 |             |
+  | char[16]                          | trading_date                         |             |
+  | char[32]                          | null                                 |             |
+  | int[1]                            | size of the list instruments         |             |
+  | Instrument[size]                  | list of instruments                  | Structure.h |
+  |-----------------------------------+--------------------------------------+-------------|
+  | Tick Data                         |                                      |             |
+  |-----------------------------------+--------------------------------------+-------------|
+  | long[1]                           | local time since epoch (ns)          |             |
+  | CThostFtdcDepthMarketDataField[1] | One tick data of a single instrument |             |
+  |-----------------------------------+--------------------------------------+-------------|
+  | long[1]                           | local time since epoch (ns)          |             |
+  | CThostFtdcDepthMarketDataField[1] | One tick data of a single instrument |             |
+  |-----------------------------------+--------------------------------------+-------------|
+  | ...                               | ...                                  |             |

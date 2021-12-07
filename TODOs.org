@@ -1,27 +1,32 @@
 
-* TODO Use upstream code base, just use orignial
+* DONE Use upstream code base, just use orignial
+  CLOSED: [2021-12-07 Di 11:11]
 <2020-03-09 Mo>
-[[file:~/src/nat_framework/NAT/src/common/json.hpp::#include <algorithm> // all_of, copy, fill, find, for_each, none_of, remove, reverse, transform]]
+[[file:~/src/nat_framework/src/common/json.hpp::#include <algorithm> // all_of, copy, fill, find, for_each, none_of, remove, reverse, transform]]
 
-* TODO libev.a link error, static or dynamic
+* DONE libev.a link error, static or dynamic
+  CLOSED: [2021-12-07 Di 11:12]
 <2020-03-09 Mo>
-[[file:~/src/nat_framework/NAT/src/make/head.mk::libev_DIR = $(BASEDIR)/ThirdParty/libev]]
+[[file:~/src/nat_framework/src/make/head.mk::libev_DIR = $(BASEDIR)/ThirdParty/libev]]
 ** change libev.so.4.0.0 to libev.so
 ** only dynamic libev linkage allowed
 
-* TODO deploy log4cplus headers as well??
+* DONE deploy log4cplus headers as well??
+  CLOSED: [2021-12-07 Di 11:12]
 <2020-03-09 Mo>
-[[file:~/src/nat_framework/NAT/src/makefile::# cp -r ThirdParty/log4cplus/include/* ../release/SDK/include]]
+[[file:~/src/nat_framework/src/makefile::# cp -r ThirdParty/log4cplus/include/* ../release/SDK/include]]
 
 * TODO 'risk' has no test main function
 <2020-03-09 Mo>
-[[file:~/src/nat_framework/NAT/src/risk/makefile.bak::include ../make/make.inc]]
+[[file:~/src/nat_framework/src/risk/makefile.bak::include ../make/make.inc]]
 
-* TODO Figure out and setup the target for unused sources in /io/ package
+* DONE Figure out and setup the target for unused sources in /io/ package
+  CLOSED: [2021-12-07 Di 11:14]
 <2020-03-11 Mi>
 [[file:~/src/nat_framework/NAT/src/io/note.org::*Unused sources][Unused sources]]
 
-* TODO /libev/ alternative
+* DONE /libev/ alternative
+  CLOSED: [2021-12-07 Di 11:14]
 ** /libev/ code base merged into nat code repo
 ** or replace with /libuv/ or /libevent/
 
@@ -41,7 +46,7 @@
 
 * TODO Dependnecy on libio not resolved
 <2020-03-12 Do>
-[[file:~/src/nat_framework/NAT/src/makefile::dump:]]
+[[file:~/src/nat_framework/src/makefile::dump:]]
 
 * TODO What's the meaning to keep 3 versions of EES
 <2020-03-12 Do>
@@ -49,69 +54,88 @@
 
 * TODO Better be private member function
 <2020-03-12 Do>
-[[file:~/src/nat_framework/NAT/src/td/ITDHelper.h::virtual void doSendOrder(int track_id) = 0;]]
+[[file:~/src/nat_framework/src/td/ITDHelper.h::virtual void doSendOrder(int track_id) = 0;]]
 
 * TODO CStrategy not used in the class
 <2020-03-12 Do>
-[[file:~/src/nat_framework/NAT/src/execute_model/CMarketStruct.h::#include "CStrategy.h"]]
+[[file:~/src/nat_framework/src/execute_model/CMarketStruct.h::#include "CStrategy.h"]]
 
 * TODO Python Helper Design
 <2020-03-13 Fr>
 [[file:~/src/nat_framework/NAT/src/td/note.org::*Helper][Helper]]
 
-* TODO The policy is not working
+* DONE The policy is not working
+  CLOSED: [2021-12-07 Di 11:15]
 <2020-03-21 Sa>
-[[file:~/src/nat_framework/NAT/src/external/log4cplus/CMakeLists.txt::# Add subdirectory and alias target]]
+[[file:~/src/nat_framework/src/external/log4cplus/CMakeLists.txt::# Add subdirectory and alias target]]
 
-* TODO Add namespace or not ?
+* DONE Add namespace or not ?
+  CLOSED: [2021-12-07 Di 11:16]
 <2020-03-21 Sa>
-[[file:~/src/nat_framework/NAT/src/external/log4cplus/CMakeLists.txt::# add_library(log4cplus::log4cplus ALIAS log4cplus)]]
+[[file:~/src/nat_framework/src/external/log4cplus/CMakeLists.txt::# add_library(log4cplus::log4cplus ALIAS log4cplus)]]
 
-* TODO Use namespace or not?
+* DONE Use namespace or not?
+  CLOSED: [2021-12-07 Di 11:16]
 <2020-03-21 Sa>
-[[file:~/src/nat_framework/NAT/src/external/libev/CMakeLists.txt::# add_library(libev::libev ALIAS libev)]]
+[[file:~/src/nat_framework/src/external/libev/CMakeLists.txt::# add_library(libev::libev ALIAS libev)]]
 
 * TODO How to install PUBLIC or INTERFACE target_soueces?
 <2020-03-27 Fr>
-[[file:~/src/nat_framework/NAT/src/common/CMakeLists.txt::PUBLIC "ATSysUtils.h"]]
+[[file:~/src/nat_framework/src/common/CMakeLists.txt::PUBLIC "ATSysUtils.h"]]
 
-* TODO Correct path format?
+* DONE Correct path format?
+  CLOSED: [2021-12-07 Di 11:18]
 <2020-03-29 So>
-[[file:~/src/nat_framework/NAT/src/include/SysConf.h::#define IO_SYSTEM_MSG_PATH IO_SYSTEM_MSG_DIR "msg"]]
+[[file:~/src/nat_framework/src/include/SysConf.h::#define IO_SYSTEM_MSG_PATH IO_SYSTEM_MSG_DIR "msg"]]
 
-* TODO Deploy.sh unfinished
+* DONE Deploy.sh unfinished
+  CLOSED: [2021-12-07 Di 11:18]
 <2020-03-29 So>
-[[file:~/src/nat_framework/NAT/src/scripts/deploy.sh][file:~/src/nat_framework/NAT/src/scripts/deploy.sh]]
+[[file:~/src/nat_framework/NAT/src/scripts/deploy.sh][file:~/src/nat_framework/src/scripts/deploy.sh]]
 
 * TODO risk_svr.sh needed
 <2020-03-29 So>
-[[file:~/src/nat_framework/NAT/src/scripts/install_template.sh::echo "* * * * * /home/jarvis/TunnelAgent/scripts/check_alive.sh >> /home/jarvis/TunnelAgent/scripts/down.log 2>&1" ;]]
+[[file:~/src/nat_framework/src/scripts/install_template.sh::echo "* * * * * /home/jarvis/TunnelAgent/scripts/check_alive.sh >> /home/jarvis/TunnelAgent/scripts/down.log 2>&1" ;]]
 
 * TODO not yet copied to SDK
 <2020-03-30 Mo>
-[[file:~/src/nat_framework/NAT/src/tools/makefile::cp $@ ${BASEDIR}/../release/SDK/$@]]
+[[file:~/src/nat_framework/src/tools/makefile::cp $@ ${BASEDIR}/../release/SDK/$@]]
 
 * TODO What's the role of logdb?
 <2020-03-31 Di>
-[[file:~/src/nat_framework/NAT/src/logdb/makefile::LogDB.so: CLogDB.o CLogTable.o CPyLogTable.o CPyLogDB.o]]
-
-* TODO what's the usage of 'subscribe' key
-<2020-04-25 Sa>
-[[file:~/src/nat_framework/NAT/src/md/doc/note.org::*Configuration][Configuration]]
+[[file:~/src/nat_framework/src/logdb/makefile::LogDB.so: CLogDB.o CLogTable.o CPyLogTable.o CPyLogDB.o]]
 
 * TODO What's the log directory?
 <2020-04-25 Sa>
-[[file:~/src/nat_framework/NAT/src/scripts/tools.sh.in::BASE=@CMAKE_INSTALL_PREFIX@/logdir/logs_${NEXTDAY}]]
+[[file:~/src/nat_framework/src/scripts/tools.sh.in::BASE=@CMAKE_INSTALL_PREFIX@/logdir/logs_${NEXTDAY}]]
 
-* TODO Is this correct macro format??
+* DONE Is this correct macro format??
+  CLOSED: [2021-12-07 Di 11:20]
 <2020-04-25 Sa>
-[[file:~/src/nat_framework/NAT/install/include/SysConf.h::#define IO_SYSTEM_MSG_PATH IO_SYSTEM_MSG_DIR "msg"]]
+[[file:~/src/nat_framework/install/include/SysConf.h::#define IO_SYSTEM_MSG_PATH IO_SYSTEM_MSG_DIR "msg"]]
 
-* TODO What's usage of 'myid_8b'
+* DONE What's usage of 'myid_8b'
+  CLOSED: [2021-12-07 Di 11:20]
 <2020-04-26 So>
-[[file:~/src/nat_framework/NAT/src/td/conf/tdengine_offhour.json.in::"myid_8b" : "miaosibo"]]
+[[file:~/src/nat_framework/src/td/conf/tdengine_offhour.json.in::"myid_8b" : "miaosibo"]]
 
-* TODO Does this mean that td engine should start before md engine?
+ This is the id string of the trading program to be registered to the broker front.
+ 
+* DONE Does this mean that td engine should start before md engine?
+  CLOSED: [2021-12-07 Di 11:21]
 <2020-05-18 Mo>
-[[file:~/src/nat_framework/NAT/src/md/IMDEngine.cpp::// Get base information by td engine name]]
+[[file:~/src/nat_framework/src/md/IMDEngine.cpp::// Get base information by td engine name]]
+
+  Yes, td should be started first to get a list of trading instruments.
+  
+* TODO pf_all is not properly closed before the end of the process
+<2021-12-07 Di>
+[[file:~/src/nat_framework/src/dump/FileMgr.cpp::FILE* FileMgr::pf_all = nullptr;]]
+<2021-12-07 Di>
+[[file:~/src/nat_framework/src/dump/FileMgr.cpp::bool FileMgr::release()]]
+
+* TODO Check the correct version number of CTP: v6.3.8 or v6.3.19
+<2021-12-07 Di>
+[[file:~/src/nat_framework/src/dump/FileMgr.cpp::const UnitedMarketDataType UMD_TYPE = UnitedMarketDataType::CTP_v638;]]
+[[file:~/src/nat_framework/src/include/Constant.h::CTP_v638=101,]]
 

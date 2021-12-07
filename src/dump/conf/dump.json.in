@@ -2,9 +2,10 @@
 	"warehouse_path":"@CMAKE_INSTALL_PREFIX@/dump/warehouse",
 	"daily_info_path":"@CMAKE_INSTALL_PREFIX@/dump/daily_info",
 	"log4cplus":"@CMAKE_INSTALL_PREFIX@/dump/conf/dumplogger.cnf",
-	"ctp_name":"CTPSN",
+	"ctp_name":"CTPSNoff",
 	"CTP":
 	{
+      "comment" : "Real Broker's Counter",
 		"flow_path" : "@CMAKE_INSTALL_PREFIX@/dump/flow/",
 		"md_uri" : ["tcp://172.18.32.125:41213"],
 		"td_uri" : ["tcp://172.18.32.125:41205"],
@@ -19,29 +20,31 @@
 	},
 	"CTPSN":
 	{
+      "comment" : "SimNow RealMarket Counter (same open/close time as market)",
 		"flow_path" : "@CMAKE_INSTALL_PREFIX@/dump/flow/",
-		"md_uri" : ["tcp://180.168.146.187:10010","tcp://180.168.146.187:10011","tcp://218.202.237.33:10012"],
-		"td_uri" : ["tcp://180.168.146.187:10000","tcp://180.168.146.187:10001","tcp://218.202.237.33:10002"],
+		"md_uri" : ["tcp://180.168.146.187:10110","tcp://180.168.146.187:10111","tcp://218.202.237.33:10112"],
+		"td_uri" : ["tcp://180.168.146.187:10100","tcp://180.168.146.187:10101","tcp://218.202.237.33:10102"],
 		"timeout" : 5,
 		"Account" : [
 			{
 				"BrokerID" : "9999",
-				"UserID" : "101903",
-				"Password" : "888888"
+				"UserID" : "163973",
+				"Password" : "NowSim88418"
 			}
 		]
 	},
 	"CTPSNoff":
 	{
+      "comment" : "SimNow 7x24 Debug Counter",
 		"flow_path" : "@CMAKE_INSTALL_PREFIX@/dump/flow/",
-		"md_uri" : ["tcp://180.168.146.187:10031"],
-		"td_uri" : ["tcp://180.168.146.187:10030"],
+		"md_uri" : ["tcp://180.168.146.187:10131"],
+		"td_uri" : ["tcp://180.168.146.187:10130"],
 		"timeout" : 5,
 		"Account" : [
 			{
 				"BrokerID" : "9999",
-				"UserID" : "101903",
-				"Password" : "888888"
+				"UserID" : "163973",
+				"Password" : "NowSim88418"
 			}
 		]
 	}

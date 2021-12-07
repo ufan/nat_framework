@@ -33,6 +33,8 @@
 **** libev
 *** ThirdParty (i.e. only binary library available)
 **** CTP
+     Current, version v6.3.19 is used.
+     But the code base use v6.3.8 (see *UnitedMarketDataType* defined in [[file:src/include/Constant.h][the common header]] and [[file:src/dump/Structure.h][the dump package header]] )
 **** EES
 **** Xt     
      
@@ -72,3 +74,30 @@
 * Caveants
 ** change libev.so.4.0.0 to libev.so
 *** only dynamic linkage success right now, to be investigated later
+
+* Running the servers
+** /TDEngine/ and /MDEngine/
+   The most essential servers are the /MDEngine/ for the market quotes and /TDEngine/ for the trade transactions.
+
+   Cautions:
+   - running the servers need root privilege
+   - /TDEngine/ needs to be invoked first and run successfully (for the base information), then /MDEngine/ could be invoked
+   - Both engines are run as daemon by default
+   - The configuration file used can be found in these scripts
+
+*** Method1
+   Each server is an independent process, which has its own directory under the installation direcotry.
+   An script (under $CMAKE_INSTALL_PREFIX$/MDEngine/scripts/md_svr.sh and $CMAKE_INSTALL_PREFIX$/TDEngine/scripts/td_svr.sh)
+   is provided to facilitate the setup of the running environment of each server.
+#+begin_src bash
+  # TDEngine
+  cd $CMAKE_INSTALL_PREFIX$/TDEngine/scripts # or MDEngine direcotry
+  sudo ./td_svr.sh start/stop
+#+end_src
+
+*** Method2
+   An overall script (under $CMAKE_INSTALL_PREFIX$/scripts/engine_svr.sh) exist to correctly load the /TDEngine/ and /MDEngine/ together.
+   #+begin_src shell
+     cd CMAKE_INSTALL_PREFIX/MDEngine/scripts
+     sudo ./engine_svr.sh start/stop
+   #+end_src

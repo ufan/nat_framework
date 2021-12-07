@@ -8,7 +8,7 @@ LIB=${LIB_PREFIX}/lib:${LIB_PREFIX}/lib/CTP:${LIB_PREFIX}/lib/Xele:${LIB_PREFIX}
 #TDENGINE=${LIB_PREFIX}/TDEngine/bin/TDEngineXt
 #TDCONF=${LIB_PREFIX}/conf/tdengine.json.xt
 TDENGINE=${LIB_PREFIX}/TDEngine/bin/TDEngine
-TDCONF=${LIB_PREFIX}/TDEngine/conf/tdengine.json
+TDCONF=${LIB_PREFIX}/TDEngine/conf/tdengine_test.json
 
 MDENGINE=${LIB_PREFIX}/MDEngine/bin/MDEngine
 MDCONF=${LIB_PREFIX}/MDEngine/conf/mdengine_test.json
@@ -78,7 +78,7 @@ function Start()
 	 
 	 for ((i=0;i<30;i++))
 	 do
-	 	STARTLOG=`tail -n 5 ${LIB_PREFIX}/logs/Engine/TDEngine.log|awk -F'|' '$1>"'"${TIME}"'"{print $0}'|grep "start listening"`
+	 	STARTLOG=`tail -n 5 ${LIB_PREFIX}/TDEngine/log/TDEngine.log|awk -F'|' '$1>"'"${TIME}"'"{print $0}'|grep "start listening"`
 	 	if [[ x"${STARTLOG}" != "x" ]]; then break; fi
 	 	sleep 2
 	 done

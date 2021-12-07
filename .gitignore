@@ -17,3 +17,5 @@ src/external/libev/src
 src/external/log4cplus/src
 con_dir
 trade_flow
+.cache
+compile_commands.json
