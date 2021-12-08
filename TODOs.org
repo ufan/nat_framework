@@ -139,3 +139,31 @@
 [[file:~/src/nat_framework/src/dump/FileMgr.cpp::const UnitedMarketDataType UMD_TYPE = UnitedMarketDataType::CTP_v638;]]
 [[file:~/src/nat_framework/src/include/Constant.h::CTP_v638=101,]]
 
+* TODO protected abstract method, but not used by the interface
+<2021-12-08 Mi>
+[[file:~/src/nat_framework/src/md/IMDEngine.h::virtual void join() = 0; // ?? TODO not used in the source code]]
+
+* TODO Find out the usage of this callback function
+<2021-12-08 Mi>
+[[file:~/src/nat_framework/src/common/CTradeBaseInfo.h::static switchday_fn switch_day_cb_;]]
+
+* TODO Why only save one ask/bid price, while 5 prices exist and data structure also keeps the place for these prices
+<2021-12-08 Mi>
+[[file:~/src/nat_framework/src/md/CMDEngineCtp.cpp::p.avg_px = p_data->AveragePrice;]]
+
+* TODO Where should the trading flow started?
+<2021-12-08 Mi>
+[[file:~/src/nat_framework/src/td/CTDEngineCtp.cpp::unit.api->SubscribePublicTopic(THOST_TERT_QUICK); // need check]]
+
+* TODO Settlement is confirmed without checking first, is it good for trading account?
+<2021-12-08 Mi>
+[[file:~/src/nat_framework/src/td/CTDEngineCtp.cpp::// confirm settlement without checking first!!]]
+
+* TODO Should argument 'size' be a reference?
+<2021-12-08 Mi>
+[[file:~/src/nat_framework/src/io/CIOBase.h::size = size_;]]
+
+* TODO Both load and createNextPage are only used by CRawIOWriter itself, so consider change them to private. They are not the interface of the class.
+<2021-12-08 Mi>
+[[file:~/src/nat_framework/src/io/CRawIOWriter.h::// overwrites CIOBase::load]]
+
