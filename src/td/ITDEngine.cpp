@@ -27,7 +27,7 @@ bool ITDEngine::initEngine(const json &j_conf) {
   request_id_end_ = j_range[1];
   request_id_ = request_id_start_;
 
-  // Step 1: init trader front:
+  // Step 1: init trader front, and MT-execution starts from here
   // - accounts collection init,
   // - front connection and subscription to public and private flow
   // - authentication, login, settlement confirmation for each account
@@ -46,45 +46,56 @@ bool ITDEngine::initEngine(const json &j_conf) {
   }
   LOG_DBG("getBaseInfo successfully.");
 
-  // init order track mmap file storage  and fetch the listed order from front
+  // Step 3: init order track mmap file storage, then fetch the exiting order
+  // from front and fill into the track mmap file
   if (!loadOrderTrack() || !updateOrderTrack()) {
     ALERT("init order track err.");
     return false;
   }
   LOG_DBG("loadOrderTrack and updateOrderTrack successfully.");
 
-  // init risk management
+  // Step 4: init risk management
+  // TBU
   if (!initAccountUtilis(j_conf)) {
     ALERT("init account utilis err.");
     return false;
   }
 
-  /******************* Configure event-loop related
+  /******************* Step 4: Configure event-loop related (i.e., IO related)
    * *****************************/
 
-  // hash id of this engine from engine name
+  // Generate hash id of this engine from engine name (should be unique)
+  // This id is the identifier for the nodes of communication.
   self_id_ = (int)HASH_STR(name().c_str());
 
-  // create io directory using the engine name
+  // Create td's io directory using the engine name
+  // The engine name should be unique in the system.
   string io_dir = string(IO_TDENGINE_BASE_PATH) + name();
   if (!createPath(io_dir)) {
     ALERT("create td_io directory %s failed.", io_dir.c_str());
     return false;
   }
 
-  // init tdsend writer
+  // Init TD engine output  message channel
+  // When initialized, it always load the latest frame for writing
+  // This writer is MT-safe, but not MP-safe. Each engine maintains its own
+  // exclusive message channel, with engine's name as page prefix.
   if (!writer_.init(io_dir + "/tdsend")) {
     ALERT("init writer err.");
     return false;
   }
 
-  // init system io
+  // Init system's io
+  // when initialized, it always load the latest frame for writing
   if (!CSystemIO::instance().init()) {
     ALERT("init system io writer err.");
     return false;
   }
 
-  // add system io reader
+  // Add system io reader
+  // The reader always points to the current latest frame of the current latest
+  // system page.
+  // From this point on, the engine will receive the incoming system message
   read_pool_.add(0, CSystemIO::instance().createReader());  // 0 for system io
 
   return true;
@@ -126,7 +137,8 @@ bool ITDEngine::initAccountUtilis(const json &j_conf) {
   return true;
 }
 
-// Init the tracked order mmap file
+// Init the tracked order mmap file using engine's name as file name
+// The mmap file is opened for writing.
 bool ITDEngine::loadOrderTrack() {
   // Load writable track order mmap file
   if (otmmap_.load(name(), true)) {
@@ -167,14 +179,14 @@ void ITDEngine::listening() {
   do_running_ = true;
   while (do_running_) {
     uint32_t len = 0;
-    uint32_t ioid;  // hash_id_ of the Page IO type
+    uint32_t ioid;  // hash_id_ of the Page IO type, 0 is system io
 
     // Fetch next un-processed cmd in reader pool
     // The default reader pool is SystemIO
     // TraderIO reader can be added by request from CTDHelperComm
     const char *p = read_pool_.seqRead(len, ioid);
     if (p) {
-      if (0 != ioid)  // trader io, this IO is added by CTDHelperComm
+      if (0 != ioid)  // trader io message, this IO is added by CTDHelperComm
       {
         switch (*(int *)p) {
           case IO_SEND_ORDER: {
@@ -186,11 +198,12 @@ void ITDEngine::listening() {
             break;
           }
         }
-      } else if (((tSysIOHead *)p)->to == self_id_)  // system io
+      } else if (((tSysIOHead *)p)->to == self_id_)  // system io message
       {
         tSysIOHead *p_head = (tSysIOHead *)p;
         switch (p_head->cmd) {
-          case IO_TD_ADD_CLIENT: {
+          case IO_TD_ADD_CLIENT: {  // add a reader for new client using hash_id
+                                    // as identifier and write ack to system io
             read_pool_.add(p_head->source, p_head->data, -1, -1);
             tSysIOHead ack = {IO_TD_ACK_ADD_CLIENT, p_head->source, self_id_,
                               p_head->back_word};
@@ -199,23 +212,26 @@ void ITDEngine::listening() {
                     p_head->data, read_pool_.size());
             break;
           }
-          case IO_TD_REMOVE_CLIENT: {
+          case IO_TD_REMOVE_CLIENT: {  // remove the reader for the client using
+                                       // hash_id and no ack
             read_pool_.erase(p_head->source);
             LOG_DBG("remove client %d", p_head->source);
             break;
           }
           case IO_TD_QUIT: {
-            do_running_ = false;
+            do_running_ = false;  // quit the engine
             break;
           }
-          case IO_TD_REQ_BASE_INFO: {
+          case IO_TD_REQ_BASE_INFO: {  // write a copy of base info to system io
             string data = CTradeBaseInfo::toSysIOStruct(
                 p_head->source, self_id_, p_head->back_word);
             CSystemIO::instance().getWriter().write(data.data(), data.size());
             LOG_DBG("response base info query.");
             break;
           }
-          case IO_TD_REQ_ORDER_TRACK: {
+          case IO_TD_REQ_ORDER_TRACK: {  // write back a list of order
+                                         // corresponding to system io, the
+                                         // orders belong to the message source
             rspOrderTrack(p_head);
             break;
           }

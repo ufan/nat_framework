@@ -6,7 +6,14 @@
  */
 
 /*
- * Central repository of all Instruments
+ * Central repository of all Instruments of a process.
+ * This is not a repository shared among multiple processes.
+ * All data resides in memory and only accessible to the process itself.
+ * Thus, each process may maintain its own copy of the trade base information.
+ * The source of this information is TD engine. TD retrieve these data from
+ * trade front. However, in the same trading day, the information need not to be
+ * updated. Thus, it's also proper to retrieve this information from second-hand
+ * source.
  *
  * Commented by Yong.Z
  */

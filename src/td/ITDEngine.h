@@ -132,15 +132,17 @@ class ITDEngine {
   /** request order action (only cancel is accomplished) */
   virtual void req_order_action(const tIOrderAction* data) = 0;
 
-  virtual bool getBaseInfo() = 0;  // 获取基础信息，更新 CTradeBaseInfo
+  // request base info of all traded instruments
+  virtual bool getBaseInfo() = 0;
 
  protected:
-  static atomic_flag flag_;
+  static atomic_flag flag_;  // atomic ensuring MT-safety, only used in testOtId
+
   volatile bool do_running_ = true;  // flag controlling the exit of event loop
   int self_id_ = 0;                  // hash id of this TDEngine
 
-  CReaderPool read_pool_;  // pool of IO Page readers, the first one is SystemIO
-  CSafeRawIOWriter writer_;  // for writing TDEngine IO Pages
+  CReaderPool read_pool_;  // pool of IO page readers, the first one is SystemIO
+  CSafeRawIOWriter writer_;  // for writing TDEngine IO pages, MT-safe
 
   // collection of risk utilities for each account managed by this engine
   vector<unique_ptr<RiskTop> > acc_utilis_;
@@ -166,7 +168,7 @@ class ITDEngine {
   // handler to the tracked order collection
   tOrderTrack* request_track_ = nullptr;
   // the real storage place of the tracked orders
-  COrderTrackMmap otmmap_{true};
+  COrderTrackMmap otmmap_{true};  // default is lock in memory, no swap
   CIDQueue<> otidfilter_[MMAP_ORDER_TRACK_SIZE];
   /**
    * @}

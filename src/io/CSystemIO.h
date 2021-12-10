@@ -8,8 +8,8 @@
 #ifndef IO_CSYSTEMIO_H_
 #define IO_CSYSTEMIO_H_
 
-#include "CRawIOReader.h"
 #include "CGlobalSafeRawIOWriter.h"
+#include "CRawIOReader.h"
 #include "SysConf.h"
 #include "utils.h"
 
@@ -19,43 +19,36 @@
  * and multi-threading environment.
  */
 
-class CSystemIO
-{
-	static const unsigned int MEM_SIZE = 64 * 1024 * 1024; // 64M
+class CSystemIO {
+  static const unsigned int MEM_SIZE = 64 * 1024 * 1024;  // 64M
 
-	CSystemIO() : sys_writer_(MEM_SIZE)
-	{
-		sys_writer_.setMemMode(false);
-	}
+  CSystemIO() : sys_writer_(MEM_SIZE) { sys_writer_.setMemMode(false); }
 
-public:
-	bool init()
-	{
-		if(!sys_writer_.hasLoad())
-		{
-			if(!createPath(IO_SYSTEM_MSG_DIR)) return false;
-			return sys_writer_.init(IO_SYSTEM_MSG_PATH);
-		}
-		return true;
-	}
+ public:
+  bool init() {
+    if (!sys_writer_.hasLoad()) {
+      if (!createPath(IO_SYSTEM_MSG_DIR)) return false;
+      return sys_writer_.init(IO_SYSTEM_MSG_PATH);
+    }
+    return true;
+  }
 
-	CGlobalSafeRawIOWriter& getWriter() {return sys_writer_;}
+  CGlobalSafeRawIOWriter& getWriter() { return sys_writer_; }
 
   // Get a reader for reading the IO Page data
-	CRawIOReader* createReader()
-	{
-		CRawIOReader *sys_reader = new CRawIOReader();
-		sys_reader->setMemMode(false);
+  CRawIOReader* createReader() {
+    CRawIOReader* sys_reader = new CRawIOReader();
+    sys_reader->setMemMode(false);
 
-    // start from the fisrt frame of the first Page file
-		sys_reader->init(IO_SYSTEM_MSG_PATH, -1 , -1);
-		return sys_reader;
-	}
+    // start from the last frame of the last Page file
+    sys_reader->init(IO_SYSTEM_MSG_PATH, -1, -1);
+    return sys_reader;
+  }
 
-	static CSystemIO& instance();
+  static CSystemIO& instance();
 
-private:
-	CGlobalSafeRawIOWriter		sys_writer_;
+ private:
+  CGlobalSafeRawIOWriter sys_writer_;
 };
 
 #endif /* IO_CSYSTEMIO_H_ */

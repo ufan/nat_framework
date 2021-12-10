@@ -167,3 +167,63 @@
 <2021-12-08 Mi>
 [[file:~/src/nat_framework/src/io/CRawIOWriter.h::// overwrites CIOBase::load]]
 
+* TODO Why manually set a new sec_diff_??
+<2021-12-09 Do>
+[[file:~/src/nat_framework/src/utility/CTimer.cpp::void CTimer::setTime(long now_nano)]]
+
+* TODO Why substract 1933008 seconds?
+<2021-12-09 Do>
+[[file:~/src/nat_framework/src/utility/utils.h::{return clock\[0\] * 36000 + clock\[1\] * 3600 + clock\[3\] * 600 + clock\[4\] * 60 + clock\[6\] * 10 + clock\[7\] - 1933008;}]]
+
+* TODO Why subtract one day for night time ?
+<2021-12-09 Do>
+[[file:~/src/nat_framework/src/md/CMDEngineCtp.cpp::else {if(p_data->UpdateTime\[0\] == '2') p.exch_time -= 86400L * 1000000000L;}]]
+
+* TODO Why assign to the returned order status?
+<2021-12-09 Do>
+[[file:~/src/nat_framework/src/td/CTDEngineCtp.cpp::pOrder->OrderStatus = ODS(TDSEND); // TBU]]
+
+* TODO Write conflict in multi-process environment                      :BUG:
+  Considering the following scenario using CSystemIO:
+  At one time point, the latest page is almost full, and two pocesses try to write some data into it and one process
+  tries to read the latest data from it. The cursor of the reading process points to the end of the
+  last frame in the latest page.
+  1. The first process locks it first, and tries to write a large datagram
+     which exceeds this page's remaining capacity. Thus, a new page is created and the datagram is
+     written to that page instead. The process now regards this new page as its latest page for
+     writing afterwards, while it will change the status of the old latest page to PAGE_STATUS_FINISH
+     and write the stop timestamp in the page header.
+  2. Now, the reading process will read the latest frame. It finds the old latest page is full and
+     labeled finished, so it loads the next page and read the latest frame written by the first process.
+     The reading process's cursor now also points to the new latest page.
+  3. Finally, the third process, which still loads the old latest page, tries to write a small datagram.
+     The size of this datagram fits the remaining capacity of the old latest page, so it writes to
+     it ([[file:src/io/CRawIOWriter.cpp][see the 'write' method in CRawIOWriter]]). The current 'write' implementation does not check
+     status code of the page it tries to write, so it will keep writing the old latest page until no more
+     space left and label the old page as finished and write the stop nano. (again!!, the first process
+     has already determined the old page was full and written the finished status code and the stop nano).
+     The frames between the two 'stop's are not and will not be seen by the reading process. This may be
+     a serious bug, since some information is lost in the communication and not processed.
+
+  Proposed solution:
+  The 'write' method should respect the status code in the page file.
+  Instead of checking the remaining space alone, check both the capacity and the status code of the page
+  it aims to write to. If the page is full, the new page should be loaded even there is still space left
+  in the old page.
+<2021-12-10 Fr>
+[[file:~/src/nat_framework/src/io/CRawIOWriter.cpp::bool CRawIOWriter::write(const void* data, uint32_t len) {]]
+
+* TODO Why write the start engine message at such a late time           :BUG:
+  Definitely behind the trade base info, indefinitely may also behind some tick data (since subscription to
+  pre-subscribed instruments happens before this writing this message).
+<2021-12-10 Fr>
+[[file:~/src/nat_framework/src/md/IMDEngine.cpp::writeStartSignal(); // write md_start message to md io]]
+
+* TODO No matching 'commit' to 'prefetch', this will block the td io!!  :BUG:
+<2021-12-10 Fr>
+[[file:~/src/nat_framework/src/td/ITDEngine.cpp::tIOrderRtn *p = (tIOrderRtn *)writer_.prefetch(sizeof(tIOrderRtn));]]
+
+* TODO What about NotTradeNotQueueing
+<2021-12-10 Fr>
+[[file:~/src/nat_framework/src/td/CTDEngineCtp.cpp::case THOST_FTDC_OST_PartTradedNotQueueing:]]
+

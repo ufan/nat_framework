@@ -8,29 +8,46 @@
 #ifndef SRC_TIMER_CTIMER_H_
 #define SRC_TIMER_CTIMER_H_
 
-#include <chrono>
 #include <time.h>
+
+#include <chrono>
 #include <string>
 using namespace std;
 
-class CTimer
-{
-	CTimer();
-public:
-	long getNano() const;
+class CTimer {
+  CTimer();
 
-	long getDayBeginTime() const {return day_begin_time_;}
+ public:
+  // The epoch time (in ns) since Unix epoch.
+  // If REALTIME_TIMER defined, the real time clock is used for ticking, which
+  // may be affected by NTP If not, the monotonic clock is used for tick, which
+  // is not affected by NTP
+  long getNano() const;
 
-	void setTime(long now_nano);
+  long getDayBeginTime() const { return day_begin_time_; }
 
-	static CTimer& instance() {return instance_;}
+  // Synchronize to an external clock.
+  // Default is synchronized to real time clock
+  void setTime(long now_nano);
 
-private:
-	long sec_diff_;
+  static CTimer& instance() { return instance_; }
 
-	long day_begin_time_;
+ private:
+  // Time diff for synchrinaztion with another clock.
+  // If REALTIME_TIMER defined, real time clock used, default sec_diff_=0
+  // If not, monotonic clock is used, default sec_diff_ is the time diff between
+  // REAL_TIME and MONOTONIC_TIME
+  //
+  // Note: it can also be synchronized to an external clock by using setTime
+  long sec_diff_;
 
-	static CTimer instance_;
+  // Epoch time in second at 00:00:00 of the day when the program using CTimer
+  // started. This value is not updated during the lifecycle of the program.
+  // Thus, user need to shutdown and restart the program everyday to get a
+  // correct beginning time of each day.
+  long day_begin_time_;
+
+  static CTimer instance_;
 };
 
 /**
@@ -39,16 +56,14 @@ private:
  * @param format eg: %Y%m%d-%H:%M:%S
  * @return string-formatted time
  */
-inline string parseNano(long nano, const char* format)
-{
-    if (nano <= 0)
-        return string("NULL");
-    nano /= 1000000000L;
-    struct tm * dt;
-    char buffer [30];
-    dt = localtime(&nano);
-    strftime(buffer, sizeof(buffer), format, dt);
-    return string(buffer);
+inline string parseNano(long nano, const char* format) {
+  if (nano <= 0) return string("NULL");
+  nano /= 1000000000L;
+  struct tm* dt;
+  char buffer[30];
+  dt = localtime(&nano);
+  strftime(buffer, sizeof(buffer), format, dt);
+  return string(buffer);
 }
 
 /**
@@ -56,10 +71,7 @@ inline string parseNano(long nano, const char* format)
  * @param _tm ctime struct
  * @return nano time in long
  */
-inline long parseTm(struct tm _tm)
-{
-    return timelocal(&_tm) * 1000000000L;
-}
+inline long parseTm(struct tm _tm) { return timelocal(&_tm) * 1000000000L; }
 
 /**
  * parse string time to nano time
@@ -67,23 +79,20 @@ inline long parseTm(struct tm _tm)
  * @param format eg: %Y%m%d-%H:%M:%S
  * @return nano time in long
  */
-inline long parseTime(const char* timeStr, const char* format)
-{
-    struct tm _tm;
-    strptime(timeStr, format, &_tm);
-    return parseTm(_tm);
+inline long parseTime(const char* timeStr, const char* format) {
+  struct tm _tm;
+  strptime(timeStr, format, &_tm);
+  return parseTm(_tm);
 }
 
-inline string calcDate(string date, int diff)
-{
-	date += " 00:00:00";
-	long t = parseTime(date.c_str(), "%Y%m%d %H:%M:%S");
-	t += diff * (24L * 3600L * 1000000000L);
-	return parseNano(t, "%Y%m%d");
+inline string calcDate(string date, int diff) {
+  date += " 00:00:00";
+  long t = parseTime(date.c_str(), "%Y%m%d %H:%M:%S");
+  t += diff * (24L * 3600L * 1000000000L);
+  return parseNano(t, "%Y%m%d");
 }
 
 #define elapse_begin(val_name) long val_name = CTimer::instance().getNano();
 #define elapse_end(val_name) val_name = CTimer::instance().getNano() - val_name;
 
 #endif /* SRC_TIMER_CTIMER_H_ */
-

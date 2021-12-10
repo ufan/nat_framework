@@ -41,3 +41,72 @@
    + IOTools
    + OTMonitor
      
+
+* Summary
+  Memory mapped file is the underlying technology to design /libio/.
+  Inter-process communication is implemented as the mmap file.
+  
+  The concept of *Page* is not the real memory page in common sense, but represents
+  a single mmap file with default size of 128MB for ordinary message and 64 MB for
+  system message.
+
+  The *Page* mmap file has the same format as follows [[file:ioprotocol.h][(io protocol)]]:
+  | Field          | Content                                                       | byte length |
+  |----------------+---------------------------------------------------------------+-------------|
+  | Page Header    | status code (writing in process or full)                      |           1 |
+  |                | version of the format                                         |           4 |
+  |                | page size (number of byte)                                    |           4 |
+  |                | tail offset (i.e., the occupied length in byte)               |           4 |
+  |                | start timestamp (ns, when this page is created)               |           8 |
+  |                | stop timestamp (ns, when this page is full, otherwise -1)     |           8 |
+  |                | last timestamp (ns, when the latest frame is filled)          |           8 |
+  |                | reserved bytes                                                |           8 |
+  |----------------+---------------------------------------------------------------+-------------|
+  | Frame_1 Header | magic word (encoding the date when this protocol is designed) |           4 |
+  |                | frame size excluding the header (number of bytes)             |           4 |
+  |                | timestamp (ns, when this frame is filled)                     |           8 |
+  |                | reserved bytes                                                |           4 |
+  | Frame_1 Body   | message bytes                                                 |    variable |
+  |----------------+---------------------------------------------------------------+-------------|
+  | Frame_2        |                                                               |             |
+  |----------------+---------------------------------------------------------------+-------------|
+  | Frame_3        |                                                               |             |
+  |----------------+---------------------------------------------------------------+-------------|
+  | ...            |                                                               |             |
+  
+  Each page file starts with a page header, then followed by a series of frames until the end.
+  Each frame consists of the frame header and the body.
+  The body can be anything filled in by the user. The format of the body is defined by user.
+  
+** IO Writer
+   The writer is in charge of writing to a page with a specific file name prefix.
+   
+| CRawIOWriter           | single-process, single-thread, single-instance | normal    |   |
+| CSafeRawIOWriter       | single-process, multi-thread, multi-instance   | normal    |   |
+| CGlobalSafeRawIOWriter | multi-process, single-thread, single-instance  | normal    |   |
+| CSystemIO              | multi-process, single-thread                   | singleton |   |
+| CSignalWriter          | single-process, single-thread, single-instance | normal    |   |
+
+/CSystemIO/ is used for system inter-process communication.
+It is wrapper of CGlobalSafeRawIOWriter and the system message path is hard coded in it.
+The writing of the /CSystemIO/ should be invoked only in the main thread of a process.
+Because it's not thread-safe.
+
+/CSignalWriter/ is a simple wrapper of /CRawIOWriter/ to write strings into frame.
+And the page prefix is hard coded.
+Its reader is /CSignalReader/.
+
+** IO Reader
+   /CRawIOReader/ is in charge of reading a frame from the group of page files with same prefix.
+   The start point can be specified by the user with respect the page number and filled-in
+   timestamp. It provides various kinds of method of navigating to a specific frame in the
+   this group of pages.
+
+   /CReaderPool/ is an aggregation of /CRawIOReader/s. It's used to manage the reading of
+   various groups of pages. Each reader manages the reading of a group of pages with same
+   prefix. Two order of reading is implemented: 1) Sequentially based on the insert order of the reader;
+   2) The earliest filled-in frame is read first.
+
+** IO Moidfier
+   /CRawIOModify/ is a utility class, which will mmap a specific page in read and write mode.
+   Thus, this page can be manipulated based on user's goal [[file:~/src/nat_framework/src/tools/fixmday.cpp][(see fixmday, which will delete all data after the latest trading day in a page)]].

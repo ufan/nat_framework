@@ -74,6 +74,14 @@ bool CTDEngineCtp::init(const json& j_conf) {
   return true;
 }
 
+/**
+ * @brief Initialize the trade account based on config file
+ * @details Account unit is created for each user and initialized with default
+ *          value. Each user is managed by td using this collection of account
+ *          units.
+ * @param[in] idx index of this account in acct_unit_
+ * @param[in] j_config user-provided configuration
+ */
 bool CTDEngineCtp::load_account(int idx, const json& j_config) {
   // internal load
   string broker_id = j_config["BrokerID"].get<string>();
@@ -123,6 +131,10 @@ bool CTDEngineCtp::load_account(int idx, const json& j_config) {
   return true;
 }
 
+/**
+ * @summary Create and init a trader api for each account. Each api will then
+ * try to connect to the trade front.
+ */
 void CTDEngineCtp::connect(long timeout_nsec, string trade_flow_path) {
   for (int idx = 0; idx < account_units_.size(); idx++) {
     AccountUnitCTP& unit = account_units_[idx];
@@ -155,7 +167,7 @@ void CTDEngineCtp::connect(long timeout_nsec, string trade_flow_path) {
   }
 }
 
-// Send login request and settle request
+// Send authentication, login and settle request
 // The function works in Sync mode, i.e. it will wait until request sucess or
 // timeout
 void CTDEngineCtp::login(long timeout_nsec) {
@@ -477,6 +489,9 @@ void CTDEngineCtp::OnRspQryInstrument(CThostFtdcInstrumentField* pInstrument,
   }
 }
 
+/**
+ * @brief OrderInsert failed, rejected by Thost
+ */
 void CTDEngineCtp::OnRspOrderInsert(CThostFtdcInputOrderField* pInputOrder,
                                     CThostFtdcRspInfoField* pRspInfo,
                                     int nRequestID, bool bIsLast) {
@@ -511,6 +526,9 @@ void CTDEngineCtp::OnRspOrderInsert(CThostFtdcInputOrderField* pInputOrder,
   }
 }
 
+/**
+ * @brief OrderAction failed, rejected by Thost
+ */
 void CTDEngineCtp::OnRspOrderAction(
     CThostFtdcInputOrderActionField* pInputOrderAction,
     CThostFtdcRspInfoField* pRspInfo, int nRequestID, bool bIsLast) {
@@ -544,6 +562,10 @@ void CTDEngineCtp::OnRspOrderAction(
   }
 }
 
+/**
+ * @brief Returns from the exchange for OrderInsert/OrderAction accepted by the
+ * exchange exchange
+ */
 void CTDEngineCtp::OnRtnOrder(CThostFtdcOrderField* pOrder) {
   if (unlikely(!CHK_USERID(pOrder))) return;
   int request_id = atoi(pOrder->OrderRef);
@@ -639,6 +661,11 @@ void CTDEngineCtp::OnRtnTrade(CThostFtdcTradeField* pTrade) {
   }
 }
 
+/**
+ * @brief OrderInsert rejected by the exchange, thus MARKET_REJECT
+ * @details This callback is invoked when the OrderInsert passes broker's trade
+ * front (i.e., Thost) but rejected by the exchange's market system.
+ */
 void CTDEngineCtp::OnErrRtnOrderInsert(CThostFtdcInputOrderField* pInputOrder,
                                        CThostFtdcRspInfoField* pRspInfo) {
   if (unlikely(!CHK_USERID(pInputOrder))) return;
@@ -833,6 +860,7 @@ void CTDEngineCtp::release() {
 }
 
 // Update the tracked orders
+// Only track a single trade day
 bool CTDEngineCtp::updateOrderTrack() {
   // ctp limit request frequency, so sleep 1s here.
   usleep(1000000);
@@ -845,7 +873,7 @@ bool CTDEngineCtp::updateOrderTrack() {
   // get the current trading day
   strcpy(otmmap_.getBuf()->trading_day, CTradeBaseInfo::trading_day_.c_str());
 
-  // query the orders for each account
+  // query the all orders for each account
   for (int idx = 0; idx < account_units_.size(); idx++) {
     query_complete_flag_ = false;
     curAccountIdx_ = idx;
@@ -869,7 +897,12 @@ bool CTDEngineCtp::updateOrderTrack() {
 
     if (!query_complete_flag_) return false;
   }
-  request_id_ = max_ref_id_ + 1;
+
+  // The existing has the request id as its unique identifier,
+  // thus the ids of new requests should not overlap with existing order's
+  // request id. Set the starting id just beyond the largest id of existing
+  // orders.
+  request_id_ = max_ref_id_ + 1;  // the next request id
 
   if (!updateTradedAmount()) {
     ALERT("updateTradedAmount failed.");
@@ -892,7 +925,7 @@ void CTDEngineCtp::OnRspQryOrder(CThostFtdcOrderField* pOrder,
     if (unlikely(!checkRequestId(order_ref))) return;
 
     tOrderTrack& track = get_request_track(order_ref);
-    pOrder->OrderStatus = ODS(TDSEND);
+    pOrder->OrderStatus = ODS(TDSEND);  // TBU, bug?
     switch (pOrder->OrderStatus) {
       case THOST_FTDC_OST_Unknown:
         track.status |= ODS(ACCEPT);
