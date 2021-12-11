@@ -396,7 +396,9 @@ enum class emOffset {
 // 回报类型
 enum class emOrderRtnType {
   NOT_SET = 0,
-  CLOSED = 1,         // order all traded (final)
+  CLOSED =
+      1,  // order's final state (all traded, canceled, rejected or market
+          // rejected, fatal error). This means  no more update on this order
   SEND = (1 << 1),    // order insert request issued by TDHelper
   TDSEND = (1 << 2),  // order insert request sent out by TDEngine
   CXLING = (1 << 3),  // order cancel request sent out by TDEngine or issued by
@@ -407,7 +409,7 @@ enum class emOrderRtnType {
   MARKET_REJECT = (1 << 7) | 1,  // order rejected by Exchange
   EXECUTION = (1 << 8),          // part or full of order traded
   CANCEL_REJECT = (1 << 9),  // order cancel rejected by TDEngine/Thost/Exchange
-  CANCELED = (1 << 10) | 1,  // order canceled (final)
+  CANCELED = (1 << 10) | 1,  // order canceled
   ERR = (1 << 11) | 1,
 };
 #define ODS(em_status) (static_cast<int>(emOrderRtnType::em_status))

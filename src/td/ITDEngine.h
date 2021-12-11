@@ -169,7 +169,7 @@ class ITDEngine {
   tOrderTrack* request_track_ = nullptr;
   // the real storage place of the tracked orders
   COrderTrackMmap otmmap_{true};  // default is lock in memory, no swap
-  CIDQueue<> otidfilter_[MMAP_ORDER_TRACK_SIZE];
+  CIDQueue<> otidfilter_[MMAP_ORDER_TRACK_SIZE];  // TBU
   /**
    * @}
    */

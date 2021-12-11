@@ -490,7 +490,7 @@ void CTDEngineCtp::OnRspQryInstrument(CThostFtdcInstrumentField* pInstrument,
 }
 
 /**
- * @brief OrderInsert failed, rejected by Thost
+ * @brief OrderInsert rejected due to failure to Thost's check
  */
 void CTDEngineCtp::OnRspOrderInsert(CThostFtdcInputOrderField* pInputOrder,
                                     CThostFtdcRspInfoField* pRspInfo,
@@ -498,7 +498,7 @@ void CTDEngineCtp::OnRspOrderInsert(CThostFtdcInputOrderField* pInputOrder,
   if (unlikely(!checkRequestId(nRequestID))) return;
   tOrderTrack& request_track = get_request_track(nRequestID);
   if (pRspInfo && request_track.from != 0 && CHK_USERID(pInputOrder)) {
-    if (request_track.status & ODS(REJECT)) return;
+    if (request_track.status & ODS(REJECT)) return;  // a final state
     request_track.status |= ODS(REJECT);
 
     tIOrderRtn* p = (tIOrderRtn*)writer_.prefetch(sizeof(tIOrderRtn));
@@ -527,7 +527,7 @@ void CTDEngineCtp::OnRspOrderInsert(CThostFtdcInputOrderField* pInputOrder,
 }
 
 /**
- * @brief OrderAction failed, rejected by Thost
+ * @brief OrderAction rejected due to failure to Thost's check
  */
 void CTDEngineCtp::OnRspOrderAction(
     CThostFtdcInputOrderActionField* pInputOrderAction,
@@ -535,7 +535,7 @@ void CTDEngineCtp::OnRspOrderAction(
   if (unlikely(!checkRequestId(nRequestID))) return;
   tOrderTrack& request_track = get_request_track(nRequestID);
   if (pRspInfo && request_track.from != 0 && CHK_USERID(pInputOrderAction)) {
-    request_track.status |= ODS(CANCEL_REJECT);
+    request_track.status |= ODS(CANCEL_REJECT);  // not a final state
 
     tIOrderRtn* p = (tIOrderRtn*)writer_.prefetch(sizeof(tIOrderRtn));
     p->cmd = IO_ORDER_RTN;
@@ -563,8 +563,8 @@ void CTDEngineCtp::OnRspOrderAction(
 }
 
 /**
- * @brief Returns from the exchange for OrderInsert/OrderAction accepted by the
- * exchange exchange
+ * @brief Every state change of an order reaching the exchange (traded,
+ * cancelled, error)
  */
 void CTDEngineCtp::OnRtnOrder(CThostFtdcOrderField* pOrder) {
   if (unlikely(!CHK_USERID(pOrder))) return;
@@ -662,7 +662,7 @@ void CTDEngineCtp::OnRtnTrade(CThostFtdcTradeField* pTrade) {
 }
 
 /**
- * @brief OrderInsert rejected by the exchange, thus MARKET_REJECT
+ * @brief OrderInsert rejected due to failure to the exchange's check
  * @details This callback is invoked when the OrderInsert passes broker's trade
  * front (i.e., Thost) but rejected by the exchange's market system.
  */
@@ -673,7 +673,7 @@ void CTDEngineCtp::OnErrRtnOrderInsert(CThostFtdcInputOrderField* pInputOrder,
   if (unlikely(!checkRequestId(request_id))) return;
   tOrderTrack& request_track = get_request_track(request_id);
   if (request_track.from != 0) {
-    if (request_track.status & ODS(MARKET_REJECT)) return;
+    if (request_track.status & ODS(MARKET_REJECT)) return;  // a final state
     request_track.status |= ODS(MARKET_REJECT);
 
     tIOrderRtn* p = (tIOrderRtn*)writer_.prefetch(sizeof(tIOrderRtn));
@@ -700,6 +700,9 @@ void CTDEngineCtp::OnErrRtnOrderInsert(CThostFtdcInputOrderField* pInputOrder,
   }
 }
 
+/**
+ * @brief OrderAction rejected due to failure to the exchange's check
+ */
 void CTDEngineCtp::OnErrRtnOrderAction(CThostFtdcOrderActionField* pOrderAction,
                                        CThostFtdcRspInfoField* pRspInfo) {
   if (unlikely(!CHK_USERID(pOrderAction))) return;
@@ -707,7 +710,7 @@ void CTDEngineCtp::OnErrRtnOrderAction(CThostFtdcOrderActionField* pOrderAction,
   if (unlikely(!checkRequestId(request_id))) return;
   tOrderTrack& request_track = get_request_track(request_id);
   if (request_track.from != 0) {
-    request_track.status |= ODS(CANCEL_REJECT);
+    request_track.status |= ODS(CANCEL_REJECT);  // not a final state
 
     tIOrderRtn* p = (tIOrderRtn*)writer_.prefetch(sizeof(tIOrderRtn));
     p->cmd = IO_ORDER_RTN;
@@ -733,7 +736,7 @@ void CTDEngineCtp::OnErrRtnOrderAction(CThostFtdcOrderActionField* pOrderAction,
   }
 }
 
-// Request OrderInsert to front
+// Request inserting a new order to trade front
 // order_ref = request_id_ = trackOrder index
 void CTDEngineCtp::req_order_insert(const tIOInputOrderField* data) {
   // elapse_begin(start_order);
@@ -741,12 +744,12 @@ void CTDEngineCtp::req_order_insert(const tIOInputOrderField* data) {
     auto& util = acc_utilis_[data->acc_idx];
     int off = data->off;
     int ret = 0;
-    // checking the risk first
+    // 1. checking the risk first
     if (unlikely(ret = util->check(data->dir, off, data->price, data->vol,
                                    data->instr_hash))) {
       writeErrRtn(data, ret, "risk check failed");
     } else {
-      // find the corresponding account
+      // 2. find the corresponding account and init insert command
       AccountUnitCTP& unit = account_units_[data->acc_idx];
       auto& order = unit.input_order;
       int2string(order.OrderRef,
@@ -757,12 +760,12 @@ void CTDEngineCtp::req_order_insert(const tIOInputOrderField* data) {
       order.Direction = data->dir;
       order.LimitPrice = data->price;
 
-      // send the request to matching trader front
+      // 2. send the request to matching trader front
       // elapse_begin(call_api);
       int ret = unit.api->ReqOrderInsert(&order, request_id_);
-      if (ret == 0)  // succ, then request_id_ should ++
-      {
-        // insert this order into request tracked order
+      if (ret == 0) {
+        // 3. request succeed and create a new record in ot mmap
+        //    start tracking this order's life with this record
         // elapse_begin(call_api_after);
         tOrderTrack& request_track = get_request_track(request_id_);
         request_track.status = ODS(TDSEND);
@@ -781,7 +784,7 @@ void CTDEngineCtp::req_order_insert(const tIOInputOrderField* data) {
         request_track.session_id = unit.session_id;
         request_track.stg_id = data->stg_id;
 
-        // write ack back
+        // 4. write ack back to sender using td io
         tIOrderRtn* p = (tIOrderRtn*)writer_.prefetch(sizeof(tIOrderRtn));
         p->cmd = IO_ORDER_RTN;
         p->to = data->from;
@@ -794,7 +797,6 @@ void CTDEngineCtp::req_order_insert(const tIOInputOrderField* data) {
         p->rtn_msg.dir = data->dir;
         p->rtn_msg.off = data->off;
         p->rtn_msg.order_ref = request_id_++;  // request_id_ increment here, as
-                                               // no more usage in scope
         p->rtn_msg.front_id = request_track.front_id;
         p->rtn_msg.session_id = request_track.session_id;
         writer_.commit();
@@ -804,6 +806,7 @@ void CTDEngineCtp::req_order_insert(const tIOInputOrderField* data) {
         // getIOFrameHead(data)->nano, call_api - start_order, call_api_after -
         // call_api, committed - call_api_after);
 
+        // 5. account management? TBU
         util->onNew(data->dir, off, data->price, data->vol, data->instr_hash,
                     request_track.order_ref);
       } else {
@@ -822,6 +825,9 @@ void CTDEngineCtp::req_order_action(const tIOrderAction* data) {
                 ODS(CANCEL_REJECT));
     return;
   }
+
+  // 1. checking if the order exists in the record
+  //    using the combi of front_id+session_id+order_ref
   tOrderTrack& request_track = get_request_track(data->order_ref);
   if (request_track.front_id == data->front_id &&
       request_track.session_id == data->session_id) {

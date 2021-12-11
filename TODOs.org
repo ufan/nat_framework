@@ -227,3 +227,12 @@
 <2021-12-10 Fr>
 [[file:~/src/nat_framework/src/td/CTDEngineCtp.cpp::case THOST_FTDC_OST_PartTradedNotQueueing:]]
 
+* TODO What's function?
+<2021-12-11 Sa>
+[[file:~/src/nat_framework/src/td/ITDEngine.h::bool testOtId(int otid, long long mid) {]]
+
+* TODO Why bother to seek IO_TD_START command? If the helper init successfully, it's guanranteed that TD engine is already started
+  For td restart??
+<2021-12-11 Sa>
+[[file:~/src/nat_framework/src/td/CTDHelperComm.cpp::} else if (p->cmd == IO_TD_START) {]]
+
