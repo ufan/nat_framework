@@ -1,6 +1,7 @@
 * /execute_model/
   
-  The package contains one specific strategy called *CExecuteStrategy*, which encapsulates various models for decision.
+  The package contains one specific strategy called *CExecuteStrategy*,
+  which encapsulates various models for decision making.
   It inherits from *CStrategy*.
 
   Several models can be used together and assigned to different instruments.

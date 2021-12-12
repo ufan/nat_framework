@@ -236,3 +236,23 @@
 <2021-12-11 Sa>
 [[file:~/src/nat_framework/src/td/CTDHelperComm.cpp::} else if (p->cmd == IO_TD_START) {]]
 
+* TODO Find another way of setting default reference value to null      :BUG:
+  Solution: If c++17 compiler available, use std::optional<std::reference_wrapper<bool>> as the type of the argument 'update'
+  see [[https://stackoverflow.com/questions/2816293/passing-optional-parameter-by-reference-in-c][this post]]
+  
+<2021-12-12 So>
+[[file:~/src/nat_framework/src/md/CMDHelperComm.h::bool qryTradeBaseInfo(bool &update = *(bool *)nullptr);]]
+
+* TODO How to understand this?                                          :BUG:
+  Should not resubscribe in a new trading day? Is it a bug here?
+<2021-12-12 So>
+[[file:~/src/nat_framework/src/md/CMDHelperComm.h::if (qryTradeBaseInfo(update)) { // TBU]]
+
+* TODO Understand bar time adjustment, especially for the aution bar
+<2021-12-12 So>
+[[file:~/src/nat_framework/src/bar/BarMaker.cpp::it->adjust_bob = it->bob - 2 * 3600; // TBU]]
+
+* TODO Confirm the session begin/end time before product usage    :important:
+<2021-12-12 So>
+[[file:~/src/nat_framework/src/bar/BarMaker.cpp::vector<TimeSpan> BarMaker::getTradingTimespan(string prd) {]]
+

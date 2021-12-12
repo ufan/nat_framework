@@ -81,7 +81,9 @@ class CStrategy {
   // subscribe to instruments managed by this strategy
   bool subscribe(string instruments);
   bool subsBar(string instrument, long interval_min);
-  void setIntraDayBaseSec(long sec) { BarHelper::setIntraDayBaseSec(sec); }
+  void setIntraDayBaseSec(long sec) {
+    BarHelper::setIntraDayBaseSec(sec);
+  }  // TBU
 
   // send request for insert/delete order to td engine
   int sendOrder(uint32_t instr_hash, double price, int vol, int dir, int off,

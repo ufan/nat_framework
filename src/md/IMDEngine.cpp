@@ -119,7 +119,8 @@ void IMDEngine::runEngine() {
     if (p) {
       if (p->to == self_id_) {  // only respond message sent to this engine
         switch (p->cmd) {
-          case IO_HEAT_BEAT: {
+          case IO_HEAT_BEAT: {  // client can use heart beat to check whether md
+                                // engine is still alive
             tSysIOHead ack = {IO_HEAT_BEAT_ACK, p->source, self_id_,
                               p->back_word};
             CSystemIO::instance().getWriter().write(&ack, sizeof(ack));

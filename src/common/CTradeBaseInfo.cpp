@@ -73,6 +73,14 @@ vector<tInstrumentInfo> CTradeBaseInfo::getInstrInProduct(string product) {
   return res;
 }
 
+/**
+ * @brief Return a set of instrument names
+ * @param[in] product element could be one of follows:
+ *            1. 'all' or 'All': for all instruments in the market
+ *            2. product name: for all instruments of this product
+ *            3. instrument name
+ * @return Description
+ */
 std::set<string> CTradeBaseInfo::productToInstrSet(
     const vector<string> &product) {
   std::set<string> res;
