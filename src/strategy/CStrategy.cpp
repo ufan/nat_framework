@@ -203,7 +203,7 @@ bool CStrategy::loadConfig(string config_content) {
   p_is_exit_ = &(getSharedData()->is_exit);
   p_do_trade_ = &(getSharedData()->do_trade);
 
-  // setp 5: init account (risk management)
+  // setp 5: init account (risk management), NOTE: only use AccountDefault
   auto& acc_conf = j_conf["AccountDefault"];
   p_risk_stg_.reset(new RiskStg);
   string name = j_conf["name"];

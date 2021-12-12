@@ -33,6 +33,13 @@ class ITDHelper {
 
   int getOrderTrackCnt() { return order_track_.size(); }
   tOrderTrack& getOrderTrack(int idx) { return order_track_[idx]; }
+
+  /**
+   * @brief Get strategy id from the return message
+   * @return Always 0 for simple strategy derived from CStrategy.
+   *         For strategy derived from CStrategyBase, return the index of this
+   *         strategy in the CStrategyProcess's list of strategies.
+   */
   int getStgIdFromRtnMsg(const tRtnMsg* prtn) {
     return getOrderTrack(prtn->local_id).stg_id;
   }
