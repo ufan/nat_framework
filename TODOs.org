@@ -256,3 +256,11 @@
 <2021-12-12 So>
 [[file:~/src/nat_framework/src/bar/BarMaker.cpp::vector<TimeSpan> BarMaker::getTradingTimespan(string prd) {]]
 
+* TODO Learn treap container
+<2021-12-13 Mo>
+[[file:~/src/nat_framework/src/risk/RiskInstrTop.h::struct TreapNode : public boost::intrusive::bs_set_base_hook<boost::intrusive::link_mode<boost::intrusive::normal_link>>]]
+
+* TODO OnTickPx in RiskTop and RiskStg is not invoked anywhere, why, bug? :important:
+<2021-12-13 Mo>
+[[file:~/src/nat_framework/src/risk/RiskStg.h::void onTickPx(uint32_t instr_hash, double tick_px);]]
+

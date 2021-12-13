@@ -161,14 +161,19 @@ int CStrategyProcess::add(CStrategyBase* stg, int profile_id) {
   stg->p_risk_stg_.reset(new RiskStg);
   string stg_name = j_conf["name"].get<string>() +
                     string(SUB_ACCOUNT_FILE_SUFFIX) + to_string(profile_id);
+  // 3.1) init associate trade account and risk account
   if (!stg->p_risk_stg_->init(stg_name.c_str(), acc_conf)) {
     ALERT("init strategy %d account failed.", profile_id);
     return -1;
   }
+
+  // 3.2) load trade account into the state of previous trading
   if (!stg->p_risk_stg_->load()) {
     ALERT("load last account err.");
     return false;
   }
+
+  // 3.3) update trade account based on existing order track
   for (int i = 0; i < getOrderTrackCnt(); i++) {
     tOrderTrack& ot = getOrderTrack(i);
     if (ot.stg_id == stg->self_id_) {

@@ -40,7 +40,7 @@ bool CTDEngineCtp::init(const json& j_conf) {
   auth_code_ = ctp_conf["AuthCode"];
   app_id_ = ctp_conf["AppID"];
 
-  // init accounts to be managed
+  // init each trading account to be managed
   auto& acc_json = ctp_conf["Account"];
   account_units_.resize(acc_json.size());
   for (int i = 0; i < acc_json.size(); i++) {
@@ -57,7 +57,7 @@ bool CTDEngineCtp::init(const json& j_conf) {
     return false;
   }
 
-  // connect to front for each account
+  // connect to front for each trading account
   connect(timout_ns_, trade_flow_path);
   if (!is_connected()) {  // error whenever one of the account could not be
                           // connected
@@ -65,7 +65,7 @@ bool CTDEngineCtp::init(const json& j_conf) {
     return false;
   }
 
-  // login for each account
+  // login for each trading account
   login(timout_ns_);
   if (!is_logged_in()) {
     ALERT("login ctp timeout.");
@@ -79,7 +79,7 @@ bool CTDEngineCtp::init(const json& j_conf) {
  * @details Account unit is created for each user and initialized with default
  *          value. Each user is managed by td using this collection of account
  *          units.
- * @param[in] idx index of this account in acct_unit_
+ * @param[in] idx index of this account in acct_unit_, for identification
  * @param[in] j_config user-provided configuration
  */
 bool CTDEngineCtp::load_account(int idx, const json& j_config) {
@@ -806,7 +806,7 @@ void CTDEngineCtp::req_order_insert(const tIOInputOrderField* data) {
         // getIOFrameHead(data)->nano, call_api - start_order, call_api_after -
         // call_api, committed - call_api_after);
 
-        // 5. account management? TBU
+        // 5. update base account statistics
         util->onNew(data->dir, off, data->price, data->vol, data->instr_hash,
                     request_track.order_ref);
       } else {

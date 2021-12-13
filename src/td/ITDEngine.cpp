@@ -54,10 +54,9 @@ bool ITDEngine::initEngine(const json &j_conf) {
   }
   LOG_DBG("loadOrderTrack and updateOrderTrack successfully.");
 
-  // Step 4: init risk management
-  // TBU
+  // Step 4: init top-level risk management account
   if (!initAccountUtilis(j_conf)) {
-    ALERT("init account utilis err.");
+    ALERT("init engine-level account utilis err.");
     return false;
   }
 
@@ -102,31 +101,48 @@ bool ITDEngine::initEngine(const json &j_conf) {
 }
 
 bool ITDEngine::initAccountUtilis(const json &j_conf) {
+  // 1. Get the number of trading account connected using this td engine
+  // These are the account registered in broker front and initialized using
+  // 'Account' field of each type of td engine implementation.
   int acc_cnt = getAccountCnt();
 
-  // the information is from top-level 'Account'
+  // 2. Create and init a risk account for each trading account of this engine.
+  // The risk parameter is from the top-level 'Account' field.
   auto &acc_conf = j_conf["Account"];
   for (int i = 0; i < acc_cnt; ++i) {
+    // 2.1 Create the top-level risk account
     acc_utilis_.emplace_back(new RiskTop);
     auto &acc = acc_utilis_.back();
 
-    // use the default config if no specific config exists
+    // The index of the account is the unique id to match configuration and the
+    // trading account. Thus, the order in the 'Account' is important: the
+    // record in td engine's 'Account' field should match the record in the same
+    // slot in the top-level 'Account'. Use the default config from
+    // 'AccountDefault' if no corresponding config exists
     auto conf = j_conf["AccountDefault"];
     if (i < acc_conf.size()) conf = acc_conf[i];
+
+    // 2.2 Read in the risk parameters from configuration
     string acc_name = name() + string(".sub") + to_string(i);
     if (!acc->init(acc_name.c_str(), conf)) {
       ALERT("init %d account position failed.", i);
       return false;
     }
 
+    // 2.3 Load the previous account summary info if exists
     if (!acc->load()) {
       ALERT("load last account err.");
       return false;
     }
+
+    // 2.4 Update the account summary in case of missing order msg
     for (int i = request_id_start_; i < request_id_; i++) {
       acc->onOrderTrack(&get_request_track(i));
     }
 
+    // 2.5 register all instruments listed in market
+    // This means risk management for all instruments, since the end-user may be
+    // interested in any instrument in market.
     for (auto &kv : CTradeBaseInfo::instr_info_) {
       if (not acc->regInstr(kv.second.instr)) {
         ALERT("account register instr %s err", kv.second.instr);

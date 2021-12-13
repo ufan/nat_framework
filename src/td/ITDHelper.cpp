@@ -17,23 +17,26 @@ ITDHelper::ITDHelper(string name) : name_(name) {
 
 /**
  * @brief Create and send a new order to td engine
+ * This is the first place that a new order track is created
  */
 int ITDHelper::sendOrder(const char* instr, double price, int vol, int dir,
                          int off, int acc_id, int stgid, uint32_t instr_hash) {
   order_track_.emplace_back();
   auto& track = order_track_.back();
-  track.status = ODS(SEND);  // initial order state
-  track.instr_hash = instr_hash;
+  track.status = ODS(SEND);       // initial order state
+  track.instr_hash = instr_hash;  // instrument hash id
   strncpy(track.instr, instr, sizeof(track.instr) - 1);
-  track.price = price;
-  track.vol = vol;
-  track.dir = dir;
-  track.off = off;
-  track.stg_id = stgid;   // strategy id?
-  track.acc_id = acc_id;  // account hash id
-
+  track.price = price;  // Price
+  track.vol = vol;      // Volume
+  track.dir = dir;      // Buy or Sell
+  track.off = off;      // Open or CloseTd or CloseYd
+  // strategy index in list of the CStrategyProcess
+  track.stg_id = stgid;
+  // trade account index in the td engine's list of trading account
+  track.acc_id = acc_id;
+  // index of order track in local collection
   int track_id = order_track_.size() - 1;
-  track.local_id = track_id;  // index of local track record
+  track.local_id = track_id;
   doSendOrder(track_id);
   return track_id;
 }

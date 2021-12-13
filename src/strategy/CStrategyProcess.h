@@ -178,6 +178,9 @@ class CStrategyBase {
    * @name Methods used by strategy to issue and delete an order
    * @{
    */
+
+  // Argument acc_idx is the index of the collection of the trading accounts in
+  // the td engine. Use the first trading account in the collection by default.
   int sendOrder(uint32_t instr_hash, double price, int vol, int dir, int off,
                 int acc_idx = 0) {
     if (*CStrategyProcess::p_do_trade_) {

@@ -1,0 +1,76 @@
+* Account and risk management
+  Types of account:
+  1. Low-level: the account registered in broker, and used to connect to the td/md front.
+     This account is only used for sending/receiving command/message to the exchange, thus is called 'trading account'.
+     A td engine may contain multiple trading accounts and keeps a list of these accounts.
+     The trading account is managed by each implementation of td engine.
+  2. Top-level (or engine-level): For each trading account, an associate risk management account is created for it.
+     The top-level account manages the risk of all transactions through the corresponding trading account.
+  3. Strategy-level: For each running strategy instance, an associate risk management account is created for it.
+     This account manages the risk of all transactions initiated by this strategy instance.
+
+     Top-level (*RiskTop*) and strategy-level (*RiskStg*) accounts are risk management account.
+     They shares the same design logic, however implemented in separate class. 
+     Orders may be stopped at strategy-level by *RiskStg* when try to ask td engine to send the new order.
+     they may later be stopped by *RiskTop* when td engine tries to send the new order to the exchange.
+     
+     *NOTE*:
+     Low-level accounts are the initial account created, the top-level account just associate itself with
+     the corresponding low-level using an account index. This index comes from the insertion sequence of the low-level
+     accounts in td engine's 'Account' field of the JSON configuration file. This index is also the unique identifier
+     to specify which low-level account for trading (i.e., when sending/deleting orders).
+     
+** Risk management account
+   *RiskTop* and *RiskStg* both consist of two components:
+   1. Base account:
+      Manages statistics and states of the trading categorized by
+      - Account:
+        + unfilled_order_cnt: total number of orders not yet filled by the exchange
+        + unit_amt: total value of the current position
+        + unit_pnl: total net loss of current position
+      - Product:
+        + unit_vol: statistics of the position of each traded product
+        + unit_amt: statistics of the value of current position of each traded product
+        + unit_pnl: net loss of each traded product
+      - Instrument:
+        + unit_vol: statistics of the position of each traded instrument
+        + unit_amt: statistics of the value of current position of each traded instrument
+        + unit_px: statistics of the price of each traded instrument
+        + unit_pnl: net loss of each traded instrument
+   2. Risk manager:
+      Manages risk checking based on parameters from configuration, organized as follows:
+      - Account-level:
+        + unfilled_order_cnt_threshold
+        + amt_long_threshold/amt_short_threshold
+        + net_amt_threshold
+      - Product-level:
+        + long_volume_threshold/short_volume_threshold
+        + net_volume_threshold
+      - Instrument-level:
+        + common to both *RiskTop* and *RiskStg*:
+          * is_allowed
+          * intensity_cycle_order_count_threshold
+          * intensity_cycle_time_span_threshold
+          * allowed_order_size_threshold
+          * long_volume_threshold/short_volume_threshold
+          * net_volume_threshold
+        + account specific:
+          * *RiskTop*: add check for self-trade through the same trading account, no parameter needed
+          * *RiskStg*: add check for price-margin with respect to market's latest best bin/ask price.
+            * allowed_order_size_threshold
+
+      The following methods are implemented by both *RiskTop* and *RiskStg*.
+      These methods are invoked at pre-defined stage to update the base account statistics and check the risks of each new order:
+      - check(): Check the risk before sending the request to insert a new order. If failed, the new order will
+      not be sent and an error msg will be generated to indicating the reason.
+      - update the base account statistics:
+        + onOrderTrack()
+        + onNew()
+        + onRtn()
+        + onTickPx() : currently, the method is not invoked (bug?)
+
+      The statistics of base account can be saved after a trading day and loaded back in a new trading day.
+      
+      *RiskTop* will manage all available instruments listed on the market, while *RiskStg* only manages
+      instruments that the strategy is interested in. *RiskStg* has an extra method 'onSwitchDay', which will
+      reset the statistics when new trade day begins.

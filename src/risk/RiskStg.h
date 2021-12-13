@@ -22,10 +22,9 @@ class RiskStg {
   void onNew(int dir, int off, double px, int vol, uint32_t instr_hash,
              long nano);
   void onRtn(const tOrderTrack* p_ord_trk, const tRtnMsg* p_rtn_msg);
-
   void onTickPx(uint32_t instr_hash, double tick_px);
-
   void onSwitchDay();
+
   bool save(string day, bool force = false) {
     return acc_base_.save(day, force);
   }
@@ -35,9 +34,9 @@ class RiskStg {
   ModInstr* getModInstr(uint32_t instr_hash) {
     return acc_base_.getModInstr(instr_hash);
   }
-  ModPrd* getModPrd(uint32_t prd_hash) { return acc_base_.getModPrd(prd_hash); }
   vector<ModInstr> getAllInstr() { return acc_base_.getAllInstr(); }
   vector<ModPrd> getAllPrd() { return acc_base_.getAllPrd(); }
+  ModPrd* getModPrd(uint32_t prd_hash) { return acc_base_.getModPrd(prd_hash); }
 
   UnitAmt* getAccUnitAmt();
   UnitPnl* getAccUnitPnl();
@@ -55,14 +54,17 @@ class RiskStg {
   bool regRiskPrd(const char* prd_name);
   bool regRiskInstr(const char* instr_name);
 
+ protected:
   char stg_name_[64] = {0};
   json j_conf_;
 
+  // risk management
   unordered_map<uint32_t, RiskInstrStg> map_risk_instr_;
   unordered_map<uint32_t, RiskPrd> map_risk_prd_;
+  RiskAcc risk_acc_;  // the risk account
 
-  RiskAcc risk_acc_;
-  AccBase acc_base_;
+  // base account
+  AccBase acc_base_;  //  the trading account
 };
 
 #endif

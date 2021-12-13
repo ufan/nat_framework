@@ -59,14 +59,14 @@ class ITDEngine {
 
   virtual void release() = 0;
 
-  virtual int getAccountCnt() = 0;
+  virtual int getAccountCnt() = 0;  // number of trading accounts
 
   virtual bool updateOrderTrack() = 0;
 
  public:
   bool initEngine(const json& j_conf);
 
-  bool initAccountUtilis(const json& j_conf);
+  bool initAccountUtilis(const json& j_conf);  // top-level risk account
 
   bool loadOrderTrack();
 
@@ -108,13 +108,16 @@ class ITDEngine {
 
   tIOrderRtn* writeRtnFromTrack(tOrderTrack& request_track);
 
+  // send request to delete order to the exchange
   void engine_req_order_action(const tIOrderAction* data);
 
-  // this should be called after return msg
+  // this should is called when receiving a new return msg from the exchange
   void engine_on_rtn(int acc_idx, const tOrderTrack* pot, const tRtnMsg* prtn) {
+    // update the risk account statistics
     acc_utilis_[acc_idx]->onRtn(pot, prtn);
   }
 
+  // save the trading statistics to disk
   void engine_on_close();
 
   void rspOrderTrack(tSysIOHead* req);
