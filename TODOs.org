@@ -295,3 +295,11 @@
 <2021-12-14 Di>
 [[file:~/src/nat_framework/src/tunnel_agent/CWaiter.cpp::p_commander_.reset(new CPythonExecutor(this));]]
 
+* TODO head_ and tail_ is not properly reset in resize()                :BUG:
+<2021-12-15 Mi>
+[[file:~/src/nat_framework/src/server_utils/CBuffer.h::void resize(uint32_t size) {]]
+
+* TODO The usage of CBuffer as read_buf_ is not correct and is buggy    :BUG:
+<2021-12-15 Mi>
+[[file:~/src/nat_framework/src/server_utils/CService.cpp::void CService::read_cb(EV_P_ ev_io *w, int events) {]]
+

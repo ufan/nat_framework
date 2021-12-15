@@ -203,8 +203,8 @@ bool CClient::desSend(string pkg) {
  * 2. from command line as extra_cmd
  */
 bool CClient::doCommand(vector<string> &extr_cmd) {
+  // 1. compose a single list of commands from two sources
   CConfig *p_config = getConfig();
-
   vector<string> cmds;
   p_config->getValList("TASK", "cmd_list", cmds);
 
@@ -212,6 +212,7 @@ bool CClient::doCommand(vector<string> &extr_cmd) {
     cmds.push_back(extr_cmd[i]);
   }
 
+  // 2. process the commands one by one
   for (vector<string>::iterator iter = cmds.begin(); iter != cmds.end();
        ++iter) {
     LOG_INFO("%s", iter->c_str());
