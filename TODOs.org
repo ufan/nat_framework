@@ -264,3 +264,34 @@
 <2021-12-13 Mo>
 [[file:~/src/nat_framework/src/risk/RiskStg.h::void onTickPx(uint32_t instr_hash, double tick_px);]]
 
+* TODO Understand hash table designe
+<2021-12-14 Di>
+[[file:~/src/nat_framework/src/utility/CHashTable.h::/]]
+
+* TODO Understand process management? setProcTitle
+<2021-12-14 Di>
+[[file:~/src/nat_framework/src/tunnel_agent/PyLoader.cpp::setProcTitle(name, argv);]]
+
+* TODO Where is 'pystrategy' defined? and 'LoadConf' and 'setStrategyName'
+<2021-12-14 Di>
+[[file:~/src/nat_framework/src/tunnel_agent/PyLoader.cpp::string tmpstr("import pystrategy\npystrategy.setStrategyName('");]]
+
+* TODO Worth trying other libev backends like 'poll' or 'linuxaio'
+<2021-12-14 Di>
+[[file:~/src/nat_framework/src/tunnel_agent/CTunnelAgent.cpp::struct ev_loop *loop = ev_default_loop (EVBACKEND_EPOLL | EVFLAG_NOENV);]]
+
+* DONE Why not just use implicit this pointer?
+  CLOSED: [2021-12-14 Di 19:37]
+  Since libev is C library and do not respect the 'this' pointer.
+  Also, the callback can only be defined as a static member function.
+<2021-12-14 Di>
+[[file:~/src/nat_framework/src/tunnel_agent/CTunnelAgent.cpp::instance()->waiters_\[fd\] = move(p_waiter);]]
+
+* TODO Unserstand SSL authentication
+<2021-12-14 Di>
+[[file:~/src/nat_framework/src/tunnel_agent/CWaiter.cpp::int CWaiter::processSSLAuth(string &pkg) {]]
+
+* TODO CClient does not support CMD_PYTHON                              :BUG:
+<2021-12-14 Di>
+[[file:~/src/nat_framework/src/tunnel_agent/CWaiter.cpp::p_commander_.reset(new CPythonExecutor(this));]]
+

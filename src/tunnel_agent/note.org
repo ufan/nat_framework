@@ -1,0 +1,38 @@
+* Authentication and secure communication
+  The communication between tunnel agent server and its client is secure.
+  The security is ensured based on authentication using RSA public/private key mechanism
+  during client/server handshake period.
+
+  The authentication procedure works as follows:
+  1. Client generates a random sequence of bytes and use the private key to encode it.
+     Both the clear and encrypted bytes are send together to the server for authentication.
+  2. The server receives the authentication message. It decrypts the encrypted part of the
+     message using the public key and compares the result with the clear text. If they match,
+     the client is authenticated.
+  3. The server then does the same as the client in step 1, but using the public key for
+     encrytion. The authentication message is sent to the client.
+  4. The client receives the message and authenticate the server's identity using the private
+     key as the server does in step 2.
+  5. If the above steps are successful, the client generates a 3DES key. It then encrypts this
+     key using the private key and sends the encrypted key to the server.
+  6. The server receives the encrypted key and decrypts it with the publich key. Thus, the key
+     is distributed to the server in a secure channel.
+     
+  After the successful authentication and distribution of the 3DES key, this key will be used
+  for encryption and decryption for all communications between the client and the server.
+
+  *Caveats*:
+  The RSA pubic/private key pair is generated during the build time (/sshkeytransfer/) and
+  hardcoded into the server and client executables.
+  Thus, only client/server from the same build can pass the authentication.
+  The build version of the server deployed and the client distributed should
+  match.
+
+** Public and private key generation
+   This process is steered by CMake build system [[file:CMakeLists.txt][(see this file)]]. 
+   /sshkeytransfer/ from tools package is built and then used to generate two source files
+   which contains the public and private key bytes: public_key.cpp and private_key.cpp.
+   The key bytes in these two files are not in clear text form. They are XORed with a predefined
+   encoding bytes. The sources are located in the build directory of /tunnel_agent/ package.
+
+   The use of the public and private key, and the generation and use of the 3DES key is managed by *CCrypt*.

@@ -9,3 +9,11 @@
   - on_bar
   - on_switch_day
   - on_msg
+* Strategy management
+  Two methods available:
+  1. Local method: the running strategy instance keeps its own private record in the heap.
+     It runs as a standalone strategy. This is the default one.
+  2. Central method: use a shared memory hash table to keep a record for each running
+     strategy instances on the same host. *StgManager* can be used to manage this table.
+     This is activated by setting 's_use_shm_controller'.
+
