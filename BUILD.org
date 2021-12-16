@@ -3,35 +3,53 @@
   as git submodule.
 
   The command to clone the whole source base including ThirdParty libraries is:
-  /git clone --recurse-submodules -b <branch_name> <repo_address>/
+  ~git clone --recurse-submodules -b <branch_name> <repo_address>~
   
-* CMake
-  The preferred build system is *CMake* by /cmake -DCMAKE_INSTALL_PPREFIX=<XXX> -DBoost_ROOT=<XXX>/. 
-** Pre-requsites
+* Build and install
+** Prerequisite
 *** /python2.7/
+    #+begin_src shell
+    sudo apt install python2-dev
+    #+end_src
 *** /boost 1.72.00/ 
-
     1. checkout version 1.72.0 in the git repo:
       #+BEGIN_SRC bash
         git checkout -f -b boost-1.72.0 boost-1.72.0
-        rm .git/modules/disjoint_sets
         git submodule update --init
+        rm -rf .git/modules/disjoint_sets
       #+END_SRC 
     2. build and install boost (/boost_python/ should be built against /python2.7/)
        #+BEGIN_SRC bash
          ./bootstrap --prefix=/home/yong/boost/1.72.0 --with-python=python2
          ./b2 install
        #+END_SRC
-
 *** /CMake/ latest (>=3.15)
+    #+begin_src shell
+    sudo apt install cmake cmake-curses-gui
+    #+end_src
 *** /autotools/ is needed to build libev
+    #+begin_src shell
+    sudo apt install automake autoconf m4 libtool
+    #+end_src
 *** /openssl/
+    #+begin_src shell
+    sudo apt install openssl
+    #+end_src
+*** /cvs/
+    This is needed to fetch *libev* source code from CVS server.
+    #+begin_src shell
+    sudo apt intall cvs
+    #+end_src
     
 ** Dependencies
 *** External (i.e. source available)
-**** log4cplus
-**** libev
+**** *log4cplus*
+     Used in *logger* package, which is a common package used by almost all other packages.
+**** *libev*
+     
+     Used in the package *tunnel_agent* and *signal_agent*.
 *** ThirdParty (i.e. only binary library available)
+    Different trading libraries (API) are integrated:
 **** CTP
      Current, version v6.3.19 is used.
      But the code base use v6.3.8 (see *UnitedMarketDataType* defined in [[file:src/include/Constant.h][the common header]] and [[file:src/dump/Structure.h][the dump package header]] )
@@ -39,15 +57,14 @@
 **** Xt     
      
 ** Configure & Build
-   
-   Example snippet:
-   #+begin_src bash
-     mkdir build && cd build
-     cmake -DCMAKE_INSTALL_PREFIX=install_prefix -DENABLE_LIBEV_BUILD=ON ../src
-     make -j8
-     make install
-   #+end_src
-   
+  The build system is *CMake* by:
+  #+begin_src shell
+  cd $git_repo$ & mkdir build & cd build
+  cmake -DCMAKE_INSTALL_PPREFIX=<XXX> -DBoost_ROOT=<XXX> -denable_libev_build=on ../src
+  make -j8
+  make install
+  #+end_src
+  
 *** CMAKE_INSTALL_PREFIX
     The default installation prefix is */home/jarvis* if user does not pass in customized /CMAKE_INSTALL_RPEFXI/.
 
@@ -66,15 +83,8 @@
     /CMake/ could find the correct python2 by itself if there is only one version of python2 installed.
     If several versions of /python2/ installed, this option should point to the one which is used to complie /boost/ library.
     
-* /make/ based build system
-** copy ThirdParty under src/ directory
-** edit /src/make/head.mk/, change *boost_DIR* and *PYTHON_BIN* accordingly
-** invoke /make/ command
-*** a new /release/ directory will be created with all targets inside
 * Caveants
-** change libev.so.4.0.0 to libev.so
-*** only dynamic linkage success right now, to be investigated later
-
+    
 * Running the servers
 ** /TDEngine/ and /MDEngine/
    The most essential servers are the /MDEngine/ for the market quotes and /TDEngine/ for the trade transactions.
