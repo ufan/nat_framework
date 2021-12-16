@@ -1,0 +1,219 @@
+% Created 2021-12-06 Mo 20:09
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\author{Yong}
+\date{\today}
+\title{}
+\hypersetup{
+ pdfauthor={Yong},
+ pdftitle={},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 26.3 (Org mode 9.4.6)}, 
+ pdflang={English}}
+\begin{document}
+
+\tableofcontents
+
+\section{Getting the source}
+\label{sec:org9200199}
+The third party libraries (such as, EES, CTP \ldots{}) are integrated into the source base
+as git submodule.
+
+The command to clone the whole source base including ThirdParty libraries is:
+\emph{git clone --recurse-submodules -b <branch\_name> <repo\_address>}
+
+\section{CMake}
+\label{sec:orge7b3446}
+The preferred build system is \textbf{CMake} by \emph{cmake -DCMAKE\_INSTALL\_PPREFIX=<XXX> -DBoost\_ROOT=<XXX>}. 
+\subsection{Pre-requsites}
+\label{sec:org0c4a7f6}
+\subsubsection{\emph{python2.7}}
+\label{sec:org5d14f57}
+\subsubsection{\emph{boost 1.72.00}}
+\label{sec:org0d8594e}
+
+\begin{enumerate}
+\item checkout version 1.72.0 in the git repo:
+\begin{verbatim}
+git checkout -f -b boost-1.72.0 boost-1.72.0
+rm .git/modules/disjoint_sets
+git submodule update --init
+\end{verbatim}
+\item build and install boost (\emph{boost\_python} should be built against \emph{python2.7})
+\begin{verbatim}
+./bootstrap --prefix=/home/yong/boost/1.72.0 --with-python=python2
+./b2 install
+\end{verbatim}
+\end{enumerate}
+
+\subsubsection{\emph{CMake} latest (>=3.15)}
+\label{sec:org48a2038}
+\subsubsection{\emph{autotools} is needed to build libev}
+\label{sec:org8fe2f4d}
+\subsubsection{\emph{openssl}}
+\label{sec:org888b899}
+
+\subsection{Dependencies}
+\label{sec:orgf151d03}
+\subsubsection{External (i.e. source available)}
+\label{sec:org56806c7}
+\begin{enumerate}
+\item log4cplus
+\label{sec:org1947b1c}
+\item libev
+\label{sec:org5bdbca8}
+\end{enumerate}
+\subsubsection{ThirdParty (i.e. only binary library available)}
+\label{sec:org19e84ff}
+\begin{enumerate}
+\item CTP
+\label{sec:orgcee00c2}
+\item EES
+\label{sec:orga08fa43}
+\item Xt
+\label{sec:org3aed372}
+\end{enumerate}
+
+\subsection{Configure \& Build}
+\label{sec:org6f03837}
+
+Example snippet:
+\begin{verbatim}
+mkdir build && cd build
+cmake -DCMAKE_INSTALL_PREFIX=install_prefix -DENABLE_LIBEV_BUILD=ON ../src
+make -j8
+make install
+\end{verbatim}
+
+\subsubsection{CMAKE\_INSTALL\_PREFIX}
+\label{sec:org844251c}
+The default installation prefix is \textbf{/home/jarvis} if user does not pass in customized \emph{CMAKE\_INSTALL\_RPEFXI}.
+
+\subsubsection{ENABLE\_LIBEV\_BUILD}
+\label{sec:org30db51b}
+This option controls whether building library \emph{libev} in the cmake configuration stage.
+The default value is \textbf{ON}.
+\emph{libev} should at least be built once.
+Normally, in the first time of cmake configuration, the option should be \textbf{ON} so that \emph{libev} is built.
+In the following times, the option can be set to \textbf{OFF} to save time of configuration.
+
+\subsubsection{Boost\_ROOT}
+\label{sec:org9405e74}
+The directory points to the installation direcotry of \emph{boost} library.
+
+\subsubsection{PYTHON2\_ROOT\_DIR}
+\label{sec:org7e64e49}
+The directory of python2 installation. This option normally can be ignored.
+\emph{CMake} could find the correct python2 by itself if there is only one version of python2 installed.
+If several versions of \emph{python2} installed, this option should point to the one which is used to complie \emph{boost} library.
+
+\section{\emph{make} based build system}
+\label{sec:orgdad9820}
+\subsection{copy ThirdParty under src/ directory}
+\label{sec:org991f5ea}
+\subsection{edit \emph{src/make/head.mk}, change \textbf{boost\_DIR} and \textbf{PYTHON\_BIN} accordingly}
+\label{sec:orge2d9e4b}
+\subsection{invoke \emph{make} command}
+\label{sec:org064d164}
+\subsubsection{a new \emph{release} directory will be created with all targets inside}
+\label{sec:org1f262cc}
+\section{Caveants}
+\label{sec:orgba5f68c}
+\subsection{change libev.so.4.0.0 to libev.so}
+\label{sec:org6ad7a96}
+\subsubsection{only dynamic linkage success right now, to be investigated later}
+\label{sec:org8bc6d6b}
+
+\section{Running the servers}
+\label{sec:org2dd6709}
+\subsection{\emph{TDEngine} and \emph{MDEngine}}
+\label{sec:orgbd9057f}
+The most essential servers are the \emph{MDEngine} for the market quotes and \emph{TDEngine} for the trade transactions.
+
+Cautions:
+\begin{itemize}
+\item running the servers need root privilege
+\item \emph{TDEngine} needs to be invoked first and run successfully (for the base information), then \emph{MDEngine} could be invoked
+\item Both engines are run as daemon by default
+\item The configuration file used can be found in these scripts
+\end{itemize}
+
+\subsubsection{Method1}
+\label{sec:org483cc5a}
+Each server is an independent process, which has its own directory under the installation direcotry.
+An script (under \$CMAKE\_INSTALL\_PREFIX\$/MDEngine/scripts/md\_svr.sh and \$CMAKE\_INSTALL\_PREFIX\$/TDEngine/scripts/td\_svr.sh)
+is provided to facilitate the setup of the running environment of each server.
+\begin{verbatim}
+# TDEngine
+cd $CMAKE_INSTALL_PREFIX$/TDEngine/scripts # or MDEngine direcotry
+sudo ./td_svr.sh start/stop
+\end{verbatim}
+
+\subsubsection{Method2}
+\label{sec:org132e6bf}
+An overall script (under \$CMAKE\_INSTALL\_PREFIX\$/scripts/engine\_svr.sh) exist to correctly load the \emph{TDEngine} and \emph{MDEngine} together.
+\begin{verbatim}
+cd CMAKE_INSTALL_PREFIX/MDEngine/scripts
+sudo ./engine_svr.sh start/stop
+\end{verbatim}
+\begin{verbatim}
+#include <stdio>
+
+void main()
+{
+  std::cout << "Hello World!" << std::endl;
+}
+\end{verbatim}
+
+\begin{verbatim}
+cd ~
+pwd
+echo "Hello WOrld"
+\end{verbatim}
+
+\begin{verbatim}
+import numpy as np
+print('Hello World')
+print(np.__version__)
+\end{verbatim}
+
+\begin{verbatim}
+print(np.__version__)
+\end{verbatim}
+
+Inline python code like \texttt{1.21.4}
+
+\begin{verbatim}
+import time 
+print(f"Hello, today's date is {time.ctime()}")
+print('Two plus two is')
+return 3+2
+\end{verbatim}
+
+\begin{verbatim}
+whoami
+hostname
+\end{verbatim}
+
+\begin{verbatim}
+return x*x
+\end{verbatim}
+
+\begin{verbatim}
+81
+\end{verbatim}
+\end{document}
