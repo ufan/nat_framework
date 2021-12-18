@@ -57,6 +57,7 @@ bool FileMgr::regInstrument(const char* trading_date,
   }
 
   for (auto it = map_prd_instr.begin(); it != map_prd_instr.end(); ++it) {
+    // Group 1 based on exch, prd and trade date
     char dirname[256] = {0};
     snprintf(dirname, sizeof(dirname), "%s/China/%s/%s", warehouse,
              map_prd_exch[it->first].c_str(), it->first.c_str());
@@ -68,19 +69,20 @@ bool FileMgr::regInstrument(const char* trading_date,
     char filename[256] = {0};
     snprintf(filename, sizeof(filename), "%s/CTP_%s_%s_%s.data", dirname,
              trading_date, map_prd_exch[it->first].c_str(), it->first.c_str());
-    FILE* pf = fopen(filename, "ab");
+    FILE* pf = fopen(filename, "ab");  // open or create in append mode
     if (pf == nullptr) {
       ALERT("can't open file %s, errno:%d, errmsg:%s\n", filename, errno,
             strerror(errno));
       return false;
     }
-    if (fseek(pf, 0, SEEK_END) == -1) {
+    if (fseek(pf, 0, SEEK_END) == -1) {  // go to eof
       ALERT("can't seek file %s, errno:%d, errmsg:%s\n", filename, errno,
             strerror(errno));
       return false;
     }
     long pos = ftell(pf);
-    if (pos == 0) {
+    if (pos == 0) {  // if newly-created, write the header and the base info; if
+                     // existing, do nothing
       int instr_cnt = it->second.size();
       fwrite(&FILE_HEAD_VER, sizeof(int), 1, pf);
       fwrite(&DUMP_MD_HEAD_VER, sizeof(int), 1, pf);
@@ -93,9 +95,12 @@ bool FileMgr::regInstrument(const char* trading_date,
         fwrite(&it->second[i], sizeof(Instrument), 1, pf);
       }
     }
+
+    // keep the file descriptor for tick data writing
     map_prd_file[it->first] = pf;
   }
 
+  // Group 2: based on trade date
   char dirname[256] = {0};
   snprintf(dirname, sizeof(dirname), "%s/China/All", warehouse);
   if (!createPath(dirname)) {

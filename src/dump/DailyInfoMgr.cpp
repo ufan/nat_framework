@@ -25,7 +25,7 @@ bool DailyInfoMgr::init(json& j, const char* trading_date) {
 
 bool DailyInfoMgr::release() {
   ENGLOG("DailyInfoMgr release.\n");
-  return write();
+  return write();  // flush all the data before release
 }
 
 /**

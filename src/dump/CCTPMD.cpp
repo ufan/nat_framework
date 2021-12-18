@@ -165,7 +165,7 @@ void CCTPMD::OnRtnDepthMarketData(
   MarketDataHead md_head;
   md_head.local_time = CTimer::instance().getNano();
 
-  // update binary file, per instrument and aggregated
+  // update binary file, per product: instr of same prd aggregated
   fwrite(&md_head, sizeof(MarketDataHead), 1, FileMgr::pf_all);
   fwrite(pDepthMarketData, sizeof(CThostFtdcDepthMarketDataField), 1,
          FileMgr::pf_all);

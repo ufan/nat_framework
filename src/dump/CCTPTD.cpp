@@ -244,6 +244,7 @@ void CCTPTD::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument,
                            : OptionsType::OT_Put;
       vec_instr.emplace_back(instr);
 
+      // update in 'instrument_list' field of daily info
       json &j =
           DailyInfoMgr::j["instrument_list"][string(pInstrument->InstrumentID)];
       j["exch"] = pInstrument->ExchangeID;
@@ -257,6 +258,7 @@ void CCTPTD::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument,
       j["strike_px"] = pInstrument->StrikePrice;
       j["options_type"] = pInstrument->OptionsType;
 
+      // init tick count of this instrument
       DailyInfoMgr::map_instr_cnt[string(pInstrument->InstrumentID)] = 0;
     }
     if (bIsLast) {

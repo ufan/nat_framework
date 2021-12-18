@@ -1,0 +1,208 @@
+* Summary
+:PROPERTIES:
+:CUSTOM_ID: summary
+:END:
+
+  *dump* is a =Container=[fn:C4] of the system, aiming to provide the functionality of fetching real-time market data from the exchange during a trading day. *dump* is designed as a standalone data backup solution.
+ It works independently from the *td_engine* and *md_engine* (just like a pure data acquisition system without trading function integrated). 
+  *dump* also has minimum dependence and interaction with other =Container= of the system, with build dependency on the *CTP* library and the *utility* and *logger* package.
+  
+  Two groups of data is fetched:
+  1. [[#warehouse-data-format][Warehouse data]]: the tick data of all listed instruments is saved in binary format as in [[tb-wh-format][this table]].
+  2. [[#daily-information][Daily information]]: the daily summary data in text JSON format.
+     
+  The common use case is that user start the dump service every day (best on a different machine from the td/md engine, and with a trading account dedicated for this purpose).
+  
+[fn:C4] [[https://c4model.com/][The C4 model for visualizing software architecture]]
+
+** Warehouse data
+:PROPERTIES:
+:CUSTOM_ID: warehouse-data-format
+:END:
+
+The warehouse data is organized into two groups as follows:
+1. Categorized based on /exchange/, /product/ and /trading_date/:
+   - Directory: ~$warehouse_path$/China/$exchange$/$product$~
+   - File name: ~CTP_$trading_date$_$exchange$_$product$.data~
+2. Categorized based only on /trading_date/:
+   - Directory: ~$warehouse_dir$/China/All~
+   - File name: ~CTP_$trading_date$_All.data~
+Thus, two copies of the same data is stored.
+     
+The format of these two copies is the same as follows:
+#+NAME: tb-wh-format
+#+TITLE: Format of warehouse binary data
+
+  +--------+-----------------------------------+--------------------------------------+
+  |        | size in words                     | field                                |
+  +--------+-----------------------------------+--------------------------------------+
+  | Header | int[1]                            | FILE_HEADER_VER                      |
+  |        | int[1]                            | DUMP_MD_HEAD_VER                     |
+  |        | int[1]                            | UnitedMarketDataType                 |
+  |        | char[16]                          | null                                 |
+  |        | char[16]                          | trading_date                         |
+  |        | char[32]                          | null                                 |
+  |        | int[1]                            | size of the list instruments         |
+  |        | Instrument[size]                  | list of instruments                  |
+  +--------+-----------------------------------+--------------------------------------+
+  | Tick1  | long[1]                           | local time since epoch (ns)          |
+  |        | CThostFtdcDepthMarketDataField[1] | One tick data of a single instrument |
+  +--------+-----------------------------------+--------------------------------------+
+  | Tick2  | long[1]                           | local time since epoch (ns)          |
+  |        | CThostFtdcDepthMarketDataField[1] | One tick data of a single instrument |
+  +--------+-----------------------------------+--------------------------------------+
+  | ...    | ...                               | ...                                  |
+  +--------+-----------------------------------+--------------------------------------+
+
+  Warehouse data is managed by the class *FileMgr*.
+  Tick data is retrieved by the class *CCTPMD*.
+
+** Daily information
+:PROPERTIES:
+:CUSTOM_ID: daily-information
+:END:
+
+ Daily information is saved in JSON format.
+ The JSON file is save each day as: ~$daily_info_path$/CTP_$trade_date$_daily.info~.
+ There three top-level fields in the JSON file:
+ - /trading_date/: the trading date of this file
+ - /instrument_list/: the list of base information of all traded instruments of this day
+ - /statistic/: the list of statistics data of these instruments
+
+Daily information is managed by the class *DailyInfoMgr*.
+The base information is fetched once by the class *CCTPTD*.
+The statistic data is updated at each tick by *CCTPMD*.
+
+* Configuration and running
+The binary is /CTPDumper/ and it needs a configuration file JSON format to run:
+#+begin_src shell
+CTPDumper dump.json # dump.json is the default configuration file
+#+end_src
+
+Running environment needs to be setup before invoking the binary.
+To facilitate this process, user should use the provided script called ~dump_svr.sh~ to run /CTPDumper/.
+
+The default configuration file is ~dump.json~, in which each field is self-explanatory.
+User is should start from this file to customize.
+
+** Caveats
+/CTPDumper/ automatically stop itself when invoked or ran outside of the official trade time.
+Here are the two invalid time period to run /CTPDumper/:
+1) between 3:00 and 8:00
+2) between 16:00 and 20:00
+
+Also, /CTPDumper/ is not day-switching aware. Thus, the user need to deploy the dump server in a daily basis
+within the valid time period: start/stop it just before/after the official market time. This is normally achieved using *cron* jobs.
+
+* Decoding warehouse data
+Three methods available:
+
+#+NAME: tb_decode_methods
+#+TITLE: Decodeing methods of warehouse data
+| dump2csv     | warehouse -> csv for each file                          | executable |
+| ctpdump2mmap | warehouse -> md mmap page file for a collection of iles | executable |
+|CWareHouseReader |                                                         |            |
+
+*dump* use its own header to define the format from the decoding methods.
+The two descriptions are compatible, with the same length for each field although with different names.
+
+* Design
+** Container diagram
+   The role of each components of *dump* is shown in this figure. Each component is implemented as a class in *dump*.
+   #+begin_src plantuml :file dump_container.png
+        @startuml "messagebus"
+      ' !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+     ' uncomment the following line and comment the first to use locally
+     !include ../../doc/c4/C4_Context.puml
+     !include ../../doc/c4/C4_Container.puml
+     !include ../../doc/c4/C4_Component.puml
+
+     System_Ext(td_front, "Trading Front", "Broker's trading desk server")
+     System_Ext(md_front, "Quotation Front", "Broker's quotation server")
+
+     Container_Boundary(dump, "dump") {
+          Component(dumper, "CTPDumper", "executable", "Entrance point of the service. Initialize TD and MD, then maintain an infinite loop for receiving tick data.")
+          Component(td, "CCTPTD", "CTP Trading API", "Login and communicate with the trading front.")
+          Component(md, "CCTPMD", "CTP MD API", "Login and communicate with the quotation front")
+          Component(dailyinfo, "DailyInfoMgr", "Disk JSON file", "Update and dumping of daily information (trading date, base information, statistics")
+          Component(warehouse, "FileMgr", "Disk binary file", "Dumping of tick data of all listed instruments on a daily basis")
+      }
+       
+      BiRel_U(td, td_front, "Request and receive base information", "Internet")
+      BiRel_U(md, md_front, "Subscribe to and receive the quotes", "Internet")
+      Rel_U(dumper, td, "Ask for base information")
+      Rel_U(dumper, md, "Ask for tick data")
+      Rel_D(dumper, dailyinfo, "Update and dump the daily information")
+      Rel_D(dumper, warehouse, "Dump tick data")
+
+     SHOW_LEGEND()
+     @enduml
+
+   #+end_src
+
+   #+RESULTS:
+   [[file:dump_container.png]]
+   
+** Sequence diagram
+#+begin_src plantuml :file dump_seq.png
+skinparam responseMessageBelowArrow true
+skinparam sequenceMessageAlign right
+/'
+ ' skinparam maxMessageSize 100
+ '/
+
+title **dump server sequence**
+Participant CTPDumper as dumper
+Participant TD as td
+Participant MD as md
+Database Warehouse as warehouse
+Database DailyInfo as dailyinfo
+
+' init
+dumper -> dumper : init logger
+activate dumper
+
+|||
+group TD session
+dumper -> td : login & confirm
+activate td
+dumper -> td : qryInstrument
+loop untill last instrument
+  td     --> dumper : return base info
+  dumper -> dumper : update base info
+return last instrument
+end
+end
+
+dumper -> warehouse : dump header and base info\nif it's not yet dumped
+activate warehouse
+dumper -> dailyinfo : dump daily info
+activate dailyinfo
+
+|||
+group MD session
+alt within 8:00~16:00 or 20:00~03:00
+  dumper -> md : login
+  activate md
+  dumper -> md : subscribe all instr
+  loop untill outside of (8:00~16:00 or 20:00~3:00)
+  md     --> dumper : RtnDepthMarketData
+  dumper -> warehouse : dump tick data
+  dumper -> dailyinfo : update daily statistics
+  end
+  return not trade time
+end
+end
+
+' force-stop or automatic-stop
+dumper -> warehouse : release resources
+deactivate warehouse
+dumper -> dailyinfo : dump daily statistics and release
+deactivate dailyinfo
+
+destroy dumper
+#+end_src
+
+#+RESULTS:
+[[file:dump_seq.png]]
+

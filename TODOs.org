@@ -303,3 +303,11 @@
 <2021-12-15 Mi>
 [[file:~/src/nat_framework/src/server_utils/CService.cpp::void CService::read_cb(EV_P_ ev_io *w, int events) {]]
 
+* TODO this global variable is defined in CMDHelperReplayIO, which has nothing to do with this class :understand:
+<2021-12-18 Sat>
+[[file:~/src/nat_framework/src/md/CMDHelperReplayCtpDump.cpp::extern int g_replay_md_fake_wait_count;]]
+
+* TODO Why 50?
+<2021-12-18 Sat>
+[[file:~/src/nat_framework/src/md/CMDHelperReplayCtpDump.cpp::// mandatory wait counts before push next tick out]]
+

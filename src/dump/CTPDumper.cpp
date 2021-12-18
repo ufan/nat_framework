@@ -44,6 +44,7 @@ bool run(string config) {
   int sleep_sec = j["timeout"].get<int>();
 
   // step 4: init Trader and enter into Trader event loop
+  // Once all base information is received, TD will exit
   p_td = new CCTPTD;
   for (; p_td->status < 5;) {
     switch (p_td->status) {
@@ -73,7 +74,7 @@ bool run(string config) {
         sleep(2);
         break;
       case 4:  // all available instruments returned and recorded
-        if (!p_td->release()) {  // release TradeApi
+        if (!p_td->release()) {  // release TradeApi, end of TD
           ALERT("can't release ctp td.\n");
         }
         break;
@@ -82,8 +83,8 @@ bool run(string config) {
     }
   }
 
-  // step 5: write header (i.e. the basic data of all instruments) into both
-  // binary and JSON files
+  // step 5: write header (i.e. the base information of all instruments) into
+  // both binary and JSON files
   if (!FileMgr::regInstrument(p_td->trading_date, p_td->vec_instr)) {
     ALERT("can't register instruments in FileMgr.\n");
     return false;
@@ -103,6 +104,7 @@ bool run(string config) {
   p_md = new CCTPMD;
   for (; p_md->status < 5;) {
     if (!p_md->isInTradingTime()) {  // if not trading now, exit program
+                                     // automatically
       p_md->status = 4;
     }
 
@@ -142,12 +144,14 @@ bool run(string config) {
     }
   }
 
-  // step 7: if exit the MD event loop normally, the do the release work here
+  // step 7: not in trading time
+  // exit the MD event loop normally
   if (!FileMgr::release()) {
     ALERT("failed in FileMgr release.\n");
     return false;
   }
 
+  // statistics of daily info is written to file here
   if (!DailyInfoMgr::release()) {
     ALERT("failed in DailyInfoMgr release.\n");
     return false;
@@ -156,6 +160,9 @@ bool run(string config) {
   return true;
 }
 
+/**
+ * @brief Force-stop the executable
+ */
 void signal_handler(int sig) {
   ENGLOG("pid %d recv signal %d.\n", getpid(), sig);
   if (p_td) {

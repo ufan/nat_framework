@@ -84,3 +84,13 @@
    - TDEngine :: get the td engine base information
      - engine_name :: name of the td engine
      - timeout :: timeout of the request of the base information
+
+* Replay
+** CWareHouseReader and CMDHelperReplayCtpDump
+   These two classes will read the warehouse file and replay them as a fake md front.
+   
+   There's an option to align the current clock time to the history time to simulate
+   the real situation to the best extent.
+   However, the simulation of the history time flow is limited to the timestamp level not the timespan level.
+   For example, in real situation, there are actually several hours between trading sessions and trading days, this
+   is not simulated in the system. The timestamp reflects the timespan, but without the waiting time.
