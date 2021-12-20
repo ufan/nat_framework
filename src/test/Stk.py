@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-#-*- coding:utf8 -*-
 
 import os
 import sys
@@ -573,4 +572,3 @@ if __name__ == "__main__":
     exch.run()
     #except:
     #    sys.exit(-1)
-

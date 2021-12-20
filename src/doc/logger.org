@@ -1,0 +1,69 @@
+
+* Summary
+  
+ Three types of logging facilities are in use, all by including the same header ~Logger.h~.
+ The default logger, the so called *HeavyLogger*, is based on [[https://github.com/log4cplus/log4cplus][*log4cplus*]].
+ The other two simpler and faster logger can be selected by
+ defining one of the following macros in the source code:
+ - *FAST_LOGGER_*: to include ~SimpleLogger.h~
+ - *SIMPLE_LOGGER_*: to include ~FastLogger.h~
+   
+** SimpleLogger.h
+ - The most simple form, just print to std::out
+ - Used only in the classes: ~/io/CMemConfigBase~, ~/io/CQueueBase~ and ~io/CLocalQueue~,
+   all of which not in use currently.
+    
+    
+** FastLogger.h
+ - Self-defined logger, composed of *CFastLog* and *CLogPool*.
+ - Used in /strategy/, /execute_model/, /trade_tool/ and all python binding/extension
+  
+** HeavyLogger.h
+   It's a wrapper around *log4cplus*.
+    
+   Some *io* classes like *CRawIOReader* and *CRawIOWriter*
+   are used both in python binding packages and other normal packages.
+    
+   Since python binding all use *FastLogger* and normal packages use *HeavyLogger*,
+   thus the same header ~Logger.h~ is used with macro definition *FAST_LOGGER_*
+   to choose which logger to use.
+   
+*** *log4cplus*
+  Integration of *log4cplus* (version 2.0.5) into the build tree is managed by *CMake* as an external project.
+  *log4cplus* is modeled after [[https://logging.apache.org/log4j/2.x/manual/index.html][*log4j*]], of which the documentation can be used as the reference.
+
+  The usage of *log4cplus* in the system is:
+  1. Only the *root* logger is used, no logger hierarchy below *root* logger
+  2. *log4cplus* property file is used for the configuration of *log4cplus*. The name of
+     the this configuration file is passed by the value of key "log4cplus" in a JSON configuration file.
+  3. If the property file does not exist on the disk,
+     the log messages will be streamed to console screen by default.
+ 
+** Log Level
+   The following level is the same for all three logger:
+   - /LOG_INFO/
+   - /LOG_DBG/
+   - /LOG_ERR/
+   - /LOG_WARN/
+   
+   *FastLogger* and *HeavyLogger* also have:
+   - /LOG_TRACE/
+   - /ASSERT/
+   - /ASSERT_RET/
+   - /ENGLOG/
+   - /ALERT/
+   
+   *FastLogger* has one extra level: LOG_LVL
+    
+   Use need to pass in *log_level* number in this case.
+   The number of commonly used level is defined in ~FastLogger.h~ and ~PublicFun.h~:
+   - /LOG_DBG/ : 10000
+   - /LOG_INFO/ : 10001
+   - /LOG_WARN/ : 10002
+   - /LOG_ERR/ : 10003
+   - /LOG_TRACE/ : 10004
+   - /DEBUGLEVEL0/ : 0
+   - /DEBUGLEVEL1/ : 1
+   - /DEBUGLEVEL2/ : 2
+   - /DEBUGLEVEL3/ : 3
+     
