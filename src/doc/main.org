@@ -34,3 +34,19 @@
 
 #+RESULTS:
 [[file:nat_context.png]]
+
+* Containers
+
+* Multi-user environment
+- system io: single path system-wide, MP and MT safe
+- md/td engine io: unique name-specific, SP use and MT safe
+- td helper for strategy: unique-name and strategy-specific, SP and ST, 
+
+- order track pages
+
+* Accounting
+- Engine-level
+- Strategy-level
+
+- Base Account
+- Risk Account

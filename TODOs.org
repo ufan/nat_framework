@@ -311,3 +311,7 @@
 <2021-12-18 Sat>
 [[file:~/src/nat_framework/src/md/CMDHelperReplayCtpDump.cpp::// mandatory wait counts before push next tick out]]
 
+* TODO Check the auction mechanism                                :important:
+<2021-12-21 Tue>
+[[file:~/src/nat_framework/src/td/CTDHelperFake.cpp::msg.price = median(tick.ask, tick.last_px, ot.price);]]
+

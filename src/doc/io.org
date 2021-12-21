@@ -1,0 +1,52 @@
+* IO
+** Memory mapped page file
+   *NAT Framework* uses memory mapped page files for communicating between core
+   components of the system in real trading environment.
+   Customized message format and protocol has been implemented.
+
+   Memory mapped file has fastest speed among all technologies on a general purpose PC.
+   The same piece of message in the mmap file are shared among all components without
+   extra overload and speed reduce.
+   The limitation imposed is that all components involved in the communication should be
+   deployed in the same machine. And the security of private messages of different accounts.
+   This is not an issue, since only core components like *TDEngine*, *MDEngine* and *Strategy*
+   needs to use mmap file mechanism.
+   Interface for end user interaction can be implemented with other technologies.
+   
+   The other characteristic of using mmap file is that all messages in the communication
+   all automatically recorded on the disk. Thus, the trading history is persistent for offline
+   checking.
+   Besides, the subscribed quotes of *MDEngine* are not only available for online trading, the same quotes are
+   also persistent on the disk, which can be later used for offline replay.
+   
+   At last, the mmap pages are also used for sharing of other information of the system like
+   order track collection.
+   
+   The implementation details of mmap pages is described [[file:~/src/nat_framework/src/io/note.org][*io* document]].
+   
+** System IO
+   The system IO pages are managed as multi-process and multi-thread safe.
+   There is only one system IO in a running system, which is a used as a central message bus
+   for communication among components.
+   
+** Engine IO
+*** *MDEngine*
+  Each *MDEngine* manages its own IO pages corresponding the engine's name.
+  This name (more precisely, the name's hash) must be unique in the running system,
+  since it corresponds to the dedicated page file directory in the host machine.
+  The name and its hash ID also acts as the identifier of this engine for communication with other components.
+  
+  *MDEngine* also fetch and response messages to it from the system IO, continuously while running.
+  
+  [[file:md_io.png][md_io.png]]
+  
+*** *TDEngine*
+  [[file:td_io.png][td_io.png]] 
+  
+** Strategy IO
+ *Strategy* uses *CMDHelperComm* and *CTDHelperComm* to
+ communicate with *MDEngine* and *TDEngine* in real trading.
+ 
+ [[file:strategy_io.png][strategy_io.png]]
+ 
+** Order track pages
