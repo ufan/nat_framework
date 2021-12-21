@@ -1,0 +1,36 @@
+* Context
+
+#+name: context_digram
+#+title: Context Diagram of NAT
+#+begin_src plantuml :file nat_context.png
+  @startuml "nat_context"
+  !include ./c4/C4_Context.puml
+  !include ./c4/C4_Container.puml
+  !include ./c4/C4_Component.puml
+     
+  ' uncomment the following line and comment the above to use the latest
+  ' !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+  System_Ext(td_front, "Trading Front", "Broker's trading desk server")
+  System_Ext(md_front, "Quotation Front", "Broker's quotation server")
+  System_Ext(exchange, "Exchange")
+
+  Person(admin, "Admin", "Administor of NAT")
+  Person(user, "User", "Invester using NAT for stratogy-based trading")
+  System(nat, "NAT Framework")
+
+  BiRel_U(nat, admin, "management and maintainence", "local/ssh")
+  BiRel_L(user, nat, "execute command/receive reply", "ssl encrpted socket")
+  Rel_D(nat, td_front, "insert/delete order", "internet")
+  Rel_U(md_front, nat, "receive realtime quotes", "internet")
+  
+  BiRel_D(td_front, exchange, "insert/delete order", "FIB bust")
+  BiRel_U(exchange, md_front, "realtime quotes", "FIB bust")
+ 
+
+  SHOW_LEGEND()
+  @enduml
+#+end_src
+
+#+RESULTS:
+[[file:nat_context.png]]

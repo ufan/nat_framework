@@ -110,17 +110,18 @@ The two descriptions are compatible, with the same length for each field althoug
 ** Container diagram
    The role of each components of *dump* is shown in this figure. Each component is implemented as a class in *dump*.
    #+begin_src plantuml :file dump_container.png
-        @startuml "messagebus"
-      ' !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
-     ' uncomment the following line and comment the first to use locally
-     !include ../../doc/c4/C4_Context.puml
-     !include ../../doc/c4/C4_Container.puml
-     !include ../../doc/c4/C4_Component.puml
+   @startuml "dump_container"
+   !include ../../doc/c4/C4_Context.puml
+   !include ../../doc/c4/C4_Container.puml
+   !include ../../doc/c4/C4_Component.puml
+     
+   ' uncomment the following line and comment the above to use the latest
+   ' !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
 
-     System_Ext(td_front, "Trading Front", "Broker's trading desk server")
-     System_Ext(md_front, "Quotation Front", "Broker's quotation server")
+   System_Ext(td_front, "Trading Front", "Broker's trading desk server")
+   System_Ext(md_front, "Quotation Front", "Broker's quotation server")
 
-     Container_Boundary(dump, "dump") {
+   Container_Boundary(dump, "dump") {
           Component(dumper, "CTPDumper", "executable", "Entrance point of the service. Initialize TD and MD, then maintain an infinite loop for receiving tick data.")
           Component(td, "CCTPTD", "CTP Trading API", "Login and communicate with the trading front.")
           Component(md, "CCTPMD", "CTP MD API", "Login and communicate with the quotation front")
@@ -134,7 +135,7 @@ The two descriptions are compatible, with the same length for each field althoug
       Rel_U(dumper, md, "Ask for tick data")
       Rel_D(dumper, dailyinfo, "Update and dump the daily information")
       Rel_D(dumper, warehouse, "Dump tick data")
-
+      
      SHOW_LEGEND()
      @enduml
 
