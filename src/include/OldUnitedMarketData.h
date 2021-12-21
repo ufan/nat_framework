@@ -284,7 +284,8 @@ struct guava_udp_normal_v428 {
   union sl_pos_v428 m_total_pos;  ///<持仓量
   double m_bid_px;                ///<最新买价
   int m_bid_share;                ///<最新买量
-  double m_ask_px;  ///<最新卖价int m_ask_share;                ///<最新卖量
+  double m_ask_px;                ///<最新卖价
+  int m_ask_share;                ///<最新卖量
 } __attribute__((packed));
 
 struct MarketDataHead {

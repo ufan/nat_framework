@@ -34,6 +34,7 @@ bool run(string config) {
 
   // step 2: initialize logger
   initLogger(j_conf["log4cplus"]);
+
   if (!FileMgr::init(j_conf)) {
     ALERT("can't init FileMgr.\n");
     return false;
@@ -195,7 +196,7 @@ int main(int argc, char* argv[]) {
     exit(EXIT_FAILURE);
   } else {
     for (int i = 0; i < argc; ++i) {
-      ENGLOG("argv[%d]: %s\n", i, argv[i]);
+      printf("argv[%d]: %s\n", i, argv[i]);
     }
   }
 
