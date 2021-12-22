@@ -1,0 +1,142 @@
+* Strategy
+** Design
+ Two types:
+ - CStrategy
+ - CStrategyBase and CStrategyProcess
+
+** TDHelper and MDHelper
+*** Summary
+ Each running strategy process owns one *TDHelper* and one *MDHelper*. They are the part of the strategy.
+ The helper classes defines the interface of the trading and quotation implementation to the running strategy.
+ Strategies are unaware of the underlying details on the other side of this interface, thus separating the design
+ and execution of the strategies from the trading and quotation implementation.
+
+ The implementations of *TDHelper* and *MDHelper* can be characterized in two dimensions:
+ - Replay or Real-Market: is the helper used for replay or trading in real market
+ - Fixed or Extensible: are the helper functions implemented as hard-coded components in the framework or
+   they are designed to be an extensible interface for writing customized trading and quotation implementation.
+   The extensible helpers use *Python* or *Pipe* to facilitate the customization.
+
+   The available *TDHelper* are:
+   #+name: tb_tdhelper
+   #+caption: Summary of TDHelpers
+   | Type   | Class           | Replay | Real-Market | Fixed | Extensible |
+   |--------+-----------------+--------+-------------+-------+------------|
+   | comm   | CTDHelperComm   | n      | y           | y     | n          |
+   | fake   | CTDHelperFake   | y      | n           | y     | n          |
+   | pipe   | CTDHelperPipe   | y      | n           | n     | y          |
+   | python | CTDHelperPython | y      | n           | n     | y          |
+
+   The available *MDHelper* are:
+   #+name: tb_mdhelper
+   #+caption: Summary of MDHelpers
+   | Type           | Class                  | Replay | Real-Market | Fixed | Extensible |
+   |----------------+------------------------+--------+-------------+-------+------------|
+   | comm           | CMDHelperComm          | n      | y           | y     | n          |
+   | replay_mmap    | CMDHelperReplayIO      | y      | n           | y     | n          |
+   | replay_ctpdump | CMDHelperReplayCtpDump | y      | n           | y     | n          |
+   | pipe           | CMDHelperPipe          | y      | n           | n     | y          |
+   | python         | CMDHelperPython        | y      | n           | n     | y          |
+
+
+ The running strategy can choose the helper based on the "Type" string in these two tables.
+ Internally, a factory class (~CMDHelperFactory~ and ~CTDHelperFactory~) will create and return
+ the correct helper instance to the running strategy.
+ There is no limitation on the type combination of the *MDHelper* and *TDHelper*.
+ 
+ Only the "comm" type of helpers are used for real market trading.
+ All other types are used for reply or orchestrate purpose.
+ 
+*** Design
+ All helper classes inherit from the abstract class ~IMDHelper~ and ~ITDHelper~ for *MD* and *TD* respectively.
+ They need to implement part or all of the following virtual functions based on their specific purpose:
+
+ #+name: tb_tdhelper_interface
+ #+caption: List of key virtual methods of ~ITDHelper~
+ | Method           | Description |   |
+ |------------------+-------------+---|
+ | init             |             |   |
+ | doSendOrder      |             |   |
+ | doDelOrder       |             |   |
+ | doGetRtn         |             |   |
+ |------------------+-------------+---|
+ | release          |             |   |
+ | qryTradeBaseInfo |             |   |
+ | qryOrderTrack    |             |   |
+ | on_tick          |             |   |
+ | on_time          |             |   |
+ | on_switch_day    |             |   |
+ 
+ #+name: tb_mdhelper_interface
+ #+caption: List of key virtual methods of ~IMDHelper~
+ | Method                        | Description |   |
+ |-------------------------------+-------------+---|
+ | init                          |             |   |
+ | read                          |             |   |
+ | setReadPos                    |             |   |
+ | doSubscribe                   |             |   |
+ | doUnsubscribe                 |             |   |
+ | getEngineSubscribedInstrument |             |   |
+ |-------------------------------+-------------+---|
+ | release                       |             |   |
+
+ ~IMDHelper~ maintains a collection of instruments subscribed by its owner strategy internally.
+ ~ITDHelper~ maintains a collection of order tracks issued by its owner strategy internally.
+
+ In the following, the implementation details of each group of helper classes are presented.
+ These groups are based on the implementation technology rather than the usage.
+ 
+**** *CTDHelperComm* and *CMDHelperComm*
+   These helpers are used for real trading environment.
+   They are in charge of communication with the *TDEngine* and *MDEngine*.
+   The communication channel are implemented using shared memory mapped files. 
+   Details about the communication using mmap files are described in [[file:io.org][*io* section]].
+   
+**** *CTDHelperFake*, *CMDHelperReplayIO* and *CMDHelperReplayCtpDump*
+   These helpers are C++ implementation of the replay facility and highly integrated with other
+   components in the system.
+   
+   *CTDHelperFake* simulates the auction process in real exchange. The implementation is simplified
+   that only the first bid/ask price is used in the auction.
+
+   *CMDHelperReplayIO* and *CMDHelperReplayCtpDump* both simulate the quotation service of real exchange.
+   *CMDHelperReplayIO* loads the tick data from the *MDEngine*'s IO pages, which only contains the best
+   bid/ask price of subscribed instruments.
+   *CMDHelperReplayCtpDump* loads the tick data from the warehouse data, which contains the complete
+   depth tick data of all listed instruments. The warehouse data is retrieved by the *dump* server.
+   
+**** *CTDHelperPipe* and *CMDHelperPipe*
+   Both helpers provides an interface to the external implementation of fake *MD* and *TD* using *pipe*
+   as a communication channel.
+   The helpers will create a child process running the external *MD* and *TD* executable.
+   Pipes are established and connects to the standard input, standard output and standard error of the external 
+   *MD* and *TD*. The message format is based on *JSON*.
+   Thus, the limited constraint is imposed on the design of external *MD* and *TD*.
+
+   An example *MD* and *TD* to be used with pipe helpers is [[file:~/src/nat_framework/src/test/YTExch.py][YTExch.py]].
+   
+**** *CTDHelperPython* and *CMDHelperPython*
+   The helpers use *CPyExtMdExch* and *CPyExtTdExch* internally to load and import methods from
+   an python module implementing the fake exchange.
+   
+   The python module needs to implement the following methods corresponding to the methods in
+   [[tb_tdhelper]] and [[tb_mdhelper]]:
+   - *MD*
+     * /md_init/
+     * /md_read/
+     * /md_get_subs/
+     * /md_unsubs/
+     * /md_set_read_pos/
+     * /md_release/
+   - *TD*
+     * /td_init/
+     * /td_send_order/
+     * /td_del_order/
+     * /td_qry_base_info/
+     * /td_qry_order_track/
+     * /td_get_rtn/
+     * /td_on_tick/
+     * /td_on_time/
+     * /td_on_switch_day/
+     * /td_release/
+       

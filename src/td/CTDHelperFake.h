@@ -5,9 +5,10 @@
  *      Author: hongxu
  *
  * Comment by Yong:
- * This helper is dedicated to be used together with CMDHelperReplayCtpDump or
- * CMDHelperReplayIO for replay purpose. It simulates a simple exchange auction
- * process, by only using the first bid and ask price.
+ * This helper is dedicated to be used: 1) together with CMDHelperReplayCtpDump
+ * or CMDHelperReplayIO for replay purpose; 2) together with CMDHelperComm to
+ * orchestrate trading process. It simulates a simple exchange
+ * auction process, by only using the first bid and ask price.
  *
  */
 

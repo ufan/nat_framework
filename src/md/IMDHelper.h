@@ -53,6 +53,7 @@ class IMDHelper {
 
   /**
    * @brief Whether the tick belongs to the subscribed instruments
+   * Return true, if not
    */
   bool filter(const UnitedMarketData *pmd) {
     return subs_instr_hash_map_.count(pmd->instr_hash) == 0;

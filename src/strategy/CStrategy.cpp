@@ -256,6 +256,7 @@ bool CStrategy::loadConfig(string config_content) {
 
 /**
  * @brief Fetch new quotes (including corresponding timestamp) from md engine
+ *        Exposed as python interface
  * @return the pointer to the new quote, timestamp is updated in cur_md_nano
  */
 const UnitedMarketData* CStrategy::readMd() {

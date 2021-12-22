@@ -45,7 +45,7 @@ class ITDHelper {
   }
   void closeOrderTrack();
 
-  // TODO to be implemeted in child, real operation, should be private
+  // to be implemeted in child, real operation, better be private
   virtual bool init(const json& j_conf) = 0;
   virtual void doSendOrder(int track_id) = 0;
   virtual void doDelOrder(int track_id) = 0;
@@ -56,6 +56,8 @@ class ITDHelper {
   virtual bool qryTradeBaseInfo() { return false; }
   virtual bool qryOrderTrack() { return false; }
 
+  // callback for auction process when new tick data is available,
+  // used in replay environment, see CTDHelperFake's implementation
   virtual void on_tick(const UnitedMarketData* pmd) {}
   virtual void on_time(long nano) {}
   // reset track records on a new trade day
