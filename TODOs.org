@@ -315,3 +315,12 @@
 <2021-12-21 Tue>
 [[file:~/src/nat_framework/src/td/CTDHelperFake.cpp::msg.price = median(tick.ask, tick.last_px, ot.price);]]
 
+* TODO CClient uses log4cplus, which is not initiated at this point, thus ASSERT_RET use here will generate complain :important:
+   However, python scripts can be executed by SHELL command??
+<2021-12-23 Thu>
+[[file:~/src/nat_framework/src/tunnel_agent/CClient.cpp::ASSERT_RET(p_config->init(cfg), false);]]
+
+* TODO Python command is not implemented in CClient
+<2021-12-23 Thu>
+[[file:~/src/nat_framework/src/tunnel_agent/CWaiter.cpp::case CMD_PYTHON: // TODO not implemented in CClient]]
+

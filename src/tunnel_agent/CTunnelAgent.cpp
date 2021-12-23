@@ -127,6 +127,7 @@ void CTunnelAgent::accept_cb(EV_P_ ev_io *w, int events) {
   unique_ptr<tWaiterWatcher> p_waiter(new tWaiterWatcher(fd));
 
   // libev is c library, do not recognize the implicit 'this' pointer
+  // accept_cb is a static member
   instance()->waiters_[fd] = move(p_waiter);
 }
 

@@ -1,0 +1,113 @@
+* Tunnel Agent
+
+- client/server model
+  - server on host machine
+  - client on end user's machine
+  - RSA and DES encrypted communication, with hardcoded private/public key pairs
+
+** Design
+*** RSA key generation
+  The public/private key pair is generated during building time using *sshkeytransfer* from *tools* package.
+  Each new build generates a new key pair. Thus, client/server executable from different build can not communicate.
+  
+*** Container Diagram
+
+*** Sequence Diagram
+#+begin_src plantuml :file tunnel_agent_seq.png
+@startuml
+title **Tunnel Agent Client/Server Interaction**
+
+Participant TunnelClient as client
+Participant TunnelAgent as server
+Participant Commander as commander
+Participant StrategyManager as stg_mgr
+
+' server should be online
+[o-> server : **Start Server**
+activate server
+server -> server : init & listen
+server -> stg_mgr : init strategy manager\n(if not exist yet)
+activate stg_mgr
+
+' init
+[o-> client : **Start Client**
+activate client
+client -> client : init
+
+' connect
+client -> server : connect
+server -> client : accept
+server -> server ++ #DarkSalmon : create a new CWaiter & \ndispatch respond job to it
+
+' == Authentication ==
+group Authentication (mutual)
+client -> server : client authentication
+server -> client : server authentication
+end
+
+|||
+group Key Distribution
+client -> server : send 3DES key (RSA encrypted)
+end
+
+|||
+' == Send N commands sequentially ==
+loop N times
+  alt type: SHELL
+    client -> server : send command and arguments
+    server -> commander ++: execute in new process
+    commander -> client : command stdout and stderr
+    commander -> client --: finish (success or fail)
+  else type: EXEC
+  else type: EXEC_DIR
+  else type: ASSERT
+  else type: STG
+  else type: SAVE
+  end
+end
+
+'waiter deactivation
+client -> server : Bye
+destroy client
+
+return release this waiter \n& close connection  
+
+[-> server : **Stop Server**
+server -> server : stop listen
+destroy server
+@enduml
+#+end_src
+
+#+RESULTS:
+[[file:tunnel_agent_seq.png]]
+
+** Configuration
+ Configuration file is /init/ style.
+
+*** *TunnelClient*
+
+  - COMMON ::
+    - client_log ::
+    - :: 
+  - AGENT ::
+    - ip ::
+    - port ::
+  - TASK ::
+    - cmd_list :: 
+      
+  List of commands defined:
+  - SAVE ::
+  - SHELL ::
+  - ASSERT ::
+  - EXEC ::
+  - EXEC_DIR ::
+  - STG :: 
+    
+  Client will wait for the response of the server indicating 'FINISH' (failed or success)
+  before sending next command.
+  
+*** *TunnelAgent*
+  - COMMON ::
+  - AGENT ::
+    - ip ::
+    - port :: 

@@ -11,34 +11,32 @@
 #include "CCommanderBase.h"
 #include "ev.h"
 
-class CShellCmd: public CCommanderBase
-{
-	enum
-	{
-		START,
-		RUNNING,
-		STOP,
-	};
+class CShellCmd : public CCommanderBase {
+  enum {
+    START,
+    RUNNING,
+    STOP,
+  };
 
-public:
-	CShellCmd(CWaiter *p_owner);
-	virtual ~CShellCmd();
+ public:
+  CShellCmd(CWaiter *p_owner);
+  virtual ~CShellCmd();
 
-	virtual int run(string &pkg);
+  virtual int run(string &pkg);
 
-	void onChildExit();
+  void onChildExit();
 
-	void onRead();
+  void onRead();
 
-	static void child_cb (EV_P_ ev_child *w, int revents);
+  static void child_cb(EV_P_ ev_child *w, int revents);
 
-	static void read_cb(EV_P_ ev_io *w, int revents);
+  static void read_cb(EV_P_ ev_io *w, int revents);
 
-private:
-	string		read_buf_;
-	int			run_state_;
-	ev_child 	child_watcher_;
-	ev_io		read_watcher_;
+ private:
+  string read_buf_;
+  int run_state_;
+  ev_child child_watcher_;  // child process stop watcher
+  ev_io read_watcher_;      // watch new data from child process's stdout/stderr
 };
 
 #endif /* SRC_TA_CSHELLCMD_H_ */

@@ -23,7 +23,7 @@ shift 2
 FILES=""
 for arg in $*
 do
-	DIR=`find /mnt/warehouse/China/ -mindepth 2 -maxdepth 2 -name ${arg} -type d`
+	DIR=`find /workspace/data/nat_framework/warehouse/China/ -mindepth 2 -maxdepth 2 -name ${arg} -type d`
 	for day in ${DAYLIST}
 	do
 		f=`ls ${DIR}/CTP_${day}_*_${arg}.data` 

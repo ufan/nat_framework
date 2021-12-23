@@ -64,6 +64,7 @@ bool CClient::init(string cfg) {
   return true;
 }
 
+// connect to agent server at ip:port
 bool CClient::connect(string ip, uint16_t port) {
   struct sockaddr_in addr;
   addr.sin_family = AF_INET;
@@ -254,6 +255,8 @@ bool CClient::doOneCommand(string cmd) {
   return true;
 }
 
+// Authenticate, and send the commands one by one, and then notify server
+// finished and return. Note: this is not an infinite loop
 void CClient::run(vector<string> &extr_cmd) {
   do {
     // do authentication first after connection
@@ -266,6 +269,8 @@ void CClient::run(vector<string> &extr_cmd) {
     if (!doCommand(extr_cmd)) break;
 
   } while (0);
+
+  //
   sayBye();
 }
 
@@ -376,6 +381,7 @@ bool CClient::doShellCmd(string cmd) {
   data += cmd;
   if (!desSend(data)) return false;
 
+  // wait for finish message from server
   while (desRead(data)) {
     if (data[0] == CMD_ALLDATA) {
       cout << data.c_str() + 1;
@@ -528,9 +534,11 @@ bool CClient::doExecCmd(string config, string execfile, string argstr,
     return false;
   }
 
+  // 1. send executable file
   bool result = sendFile(execfile, name, CMD_EXEC);
   if (!result || readEcho() != TYPE_FINISH_ACK) return false;
 
+  // 2. send configuration file
   result = sendFile(config, name, CMD_EXEC);
   if (!result) return false;
   int echo = readEcho();
@@ -539,6 +547,7 @@ bool CClient::doExecCmd(string config, string execfile, string argstr,
   else if (echo == TYPE_FINISH_FAIL)
     return false;
 
+  // 3. send working directory
   if (workdir.empty()) {
     result = sendDir(workdir, workdir, CMD_EXEC);
   } else {
@@ -549,8 +558,12 @@ bool CClient::doExecCmd(string config, string execfile, string argstr,
     result = sendDir(workdir, buf, CMD_EXEC);
   }
   if (!result || readEcho() != TYPE_FINISH_ACK) return false;
+
+  // 4. send args
   result = desSend(argstr);
   if (!result) return false;
+
+  // 5. wait for finish
   return readEcho() == TYPE_FINISH_SUCC;
 }
 

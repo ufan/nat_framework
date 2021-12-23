@@ -184,7 +184,7 @@ int CWaiter::process(EV_P_ ev_io *w, int events) {
   // process read event
   if ((events & EV_READ) && ret != STATE_ABORT) {
     ret = read_cb();
-    if (STATE_NEXT == ret)  // pkg driven
+    if (STATE_NEXT == ret)  // pkg ready
     {
       ret = processPkg();
       read_buf_.clear();  // pkg has been processed, clear it. must do it.
@@ -332,6 +332,8 @@ int CWaiter::get3DESkey(string &pkg) {
 }
 
 int CWaiter::doCommand(string &pkg) {
+  // if no exiting command, create one;
+  // otherwise, let the exiting command to process new pkg
   if (!p_commander_) {
     tCommand *p_head = (tCommand *)pkg.data();
     switch (p_head->cmd) {
@@ -343,7 +345,7 @@ int CWaiter::doCommand(string &pkg) {
         p_commander_.reset(new CShellCmd(this));
         break;
 
-      case CMD_PYTHON:
+      case CMD_PYTHON:  // TODO not implemented in CClient
         p_commander_.reset(new CPythonExecutor(this));
         break;
 
@@ -355,7 +357,7 @@ int CWaiter::doCommand(string &pkg) {
         p_commander_.reset(new CStrategyManager(this));
         break;
 
-      case CMD_BYE:
+      case CMD_BYE:  // no more commands from client
         state_ = FINISH;
         return STATE_NEXT;
 
@@ -371,7 +373,8 @@ int CWaiter::doCommand(string &pkg) {
       p_commander_.reset();
       return STATE_PENDING;
     } else if (STATE_NEXT == ret) {
-      p_commander_.reset();
+      p_commander_.reset();  // destroy the previous command and ready for
+                             // executing new command
     }
     return ret;
   }

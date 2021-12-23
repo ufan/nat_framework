@@ -10,10 +10,11 @@
    for inter-process communication on a general purpose PC [fn::[[http://pages.cs.wisc.edu/~adityav/Evaluation_of_Inter_Process_Communication_Mechanisms.pdf]],
    especially for large blocks of data.
    The limitation imposed is that all components involved in the communication should be
-   deployed in the same machine and concern about the security of private messages of
-   different accounts.
-   Thus, only core components like *TDEngine*, *MDEngine* and *Strategy* use mmap file for communication.
-   End user interaction will not happen in the host machine locally, but through an secure channel remotely.
+   deployed in the same machine and the concern about leakage of trading messages to unauthorized user.
+   The system has a well-designed account management that messages of different accounts will not mess up with each other.
+   If the host machine is hacked with root privilege, then of course, everything will be leaked.
+   Thus, only core components like *TDEngine*, *MDEngine* and *Strategy* use mmap file for internal communication.
+   End user interaction will not take place in the host machine locally, but through a secure channel remotely.
    
    The other big advantage of using memory mapped file is that all messages, including the quotation data,
    are persistent on disk. The whole trading timeline can be reviewed or replayed offline.
