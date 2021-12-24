@@ -4,6 +4,9 @@
  - CStrategy
  - CStrategyBase and CStrategyProcess
 
+ Running strategy process is identified by its unique name.
+ This is achieved by change the process title to the strategy's name.
+ 
 ** TDHelper and MDHelper
 *** Summary
  Each running strategy process owns one *TDHelper* and one *MDHelper*. They are the part of the strategy.
@@ -140,3 +143,65 @@
      * /td_on_switch_day/
      * /td_release/
        
+
+** Strategy Management
+   Two methods are available to control the running strategy process (through ~use_shm_controller~ in the config file):
+   1. Through the process itself (default one): suitable for replay environment
+   2. Through a shared memory strategy table: suitable for real trading environment 
+      
+*** Default method: ~use_shm_controller = False~
+    If ~use_shm_controller~ is set to ~False~, the running strategy will be ran as a standalone process.
+    Other process has no control of it (like start/stop trading, exit).
+    The only way to control it is sending termination/kill signal, for example keyboard interrupt like ~Ctrl-C~.
+    
+    This method is suitable for running strategy as a batch job, which will exit itself after job is done.
+    Otherwise, it may become a dangling strategy out of management [fn::It can only be stopped by sending terminate signal to it].
+    It is designed to be used in replay environment, where the strategy is driven by the disk quote data
+    and no start/stop trading intervention is needed.
+    
+    The advantage of using this method is that user do not need to manage strategy table [[sec:stg_tbl_method][see next section]].
+    
+*** Strategy table method: ~use_shm_controller = True~ <<sec:stg_tbl_method>>
+    
+    If ~use_shm_controller~ is set to ~True~, the new strategy process is recorded in a
+    table in the shared memory. Each entry in the table represents a running strategy.
+    
+    The table is persistent in the same boot and accessible to any running process.
+    Running strategy process will poll the control flag from its record in this table to change its running status.
+    Other manager process can control the running strategies by changing corresponding control flags in this table.
+    This method is designed to be used in product environment and suitable for running strategy as a daemon service on the server.
+    It is also suitable for reply environment.
+
+    For strategies executed through *TunnelAgent*, they will always be registered in the strategy table.
+    Thus, user should be careful that ~use_shm_controller~ should be set to ~True~ explicitly in the configuration file.
+    Otherwise, the strategy will be out of control from the user [fn::The server admin can still kill it].
+    After the strategy is loaded in the *TunnelAgent* server, user can control it through *TunnelClient* by
+    sending ~STG~ command:
+    * ~STG status~ :: show status
+    * ~STG start~ :: start trading
+    * ~STG stop~ :: stop trading
+    * ~STG exit~ :: exit
+    * ~STG signal~ :: send signal
+    * ~STG set~ :: set user data
+    The details and exact syntax explanation of ~STG~ command is presented in [[file:tunnel_agent.org][*tunnel_agent*]] section.
+    
+    The extra work is needed from user to manage the strategy table.
+    Since the size of the table is limited, the exited strategy record should be deleted.
+    If user the strategy through *TunnelAgent* interface, this is done by the sever automatically.
+    If the strategy is executed directly by the user, then user needs to invoke ~release()~ method
+    of the strategy before exit the program.
+    
+**** Strategy table in shared memory
+    A hash table stored in shared memory, accessible and persistent in the same boot.
+    Each record is a piece of meta information about running strategy on the host machine:
+    #+name: tb_strategy_node
+    #+title: Elements of Strategy Table Entry [fn:caveat]
+    | element    | type      | description                                                                       |
+    |------------+-----------+-----------------------------------------------------------------------------------|
+    | name       | char[128] | Unique name of the strategy, set by end user                                      |
+    | start_time | uint32    | When the strategy process is started (seconds from epoch)                         |
+    | is_exit    | uint32    | Ask strategy process to exit or check if it exits normally                        |
+    | do_trade   | uint32    | Ask strategy process to start trading or check if it is doing the trade currently |
+    | userdata   | uint64    | Additional data set by end user                                                   |
+
+    [fn:caveat:] For abnormal state of the running strategy, the PID should be checked using system call rather than query this table.

@@ -36,17 +36,19 @@ CExecLoader::~CExecLoader() {}
 int CExecLoader::run(string &pkg) {
   int ret = STATE_ABORT;
   switch (exec_state_) {
-    case ST_RECV_FILE:
+    case ST_RECV_FILE:  // 1. client first send script file
       ret = CFileReciever::run(pkg);
-      if (ret == STATE_FINISH) {
+      if (ret == STATE_FINISH) {  // full script content saved
         exec_state_ = ST_RECV_CONFIG;
+
+        // create the config receiver, ready to receive strategy config file
         p_conf_reciever_.reset(new CFileReciever(p_owner_));
         p_owner_->sayFinish(TYPE_FINISH_ACK);
         return STATE_PENDING;
       } else
         return ret;
       break;
-    case ST_RECV_CONFIG:
+    case ST_RECV_CONFIG:  // 2. second file from client is the config file
       ret = p_conf_reciever_->run(pkg);
       if (ret == STATE_FINISH) {
         exec_state_ = ST_RECV_DIR;
@@ -66,6 +68,8 @@ int CExecLoader::run(string &pkg) {
           ret = STATE_ABORT;
           break;
         }
+        // try to find a running strategy with the same name
+        // return finish if exits
         if (findProcessByCmdLine(name_) >= 0) {
           LOG_INFO("IGNORED: %s is already running.", name_.c_str());
           string info("the same name process is already running.\t\t\t" SWARN(
@@ -75,13 +79,17 @@ int CExecLoader::run(string &pkg) {
           ret = STATE_FINISH;
           break;
         }
+
+        // new strategy process not existing, ready to create one
+        // 1. create directory reciever for work directory
+        // 2. then ack client to send it
         p_dir_reciever_.reset(new CDirReciever(p_owner_));
         p_owner_->sayFinish(TYPE_FINISH_ACK);
         return STATE_PENDING;
       } else
         return ret;
       break;
-    case ST_RECV_DIR:
+    case ST_RECV_DIR:  // 3. third message from client is working directory
       ret = p_dir_reciever_->run(pkg);
       if (ret == STATE_FINISH) {
         exec_state_ = ST_RECV_CMD;
@@ -99,8 +107,10 @@ int CExecLoader::run(string &pkg) {
       } else
         return ret;
       break;
-    case ST_RECV_CMD: {
+    case ST_RECV_CMD: {  // 4. fourth message is script arguments
       args_ = pkg;
+
+      // immediately start the strategy process
       ret = load();
       if (STATE_ABORT == ret) {
         delDir(workdir_);
@@ -117,6 +127,9 @@ int CExecLoader::run(string &pkg) {
 }
 
 int CExecLoader::load() {
+  // 1. make the temporary directory: $base_dir/.tmp, if not yet created
+  // if client does not specify workdir, then the temporary directory needs to
+  // be created at this stage
   CConfig *conf = CTunnelAgent::instance()->getConfig();
   string base_dir = conf->getVal<string>("COMMON", "base_dir");
   if (base_dir[base_dir.size() - 1] != '/') {
@@ -132,6 +145,7 @@ int CExecLoader::load() {
 
   if (!checkTmpDir(dir_path)) return STATE_ABORT;
 
+  // 2. register the strategy process into strategy table
   if (!CStrategyManager::registerStg(name_)) {
     LOG_ERR("register %s err", name_.c_str());
     string info("register ");
@@ -140,19 +154,21 @@ int CExecLoader::load() {
     return STATE_ABORT;
   }
 
+  // create the child process and replace it with the script code path
   pid_t pid = fork();
   if (pid < 0) {
     LOG_ERR("fork err: %s", strerror(errno));
     return STATE_ABORT;
   }
   if (pid > 0) {
-    tChildWatcher *p_child_watcher =
-        new tChildWatcher;  // this object will reserve until callback delete
-                            // it.
+    // start watcher for strategy exit
+    tChildWatcher *p_child_watcher = new tChildWatcher;
     p_child_watcher->name = name_;
     ev_child_init((ev_child *)p_child_watcher, child_cb, pid, 0);
     ev_child_start(EV_DEFAULT_(ev_child *) p_child_watcher);
 
+    // start timer to flag the deletion of the script and work directory after
+    // strategy process exit
     double del_sec = conf->getVal<double>("COMMON", "clean_interval");
     tDelWatcher *p_del_watcher = new tDelWatcher;
     p_del_watcher->file = file_path;
@@ -160,6 +176,7 @@ int CExecLoader::load() {
     ev_timer_init(&(p_del_watcher->timer), timeout_cb, del_sec, 0.);
     ev_timer_start(EV_DEFAULT, &(p_del_watcher->timer));
 
+    // load the strategy successfully, send finish msg to client
     return STATE_FINISH;
   } else  // child
   {
@@ -265,6 +282,7 @@ void CExecLoader::runChild(string file_path) {
 }
 
 void CExecLoader::child_cb(EV_P_ ev_child *w, int revents) {
+  // delete the record from the strategy table
   CStrategyManager::exitStg(((tChildWatcher *)w)->name);
 
   ev_child_stop(EV_DEFAULT_ w);

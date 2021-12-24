@@ -268,7 +268,11 @@
 <2021-12-14 Di>
 [[file:~/src/nat_framework/src/utility/CHashTable.h::/]]
 
-* TODO Understand process management? setProcTitle
+* DONE Understand process management? setProcTitle
+CLOSED: [2021-12-24 Fri 21:27]
+A: Change the running process's title to a new name (the strategy's name in NAT).
+   So that strategies invoked with same executable and arguments can be recognized simply by its title,
+   rather than only through the pid.
 <2021-12-14 Di>
 [[file:~/src/nat_framework/src/tunnel_agent/PyLoader.cpp::setProcTitle(name, argv);]]
 

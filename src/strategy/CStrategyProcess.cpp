@@ -89,6 +89,9 @@ bool CStrategyProcess::initStr(string config_content) {
  * position in the strategy list of this CStrategyProcess instance.
  */
 bool CStrategyProcess::loadConfig(string config_content) {
+  // Config strategy control method: default is central strategy table
+  // if 'use_shm_controller' is configured as 'False', the strategy is
+  // ran as a dangling process.
   setStrategyConfig(config_content);
   setup_signal_callback();
 

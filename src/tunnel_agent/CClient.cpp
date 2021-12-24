@@ -384,8 +384,8 @@ bool CClient::doShellCmd(string cmd) {
   // wait for finish message from server
   while (desRead(data)) {
     if (data[0] == CMD_ALLDATA) {
-      cout << data.c_str() + 1;
-      last_shell_output_ += data.substr(1);
+      cout << data.c_str() + 1;              // print the command output
+      last_shell_output_ += data.substr(1);  // keep a copy for ASSERT cmd
     } else if (data[0] == CMD_FINISH) {
       tCommand *p = (tCommand *)data.data();
       return p->type == TYPE_FINISH_SUCC ? true : false;
@@ -406,6 +406,7 @@ bool CClient::doAssertCmd(string target) {
   return last_shell_output_ == target;
 }
 
+// block reading reply from server
 bool CClient::loopReadAndEcho() {
   string data;
   while (desRead(data)) {
@@ -422,6 +423,7 @@ bool CClient::loopReadAndEcho() {
   return false;
 }
 
+// block reading reply from server
 int CClient::readEcho() {
   string data;
   while (desRead(data)) {
@@ -476,6 +478,11 @@ bool CClient::sendFile(string file, string name, uint8_t cmd, uint8_t type) {
   return desSend(data);
 }
 
+/**
+ * @brief Recursively send all files and directories under 'localdir' on the
+ * client machine to the 'remotedir' on the server machine. The directory
+ * structure is preverved. If 'remotedir' is empty, just send a cmd header.
+ */
 bool CClient::sendDir(string localdir, string remotedir, uint8_t cmd,
                       uint8_t type) {
   tCommand cmd_head = {cmd, type, 0};
@@ -515,6 +522,19 @@ bool CClient::sendDir(string localdir, string remotedir, uint8_t cmd,
   return desSend(data);
 }
 
+/**
+ * @brief send python strategy script for execution
+ * @param[in] config strategy configuration in JSON format
+ * @param[in] execfile script file
+ * @param[in] argstr script arguments
+ * @param[in] workdir the files and directories under workdir on the client
+ * machine is copied to the server machine under a new temporary directory.
+ * The new temporary directory is created under $base_dir/.tmp/ with the name:
+ * $basename_$timestamp. 'basename' is from workdir and 'timestamp' is the
+ * second from epoch when this directory is sent from client to server.
+ * If workdir is empty, then nothing happens on the server side. 'base_dir' is
+ * configuration variable in the JSON file on the server side.
+ */
 bool CClient::doExecCmd(string config, string execfile, string argstr,
                         string workdir) {
   ifstream in(config);
@@ -542,9 +562,9 @@ bool CClient::doExecCmd(string config, string execfile, string argstr,
   result = sendFile(config, name, CMD_EXEC);
   if (!result) return false;
   int echo = readEcho();
-  if (echo == TYPE_FINISH_SUCC)
+  if (echo == TYPE_FINISH_SUCC)  // strategy with the same name already exist
     return true;
-  else if (echo == TYPE_FINISH_FAIL)
+  else if (echo == TYPE_FINISH_FAIL)  // abnormal failure
     return false;
 
   // 3. send working directory

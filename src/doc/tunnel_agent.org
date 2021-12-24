@@ -4,7 +4,8 @@
   - server on host machine
   - client on end user's machine
   - RSA and DES encrypted communication, with hardcoded private/public key pairs
-
+  - Single-shot session fot the execution of a pre-defined list of commands.
+    The client is not designed for interactive tasks.
 ** Design
 *** RSA key generation
   The public/private key pair is generated during building time using *sshkeytransfer* from *tools* package.
@@ -13,21 +14,39 @@
 *** Container Diagram
 
 *** Sequence Diagram
+
+  Each session is initiated by the client and consists of several dialogs:
+    - each dialog is initiated by the client and wait for the reply from the server
+    - dialog types:
+      + authentication
+        1. send request for authentication to server
+        2. server confirms client's identity and send request for authentication to client
+        3. client confirms server's identity, continue to key distribution
+      + key distribution
+        1. client generate and send the DES key to server
+        2. server received the key and ready for command execution
+      + command
+        1. send a command for execution (encrypted)
+        2. wait for replay from server: command output, running info or error
+        3. receive the finish msg and continue to next command
+      + bye:
+        1. notify the server that no more commands available and exit
+        2. server received the notification and close the session
+           
 #+begin_src plantuml :file tunnel_agent_seq.png
 @startuml
-title **Tunnel Agent Client/Server Interaction**
+title **Client/Server Interaction (**tunnel_agent**)**
 
-Participant TunnelClient as client
-Participant TunnelAgent as server
+Entity TunnelClient as client
+Entity TunnelAgent as server
 Participant Commander as commander
-Participant StrategyManager as stg_mgr
+Collections StrategyTable as stg_tbl
 
 ' server should be online
-[o-> server : **Start Server**
+?o-> server : **Start Server**
 activate server
 server -> server : init & listen
-server -> stg_mgr : init strategy manager\n(if not exist yet)
-activate stg_mgr
+server -> stg_tbl **: create the strategy table\n in shared-memory (if not exist)
 
 ' init
 [o-> client : **Start Client**
@@ -67,12 +86,15 @@ loop N times
 end
 
 'waiter deactivation
-client -> server : Bye
+group Bye (no more command on the list)
+client -> server : bye!
 destroy client
-
 return release this waiter \n& close connection  
+end
 
-[-> server : **Stop Server**
+...some time later...
+
+?-> server : **Stop Server**
 server -> server : stop listen
 destroy server
 @enduml
@@ -96,18 +118,50 @@ destroy server
     - cmd_list :: 
       
   List of commands defined:
-  - SAVE ::
-  - SHELL ::
-  - ASSERT ::
-  - EXEC ::
-  - EXEC_DIR ::
-  - STG :: 
-    
-  Client will wait for the response of the server indicating 'FINISH' (failed or success)
-  before sending next command.
+  - SHELL :: execute a shell command and the stdout and stderr of the command will be sent back.
+  - ASSERT :: check the output of last ~SHELL~ command, thus used together with ~SHELL~ as a pair.
+  - EXEC :: execute a strategy script (presumably python script). The following fields: /configuration_file/, /python_script/
+    and /script_arguments/.
+  - EXEC_DIR :: same as ~EXEC~ with an additional /working_directory/ filed
+  - STG ::
+    - status :: query the current status of all running strategies.
+      This command will also report and delete strategy record with abnormal
+      exit status from the strategy table (invoke it constantly to have a clean table).
+      =Sytax: STG status= .
+    - start :: request the strategy to start trading
+      =Sytax: STG start ${stg_name}= .
+    - stop :: request the strategy to stop trading
+      =Sytax: STG stop ${stg_name}= .
+    - exit :: request the strategy to exit normally
+      =Sytax: STG exit ${stg_name}= .
+    - signal :: send signal to the strategy process, optionally with data (32-bit).
+      =Sytax: STG signal ${stg_name} ${sig_id} [${data}]= .
+    - set :: set the ~userdata~ field of the strategy record
+      =Sytax: STG set ${data} ${stg_name}= .
+  - SAVE :: copy a client file to server or create a directory on server: =Syntax: SAVE ${src} ${dst}=.
+    If ~src~ is a file, then copy this file on client machine to ~dst~ on the server machine.
+    If ~src~ is a directory on client machine, create a new directory ~dst~ on the server with
+    properties of ~src~.
   
 *** *TunnelAgent*
   - COMMON ::
+    - base_dir :: *TunnelAgent*'s main directory.
+      Its sub-directory ~lib~ will be added to the ~LD_LIBRARY_PATH~ and ~PYTHONPATH.~,
+      if ~lib_dir~ is not specified in the configuration file.
+      Besides, the strategy scripts and the working directory will temporarily copied under
+      ~.tmp~ subdirectory in it.
+    - lib_dir :: this directory is appended to ~LD_LIBRARY_PATH~ of the strategy running environment
+    - python_path :: this directory is appended to ~PYTHONPATH~ of the strategy running environment
+    - exe_log_dir :: the directory for storing the log files which records the stdout and stderr of
+      the running strategies. Each strategy process will have its own log file named: ~${stg_name}_stdio.log~.
+    - clean_interval :: the interval in second, after which the temporary files under ~.tmp~ is marked
+      for automatic deleting when strategy process exits.
   - AGENT ::
-    - ip ::
-    - port :: 
+    - ip :: listening ip
+    - port :: listening port
+      
+** Security
+   Since any shell commands and executables from *TunnelClient* can be executed by *TunnelAgent* on
+   server machine, it's important to set a limited access permission of the user invoking *TunnelAgent*.
+   It's best to set an dedicated user account and home directory on the server machine to host *TunnelAgent*
+   service.

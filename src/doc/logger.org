@@ -1,5 +1,5 @@
 
-* Summary
+* logger
   
  Three types of logging facilities are in use, all by including the same header ~Logger.h~.
  The default logger, the so called *HeavyLogger*, is based on [[https://github.com/log4cplus/log4cplus][*log4cplus*]].

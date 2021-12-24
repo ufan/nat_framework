@@ -17,8 +17,9 @@
    End user interaction will not take place in the host machine locally, but through a secure channel remotely.
    
    The other big advantage of using memory mapped file is that all messages, including the quotation data,
-   are persistent on disk. The whole trading timeline can be reviewed or replayed offline.
-   Other methods, like *pipe* and *shared memory*, may be suitable for communication but not for persistence.
+   are persistent on disk (even after reboot). The whole trading timeline can be reviewed or replayed offline.
+   Other methods, like *pipe* and *shared memory*[fn::shared memory is persistent as long as OS is not reboot (except destroyed explicitly)],
+   may be suitable for communication but not for persistence.
    
    At last, the memory mapped files are also used for solely for sharing of data in the system like the order track collection.
    

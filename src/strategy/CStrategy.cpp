@@ -41,17 +41,17 @@ CStrategy::CStrategy() {}
 CStrategy::~CStrategy() { release(); }
 
 /**
- * @brief Init this strategy with a configuration file. Default configuration
- * can be  set using environment variable 'STG_CFG'
+ * @brief Init this strategy with a configuration file.
+ * If environment variable 'STG_CFG' set, it will load configuration there.
  */
 bool CStrategy::init(string config_file) {
-  // 1. read default config files, which may be used to set default value
+  // 1. read config from environment variable if set
   char* p_cfg = getenv("STG_CFG");
   if (p_cfg) {
     return loadConfig(string(p_cfg));
   }
 
-  // 2. load user-customized configuration
+  // 2. load configuration file
   ifstream in(config_file);
   if (!in) {
     fprintf(stderr, "read config file %s err.\n", config_file.c_str());
@@ -179,8 +179,9 @@ int CStrategy::cancelOrder(int order_id) {
  *       4. the td/md helper of this strategy
  */
 bool CStrategy::loadConfig(string config_content) {
-  // step 1: read 'use_shm_controller' flag from configure file , which is used
-  // to control how the strategy's shared region is managed
+  // step 1: Config strategy control method: default is central strategy table
+  // if 'use_shm_controller' is configured as 'False', the strategy is
+  // ran as a dangling process.
   setStrategyConfig(config_content);
   setup_signal_callback();
 
@@ -188,7 +189,8 @@ bool CStrategy::loadConfig(string config_content) {
   json j_conf = json::parse(config_content);
   initFastLogger(j_conf);
 
-  // step 3: set process file? TBU
+  // step 3: change the title of the running process to the strategy's name
+  // This is a critical so that the process can be identified by its unique name
   if (!setProcTitle(j_conf["name"])) {
     ALERT("setProcTitle failed.");
     return false;

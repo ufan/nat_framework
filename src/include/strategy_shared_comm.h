@@ -23,11 +23,14 @@
 
 #define SHARED_STG_HASH(p, len) MurmurHash2(p, len, 0x2017)
 
+// Meta data about running strategy (a record in strategy table)
+// Abnormal exit status of the strategy is not recorded here, the pid should be
+// checked
 struct tStrategyNode {
   char name[SHARED_STG_NAME_MAX_SIZE];
-  uint32_t start_time;
-  uint32_t is_exit;
-  uint32_t do_trade;
+  uint32_t start_time;  // when strategy is started
+  uint32_t is_exit;   // flag controlling and indicating normal exit of strategy
+  uint32_t do_trade;  // flag controlling and indicating do trading or not
   uint64_t userdata;
 
   void setName(const char* p) {

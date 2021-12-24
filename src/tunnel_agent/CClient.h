@@ -70,9 +70,9 @@ class CClient {
   static CConfig *getConfig();
 
  private:
-  int fd_;  // socket descriptor
-  CCrypt crypter_;
-  string last_shell_output_;
+  int fd_;          // socket descriptor
+  CCrypt crypter_;  // for authentication and 3DES encrypted communication
+  string last_shell_output_;  // output of last SHELL command
 };
 
 #endif /* SRC_TA_CCLIENT_H_ */

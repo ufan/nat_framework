@@ -15,21 +15,21 @@ using json = nlohmann::json;
 
 // record pointer to the this running strategy
 static tStrategyNode *s_p_node = nullptr;
-static string s_name;    // name of this strategy instance
-static string s_config;  // configuration of this strategy instance
+static string s_name;    // name of this strategy process
+static string s_config;  // configuration of this strategy process
 
-// This flag controls which method is used to manage the strategy record
+// This flag controls which method is used to manage the strategy
 static bool s_use_shm_controller = false;
 
 // Method 1: use a shm table for central stg management of all strategy
-// instances running in the same host. This table is ignore if not used.
+// process running in the same host. This table is ignore if not used.
 static SHARED_STG_TABLE s_table;
-// Method 2: use a private local record to manage this strategy instance.
+// Method 2: use a private record to manage this strategy process by itself.
 // It is ignored if shm table is used.
 static tStrategyNode s_stg_node;
 
 /**
- * @brief Init the record of a new strategy instance
+ * @brief Init the record of a new strategy process
  * @detail If using method 1 (shm table), this record is managed centrally by
  * StgManager. */
 bool initStrategyShared(string name) {

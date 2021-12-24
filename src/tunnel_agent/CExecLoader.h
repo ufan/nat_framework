@@ -51,11 +51,12 @@ class CExecLoader : public CFileReciever {
   void runChild(string file_path);
 
  private:
-  string conf_;  // strategy configuration in json format
+  string conf_;  // strategy configuration in json format sent from client
   string args_;
   string workdir_;  // strategy work directory (i.e., running directory)
 
   int exec_state_;
+  // in charge of recieving config file
   unique_ptr<CFileReciever> p_conf_reciever_;
   unique_ptr<CDirReciever> p_dir_reciever_;
 };

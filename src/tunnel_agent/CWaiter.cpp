@@ -345,7 +345,7 @@ int CWaiter::doCommand(string &pkg) {
         p_commander_.reset(new CShellCmd(this));
         break;
 
-      case CMD_PYTHON:  // TODO not implemented in CClient
+      case CMD_PYTHON:  // deprecated, function replaced by CMD_EXEC
         p_commander_.reset(new CPythonExecutor(this));
         break;
 
