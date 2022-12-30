@@ -32,9 +32,8 @@ set(FETCHCONTENT_QUIET OFF)
 set(VERSION "-rrel-4_24")
 FetchContent_Declare(
   libev
-  CVS_REPOSITORY   ":pserver:anonymous@cvs.schmorp.de/schmorpforge"
-  CVS_MODULE       "libev"
-  CVS_TAG          ${VERSION}
+  GIT_REPOSITORY   "https://github.com/natcollab/libev"
+  GIT_TAG          main
   SOURCE_DIR       ${CMAKE_CURRENT_LIST_DIR}/src
   )
 

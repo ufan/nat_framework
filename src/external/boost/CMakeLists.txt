@@ -22,7 +22,7 @@ set(Boost_USE_MULTITHREADED    TRUE)
 # set(Boost_USE_STATIC_RUNTIME   TRUE)
 
 set(BOOST_VERSION 1.72.0)
-find_package(Boost ${BOOST_VERSION} EXACT
+find_package(Boost ${BOOST_VERSION}
   CONFIG
   REQUIRED COMPONENTS headers
                       python # header only libraries are found by default, in Boost::headers
